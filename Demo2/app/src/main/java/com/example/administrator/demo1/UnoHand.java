@@ -1,7 +1,7 @@
 package com.example.administrator.demo1;
 
 /**
- * Created by alexj on 1/28/2018.
+ * Created by Xemnaes on 1/28/2018.
  */
 
 import java.util.ArrayList;
@@ -20,12 +20,18 @@ public class UnoHand {
     }
 
     public ArrayList<UnoCard> getCards() {
+
         return unoCards;
     }
 
     public int getCardNum() {
+
         return cardNum;
     }
 
+    public void addCard(UnoCard givenCard) {
+
+        this.unoCards.add(givenCard);
+    }
 
 }

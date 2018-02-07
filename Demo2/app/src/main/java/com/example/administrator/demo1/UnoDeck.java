@@ -38,11 +38,26 @@ public class UnoDeck {
         }
 
         public void shuffleCards() {
+
             Collections.shuffle(this.cards);
         }
 
         public ArrayList<UnoCard> getCards() {
+
             return this.cards;
+        }
+
+        public ArrayList<UnoHand> dealHands(int playerNum) {
+            int i, j;
+            //Create # of hands
+            ArrayList<UnoHand> hands = new ArrayList<>(playerNum);
+            for(i = 0; i < playerNum; i++) {
+                UnoHand currentHand = hands.get(i);
+                for(j = 0; j < 7; j++) {
+                    currentHand.addCard(this.cards.remove(0));
+                }
+            }
+            return hands;
         }
 
 }

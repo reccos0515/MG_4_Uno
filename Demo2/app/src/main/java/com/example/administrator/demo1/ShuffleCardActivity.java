@@ -4,19 +4,17 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener{
+public class ShuffleCardActivity extends AppCompatActivity implements View.OnClickListener{
 
     private Button btn;
     private UnoDeck deck = new UnoDeck();
 
     @Override
-    //Create items needed for initial setup
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_shuffle_card);
 
         //Set the onClickListener for the shuffle button
         btn = findViewById(R.id.button);
@@ -31,8 +29,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 //Updates button text
                 Button btn = findViewById(v.getId());
                 btn.setText("Shuffled!");
+
                 //Shuffles the Uno deck
                 deck.shuffleCards();
+
+                //Deals the cards to each hand (***Set at 7 for now***)
+                ///ArrayList<UnoHand> hands = deck.dealHands(7);
+                ///UnoGame game = new UnoGame(7,deck,hands);
+
                 //Updates the card display
                 TextView cardText = findViewById(R.id.card);
                 UnoCard card = deck.getCards().get(0);
@@ -42,5 +46,4 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 break;
         }
     }
-
 }
