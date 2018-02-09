@@ -12,12 +12,11 @@ public class UnoCard {
     private Colors color;
 
     //Action Types:
-    //0: Not An Action Card
-    //1: Draw Two Card
-    //2: Skip Card
-    //3: Reverse Card
-    //4: Wild Card
-    //5: Wild Draw Four Card
+    //Draw Two Card
+    //Skip Card
+    //Reverse Card
+    //Wild Card
+    //Wild Draw Four Card
     private Actions actionType;
 
     public UnoCard(int givenValue, Colors givenColor, Actions givenActionType) {
@@ -27,6 +26,18 @@ public class UnoCard {
         color = givenColor;
         //Action type of card
         actionType = givenActionType;
+    }
+
+    public int getValue() {
+        return this.value;
+    }
+
+    public Colors getColor() {
+        return this.color;
+    }
+
+    public Actions getActionType() {
+        return this.actionType;
     }
 
     public String CardToText() {

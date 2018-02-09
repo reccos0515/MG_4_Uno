@@ -4,6 +4,11 @@ package com.example.administrator.demo1;
  * Created by Xemnaes on 1/28/2018.
  */
 
+import android.content.Context;
+import android.view.View;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+
 import java.util.ArrayList;
 
 public class UnoHand {
@@ -20,18 +25,16 @@ public class UnoHand {
     }
 
     public ArrayList<UnoCard> getCards() {
-
-        return unoCards;
+        return this.unoCards;
     }
 
-    public int getCardNum() {
-
-        return cardNum;
-    }
+    public int getCardNum() { return this.cardNum; }
 
     public void addCard(UnoCard givenCard) {
-
+        //Add UNO card to hand object
         this.unoCards.add(givenCard);
     }
+
+    public void removeCard(UnoCard givenCard) { this.unoCards.remove(givenCard); }
 
 }

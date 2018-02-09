@@ -27,6 +27,8 @@ public class MainActivity extends AppCompatActivity {
                 break;
             //Go to test #3
             case R.id.test3:
+                Intent i3 = new Intent(this, DealCardsActivity.class);
+                startActivity(i3);
                 break;
             //Go to test #4
             default:

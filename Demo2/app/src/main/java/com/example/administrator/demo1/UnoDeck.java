@@ -14,48 +14,57 @@ public class UnoDeck {
         public UnoDeck() {
             //For each color...
             for(Colors tempColor: Colors.values()) {
-                int i;
-                //Insert numbered cards
-                for(i = 0; i < 10; i++) {
-                    cards.add(new UnoCard(i,tempColor,Actions.NONE));
-                    //If it's not the zeroth numbered card...
-                    if(i>0) {
-                        cards.add(new UnoCard(i,tempColor,Actions.NONE));
+                if (tempColor != Colors.NONE) {
+                    int i;
+                    //Insert numbered cards
+                    for (i = 0; i < 10; i++) {
+                        cards.add(new UnoCard(i, tempColor, Actions.NONE));
+                        //If it's not the zeroth numbered card...
+                        if (i > 0) {
+                            cards.add(new UnoCard(i, tempColor, Actions.NONE));
+                        }
+                    }
+                    //Insert two of the three following action cards
+                    for (i = 0; i < 2; i++) {
+                        cards.add(new UnoCard(-1, tempColor, Actions.DRAW_TWO));
+                        cards.add(new UnoCard(-1, tempColor, Actions.SKIP));
+                        cards.add(new UnoCard(-1, tempColor, Actions.REVERSE));
                     }
                 }
-                //Insert two of the three following action cards
-                for(i = 0; i < 2; i++) {
-                    cards.add(new UnoCard(-1,tempColor,Actions.DRAW_TWO));
-                    cards.add(new UnoCard(-1,tempColor,Actions.SKIP));
-                    cards.add(new UnoCard(-1,tempColor,Actions.REVERSE));
-                }
-                //Insert four of the two following action cards
-                for(i = 0; i < 4; i++) {
-                    cards.add(new UnoCard(-1,tempColor,Actions.WILD));
-                    cards.add(new UnoCard(-1,tempColor,Actions.WILD_DRAW_FOUR));
-                }
+            }
+            //Insert four of the two following action cards
+            for(int i = 0; i < 4; i++) {
+                cards.add(new UnoCard(-1,Colors.NONE,Actions.WILD));
+                cards.add(new UnoCard(-1,Colors.NONE,Actions.WILD_DRAW_FOUR));
             }
         }
 
+        // Shuffles the deck
         public void shuffleCards() {
 
             Collections.shuffle(this.cards);
         }
 
+        //Returns all the cards in the deck
         public ArrayList<UnoCard> getCards() {
 
             return this.cards;
         }
 
+        // Returns an ArrayList of UnoHand
         public ArrayList<UnoHand> dealHands(int playerNum) {
             int i, j;
-            //Create # of hands
-            ArrayList<UnoHand> hands = new ArrayList<>(playerNum);
+            //Create ArrayList of UnoHands
+            ArrayList<UnoHand> hands = new ArrayList<>();
             for(i = 0; i < playerNum; i++) {
-                UnoHand currentHand = hands.get(i);
+                // Create an ArrayList of UnoCards
+                ArrayList<UnoCard> currentCards = new ArrayList<>();
                 for(j = 0; j < 7; j++) {
-                    currentHand.addCard(this.cards.remove(0));
+                    // Add a card to the list, removing it from the deck
+                    currentCards.add(this.cards.remove(0));
                 }
+                // Create a hand from the list of cards pulled
+                hands.add(new UnoHand(7,currentCards));
             }
             return hands;
         }

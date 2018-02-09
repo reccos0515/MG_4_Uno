@@ -5,5 +5,5 @@ package com.example.administrator.demo1;
  */
 
 public enum Colors {
-    RED,GREEN,YELLOW,BLUE;
+    NONE,RED,GREEN,YELLOW,BLUE;
 }

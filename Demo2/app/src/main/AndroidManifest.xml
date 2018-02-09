@@ -17,7 +17,8 @@
             </intent-filter>
         </activity>
         <activity android:name=".DragDropCardsActivity" />
-        <activity android:name=".ShuffleCardActivity"></activity>
+        <activity android:name=".ShuffleCardActivity" />
+        <activity android:name=".DealCardsActivity"></activity>
     </application>
 
 </manifest>

@@ -33,10 +33,6 @@ public class ShuffleCardActivity extends AppCompatActivity implements View.OnCli
                 //Shuffles the Uno deck
                 deck.shuffleCards();
 
-                //Deals the cards to each hand (***Set at 7 for now***)
-                ///ArrayList<UnoHand> hands = deck.dealHands(7);
-                ///UnoGame game = new UnoGame(7,deck,hands);
-
                 //Updates the card display
                 TextView cardText = findViewById(R.id.card);
                 UnoCard card = deck.getCards().get(0);
