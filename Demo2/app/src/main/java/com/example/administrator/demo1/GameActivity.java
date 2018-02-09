@@ -1,29 +1,23 @@
 package com.example.administrator.demo1;
 
+import android.content.Context;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Toast;
-import android.content.Context;
 
 import java.util.ArrayList;
 
-public class DealCardsActivity extends AppCompatActivity implements View.OnClickListener{
-
-    private Button btn;
+public class GameActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_deal_cards);
-
-        //Set the onClickListener for the deal button
-        btn = findViewById(R.id.dealHands);
-        btn.setOnClickListener(this);
+        setContentView(R.layout.activity_game);
     }
 
     //Create onClick listener method
@@ -35,8 +29,8 @@ public class DealCardsActivity extends AppCompatActivity implements View.OnClick
                 Context context = getApplicationContext();
                 CharSequence text = "Hands have been dealt";
                 int duration = Toast.LENGTH_SHORT;
-
                 Toast toast = Toast.makeText(context, text, duration);
+                toast.setGravity(Gravity.CENTER,0,500);
                 toast.show();
 
                 //Create and Shuffle Deck
@@ -97,3 +91,4 @@ public class DealCardsActivity extends AppCompatActivity implements View.OnClick
         }
     }
 }
+

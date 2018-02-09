@@ -16,24 +16,16 @@ public class MainActivity extends AppCompatActivity {
 
     //Create onClick listener method
     public void onClick(View v) {
-        switch(v.getId()) {
-            //Go to test #1
-            case R.id.test1:
-                Intent i1 = new Intent(this, ShuffleCardActivity.class);
+        switch (v.getId()) {
+            //Start the game
+            case R.id.playGame:
+                Intent i1 = new Intent(this, GameActivity.class);
                 startActivity(i1);
                 break;
-            //Go to test #2
-            case R.id.test2:
-                break;
-            //Go to test #3
-            case R.id.test3:
-                Intent i3 = new Intent(this, DealCardsActivity.class);
-                startActivity(i3);
-                break;
-            //Go to test #4
             default:
                 break;
         }
     }
 
 }
+
