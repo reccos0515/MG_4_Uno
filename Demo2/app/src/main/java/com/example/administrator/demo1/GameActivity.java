@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
+import android.os.AsyncTask;
 import android.os.Handler;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -17,6 +18,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.Random;
 
 public class GameActivity extends AppCompatActivity {
 
@@ -60,7 +62,6 @@ public class GameActivity extends AppCompatActivity {
                         currentGame.getUnoPlayers().get(0).getUnoHand().addCard(card);
 
                         //Go to the next player
-                        //***FOR WILD CARD, PROMPT USER BEFORE SIMULATING TURN (AKA CALL SIMULATE TURN AFTER ONCLICK, NOT HERE)
                         simulateTurn(null);
                     }
                 }
@@ -108,18 +109,39 @@ public class GameActivity extends AppCompatActivity {
             iv.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    UnoCard card = (UnoCard) view.getTag();
+                    final UnoCard card = (UnoCard) view.getTag();
                     boolean validMove = currentGame.checkMove(card, currentGame.getUnoPlayers().get(currentGame.getCurrentTurn()));
                     if(validMove) {
-                        Context context = getApplicationContext();
-                        CharSequence text = "Valid move!";
-                        int duration = Toast.LENGTH_SHORT;
-                        Toast toast = Toast.makeText(context, text, duration);
-                        toast.setGravity(Gravity.CENTER,0,500);
-                        toast.show();
 
                         //Perform the turn
-                        simulateTurn(card);
+                        if(card.getActionType()==Actions.WILD || card.getActionType()==Actions.WILD_DRAW_FOUR) {
+                            CharSequence colors[] = new CharSequence[] {"Red", "Green", "Blue", "Yellow"};
+                            AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
+                            builder.setTitle("Pick a color");
+                            builder.setItems(colors, new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    switch(which) {
+                                        case 0:
+                                            card.setColor(Colors.RED);
+                                            break;
+                                        case 1:
+                                            card.setColor(Colors.GREEN);
+                                            break;
+                                        case 2:
+                                            card.setColor(Colors.BLUE);
+                                            break;
+                                        case 3:
+                                            card.setColor(Colors.YELLOW);
+                                            break;
+                                    }
+                                    simulateTurn(card);
+                                }
+                            });
+                            builder.show();
+                        } else {
+                            simulateTurn(card);
+                        }
 
                     } else {
                         Context context = getApplicationContext();
@@ -137,7 +159,7 @@ public class GameActivity extends AppCompatActivity {
 
     //Updates the card in the disposed stack
     public void updateDisposal(UnoCard card) {
-
+        Log.d("Test"," Disposal Card: "+card.CardToText());
         //Fetches the stack icon and retrieves the card on top
         ImageView tempView = findViewById(R.id.depositStack);
         currentGame.getDisposalCards().add(0, card);
@@ -149,7 +171,7 @@ public class GameActivity extends AppCompatActivity {
             int value = curCard.getValue();
             tempView.setImageResource(getResources().getIdentifier(color+"_"+Integer.toString(value),"drawable",getPackageName()));
         } else {
-            if (curCard.getColor() != Colors.NONE) {
+            if (curCard.getActionType() != Actions.WILD && curCard.getActionType() != Actions.WILD_DRAW_FOUR) {
                 String color = curCard.getColor().toString().toLowerCase();
                 String action = curCard.getActionType().toString().toLowerCase();
                 tempView.setImageResource(getResources().getIdentifier(color + "_" + action, "drawable", getPackageName()));
@@ -245,13 +267,92 @@ public class GameActivity extends AppCompatActivity {
                         UnoCard takenCard = currentGame.getCardFromDeck();
                         currentGame.getUnoPlayers().get(nextPlayer).getUnoHand().addCard(takenCard);
                     }
-                    chooseColor(card);
-                    break;
-                case WILD:
-                    chooseColor(card);
                     break;
                 case SKIP:
                     currentGame.nextTurn();
+                    break;
+                case REVERSE:
+                    currentGame.changeDirection();
+                    break;
+                case DRAW_TWO:
+                    nextPlayer = currentGame.nextPlayer();
+                    for(int i = 0; i < 2; i++) {
+                        UnoCard takenCard = currentGame.getCardFromDeck();
+                        currentGame.getUnoPlayers().get(nextPlayer).getUnoHand().addCard(takenCard);
+                    }
+                    break;
+                case WILD:
+                    break;
+            }
+
+            //Place card in disposal
+            updateDisposal(card);
+
+            //Check for a win [HUMAN]
+            if(currentPlayer.getUnoHand().getCards().size()==0) {
+
+                Context context = getApplicationContext();
+                CharSequence text = "You win!";
+                int duration = Toast.LENGTH_SHORT;
+                Toast toast = Toast.makeText(context, text, duration);
+                toast.setGravity(Gravity.CENTER,0,500);
+                toast.show();
+
+                Intent i1 = new Intent(this, MainActivity.class);
+                startActivity(i1);
+                return;
+            }
+        }
+
+        //Update whose turn it is/pointer variable
+        currentGame.nextTurn();
+        Log.d("Test","Turn is now... "+Integer.toString(currentGame.getCurrentTurn()));
+
+        //Update the onscreen display
+        updateCardSlide();
+        updatePlayerSlider();
+        updateScore();
+
+        //New player updated
+        currentPlayer = currentGame.getUnoPlayers().get(currentGame.getCurrentTurn());
+        while(currentPlayer.getPlayerType() == PlayerType.CPU) {
+            CPUTurn();
+            //Update the currentPlayer
+            currentPlayer = currentGame.getUnoPlayers().get(currentGame.getCurrentTurn());
+        }
+    }
+
+    public void CPUTurn() {
+        //Retrieve a card from the currentPlayer
+        UnoPlayer currentPlayer = currentGame.getUnoPlayers().get(currentGame.getCurrentTurn());
+        UnoCard CPUCard = currentGame.getValidCard(currentPlayer);
+
+        //If it couldn't get a card, draw from the pile and move to the next turn
+        if(CPUCard==null) {
+
+            CPUCard = currentGame.getCardFromDeck();
+            currentPlayer.getUnoHand().addCard(CPUCard);
+
+        } else {
+            //Removes the card from the hand
+            currentPlayer.getUnoHand().removeCard(CPUCard);
+            //Check for action card [CPU]
+            switch (CPUCard.getActionType()) {
+                case WILD_DRAW_FOUR:
+                    int nextPlayer = currentGame.nextPlayer();
+                    for(int i = 0; i < 4; i++) {
+                        UnoCard takenCard = currentGame.getCardFromDeck();
+                        currentGame.getUnoPlayers().get(nextPlayer).getUnoHand().addCard(takenCard);
+                    }
+                    chooseColor(CPUCard);
+                    break;
+                case WILD:
+                    chooseColor(CPUCard);
+                    Log.d("Test","Reg Wild Color is..."+CPUCard.getColor().toString());
+                    break;
+                case SKIP:
+                    currentGame.nextTurn();
+                    break;
                 case REVERSE:
                     currentGame.changeDirection();
                     break;
@@ -263,108 +364,32 @@ public class GameActivity extends AppCompatActivity {
                     }
                     break;
             }
-
-            //Place card in disposal
-            updateDisposal(card);
-
-            //Check for a win [HUMAN]
-            if(currentPlayer.getUnoHand().getCards().size()==0) {
-                //***TEMP
-                Context context = getApplicationContext();
-                CharSequence text = "You win!";
-                int duration = Toast.LENGTH_SHORT;
-                Toast toast = Toast.makeText(context, text, duration);
-                toast.setGravity(Gravity.CENTER,0,500);
-                toast.show();
-                //
-
-                Intent i1 = new Intent(this, MainActivity.class);
-                startActivity(i1);
-                return;
-            }
         }
 
-        //Update whose turn it is/pointer variable
+        //Updates the disposal stack and cardSlider
+        updateDisposal(CPUCard);
+        updateCardSlide();
+
+        //Check for a win [CPU]
+        if(currentPlayer.getUnoHand().getCards().size()==0) {
+
+            Context context = getApplicationContext();
+            CharSequence text = "You lose";
+            int duration = Toast.LENGTH_SHORT;
+            Toast toast = Toast.makeText(context, text, duration);
+            toast.setGravity(Gravity.CENTER,0,500);
+            toast.show();
+
+            Intent i1 = new Intent(this, MainActivity.class);
+            startActivity(i1);
+            return;
+        }
+
+        //Update whose turn it is
         currentGame.nextTurn();
 
-        //Update the onscreen display
-        updateCardSlide();
+        //Update visual display
         updatePlayerSlider();
-        updateScore();
-
-        currentPlayer = currentGame.getUnoPlayers().get(currentGame.getCurrentTurn());
-
-        //If the next player was a CPU, have them play
-        while(currentPlayer.getPlayerType() == PlayerType.CPU) {
-
-            //Retrieve a card
-            UnoCard CPUCard = currentGame.getValidCard(currentPlayer);
-
-            //If it couldn't get a card, draw from the pile and move to the next turn
-            if(CPUCard==null) {
-
-                CPUCard = currentGame.getCardFromDeck();
-                currentPlayer.getUnoHand().addCard(CPUCard);
-
-            } else {
-                //Removes the card from the hand
-                currentPlayer.getUnoHand().removeCard(CPUCard);
-                //Check for action card [CPU]
-                switch (CPUCard.getActionType()) {
-                    case WILD_DRAW_FOUR:
-                        int nextPlayer = currentGame.nextPlayer();
-                        for(int i = 0; i < 4; i++) {
-                            UnoCard takenCard = currentGame.getCardFromDeck();
-                            currentGame.getUnoPlayers().get(nextPlayer).getUnoHand().addCard(takenCard);
-                        }
-                        chooseColor(card);
-                        break;
-                    case WILD:
-                        chooseColor(card);
-                        break;
-                    case SKIP:
-                        currentGame.nextTurn();
-                    case REVERSE:
-                        currentGame.changeDirection();
-                        break;
-                    case DRAW_TWO:
-                        nextPlayer = currentGame.nextPlayer();
-                        for(int i = 0; i < 2; i++) {
-                            UnoCard takenCard = currentGame.getCardFromDeck();
-                            currentGame.getUnoPlayers().get(nextPlayer).getUnoHand().addCard(takenCard);
-                        }
-                        break;
-                }
-            }
-
-            //Updates the disposal stack
-            updateDisposal(CPUCard);
-
-            //Check for a win [CPU]
-            if(currentPlayer.getUnoHand().getCards().size()==0) {
-                //***TEMP
-                Context context = getApplicationContext();
-                CharSequence text = "You lose";
-                int duration = Toast.LENGTH_SHORT;
-                Toast toast = Toast.makeText(context, text, duration);
-                toast.setGravity(Gravity.CENTER,0,500);
-                toast.show();
-                //
-
-                Intent i1 = new Intent(this, MainActivity.class);
-                startActivity(i1);
-                return;
-            }
-
-            //Update whose turn it is
-            currentGame.nextTurn();
-
-            //Update visual display
-            updatePlayerSlider();
-
-            //Change pointer to next player
-            currentPlayer = currentGame.getUnoPlayers().get(currentGame.getCurrentTurn());
-        }
     }
 
     public void setUpGame(View v) {
@@ -410,9 +435,22 @@ public class GameActivity extends AppCompatActivity {
 
     }
 
-    //Human chooses a color for the current card ***FIX
+    //CPU chooses a random color
     public void chooseColor(UnoCard card) {
-        card.setColor(Colors.RED);
+        Random random = new Random();
+        Colors randomColor = Colors.values()[random.nextInt(Colors.values().length)];
+        //Cannot pick NONE for a color
+        while(randomColor == Colors.NONE) {
+            randomColor = Colors.values()[random.nextInt(Colors.values().length)];
+        }
+        card.setColor(randomColor);
+
+        Context context = getApplicationContext();
+        CharSequence text = "Color was set to "+randomColor.toString();
+        int duration = Toast.LENGTH_SHORT;
+        Toast toast = Toast.makeText(context, text, duration);
+        toast.setGravity(Gravity.CENTER,0,500);
+        toast.show();
     }
 
 }

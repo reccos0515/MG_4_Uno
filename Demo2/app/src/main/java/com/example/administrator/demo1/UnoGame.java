@@ -62,13 +62,13 @@ public class UnoGame {
         //Clockwise [0->1->2->3...]
         if(this.direction==0) {
             nextPlayer = this.getCurrentTurn()+1;
-            if(this.currentTurn==this.players.size()) {
+            if(nextPlayer==this.players.size()) {
                 nextPlayer = 0;
             }
             //Counter-Clockwise [3->2->1->0...]
         } else {
             nextPlayer = this.getCurrentTurn()-1;
-            if(this.currentTurn<0) {
+            if(nextPlayer<0) {
                 nextPlayer = this.players.size()-1;
             }
         }
