@@ -41,17 +41,15 @@ public class UnoDeck {
 
         // Shuffles the deck
         public void shuffleCards() {
-
             Collections.shuffle(this.cards);
         }
 
         //Returns all the cards in the deck
         public ArrayList<UnoCard> getCards() {
-
             return this.cards;
         }
 
-        // Returns an ArrayList of UnoHand
+        // Returns an ArrayList of UnoHands using the UnoDeck
         public ArrayList<UnoHand> dealHands(int playerNum) {
             int i, j;
             //Create ArrayList of UnoHands
@@ -64,9 +62,14 @@ public class UnoDeck {
                     currentCards.add(this.cards.remove(0));
                 }
                 // Create a hand from the list of cards pulled
-                hands.add(new UnoHand(7,currentCards));
+                hands.add(new UnoHand(currentCards));
             }
             return hands;
+        }
+
+        //Adds an ArrayList of cards to the deck //TODO
+        public void combineDisposal(ArrayList<UnoCard> dispStack) {
+
         }
 
 }

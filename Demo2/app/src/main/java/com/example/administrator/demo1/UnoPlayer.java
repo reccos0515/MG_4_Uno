@@ -19,14 +19,17 @@ public class UnoPlayer {
         hand = givenHand;
     }
 
+    //Returns the player's type
     public PlayerType getPlayerType() {
         return this.type;
     }
 
+    //Returns the player's ID number
     public int getPlayerNum() {
         return this.playerNum;
     }
 
+    //Returns the player's UnoHand
     public UnoHand getUnoHand() {
         return this.hand;
     }

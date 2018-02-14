@@ -5,5 +5,5 @@ package com.example.administrator.demo1;
  */
 
 public enum PlayerType {
-    HUMAN,CPU;
+    HUMAN,CPU
 }

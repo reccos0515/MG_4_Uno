@@ -36,6 +36,8 @@ public class UnoCard {
         return this.color;
     }
 
+    public void setColor(Colors color) { this.color = color; }
+
     public Actions getActionType() {
         return this.actionType;
     }
