@@ -4,8 +4,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
-import android.os.AsyncTask;
-import android.os.Handler;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -41,6 +39,10 @@ public class GameActivity extends AppCompatActivity {
 
                 //Setup the initial game window
                 setUpGame(v);
+
+                //Turn on the draw stack
+                ImageView v2 = findViewById(R.id.drawStack);
+                v2.setVisibility(View.VISIBLE);
 
                 //Create toast
                 Context context = getApplicationContext();
@@ -306,7 +308,6 @@ public class GameActivity extends AppCompatActivity {
 
         //Update whose turn it is/pointer variable
         currentGame.nextTurn();
-        Log.d("Test","Turn is now... "+Integer.toString(currentGame.getCurrentTurn()));
 
         //Update the onscreen display
         updateCardSlide();
@@ -348,7 +349,6 @@ public class GameActivity extends AppCompatActivity {
                     break;
                 case WILD:
                     chooseColor(CPUCard);
-                    Log.d("Test","Reg Wild Color is..."+CPUCard.getColor().toString());
                     break;
                 case SKIP:
                     currentGame.nextTurn();
