@@ -94,15 +94,15 @@ public class GameActivity extends AppCompatActivity {
             if(card.getActionType()==Actions.NONE) {
                 String color = card.getColor().toString().toLowerCase();
                 int value = card.getValue();
-                iv.setBackgroundResource(getResources().getIdentifier(color+"_"+Integer.toString(value),"drawable",getPackageName()));
+                iv.setImageResource(getResources().getIdentifier(color+"_"+Integer.toString(value),"drawable",getPackageName()));
             } else {
                 if(card.getColor()!=Colors.NONE) {
                     String color = card.getColor().toString().toLowerCase();
                     String action = card.getActionType().toString().toLowerCase();
-                    iv.setBackgroundResource(getResources().getIdentifier(color+"_"+action,"drawable",getPackageName()));
+                    iv.setImageResource(getResources().getIdentifier(color+"_"+action,"drawable",getPackageName()));
                 } else {
                     String action = card.getActionType().toString().toLowerCase();
-                    iv.setBackgroundResource(getResources().getIdentifier(action,"drawable",getPackageName()));
+                    iv.setImageResource(getResources().getIdentifier(action,"drawable",getPackageName()));
                 }
             }
 
@@ -274,7 +274,7 @@ public class GameActivity extends AppCompatActivity {
                     currentGame.nextTurn();
                     break;
                 case REVERSE:
-                    currentGame.changeDirection();
+                    currentGame.changeDirection(this);
                     break;
                 case DRAW_TWO:
                     nextPlayer = currentGame.nextPlayer();
@@ -354,7 +354,7 @@ public class GameActivity extends AppCompatActivity {
                     currentGame.nextTurn();
                     break;
                 case REVERSE:
-                    currentGame.changeDirection();
+                    currentGame.changeDirection(this);
                     break;
                 case DRAW_TWO:
                     nextPlayer = currentGame.nextPlayer();
@@ -393,8 +393,10 @@ public class GameActivity extends AppCompatActivity {
     }
 
     public void setUpGame(View v) {
-        //Get rid of the deal button
+        //Get rid of the deal button and make visible the direction arrow
         v.setVisibility(View.GONE);
+        ImageView v2 = findViewById(R.id.directionArrow);
+        v2.setVisibility(View.VISIBLE);
 
         //Create and Shuffle Deck
         UnoDeck deck = new UnoDeck();

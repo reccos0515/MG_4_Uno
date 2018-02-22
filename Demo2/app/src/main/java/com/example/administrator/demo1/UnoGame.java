@@ -1,7 +1,11 @@
 package com.example.administrator.demo1;
 
+import android.app.Activity;
+import android.content.Context;
 import android.util.Log;
 import android.view.View;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
@@ -93,11 +97,14 @@ public class UnoGame {
     }
 
     //Upon calling, it will change the flow of the game
-    public void changeDirection() {
+    public void changeDirection(Context con) {
+        ImageView iv = ((Activity) con).findViewById(R.id.directionArrow);
         if(this.direction==0) {
             this.direction = 1;
+            iv.setImageResource(con.getResources().getIdentifier("arrow_left", "drawable", con.getPackageName()));
         } else {
             this.direction = 0;
+            iv.setImageResource(con.getResources().getIdentifier("arrow_right", "drawable", con.getPackageName()));
         }
     }
 
