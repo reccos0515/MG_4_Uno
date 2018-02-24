@@ -1,6 +1,7 @@
 package com.example.administrator.demo1;
 
 import android.content.Intent;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -19,12 +20,19 @@ public class MainActivity extends AppCompatActivity {
         switch (v.getId()) {
             //Start the game
             case R.id.playGame:
-                Intent i1 = new Intent(this, GameActivity.class);
-                startActivity(i1);
+                AlertDialog.Builder builder new AlertDialog(v.getContext());
+                builder.setTitle("Please Enter a Username:");
+
                 break;
             default:
                 break;
         }
+    }
+
+    //Launch the lobby activity
+    public void launchLobbyActivity() {
+        Intent i = new Intent(this, LobbyActivity.class);
+        startActivity(i);
     }
 
 }
