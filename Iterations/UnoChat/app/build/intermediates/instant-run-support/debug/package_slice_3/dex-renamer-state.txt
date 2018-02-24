@@ -1,0 +1,4 @@
+#Sat Feb 24 14:48:51 CST 2018
+base.0=/Users/apple/Documents/MG_4_Uno/Iterations/UnoChat/app/build/intermediates/transforms/dexMerger/debug/4
+path.0=classes.dex
+renamed.0=classes.dex
