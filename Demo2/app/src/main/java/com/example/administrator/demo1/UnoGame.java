@@ -1,7 +1,11 @@
 package com.example.administrator.demo1;
 
+import android.app.Activity;
+import android.content.Context;
 import android.util.Log;
 import android.view.View;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
@@ -93,11 +97,14 @@ public class UnoGame {
     }
 
     //Upon calling, it will change the flow of the game
-    public void changeDirection() {
+    public void changeDirection(Context con) {
+        ImageView iv = ((Activity) con).findViewById(R.id.directionArrow);
         if(this.direction==0) {
             this.direction = 1;
+            iv.setImageResource(con.getResources().getIdentifier("arrow_left", "drawable", con.getPackageName()));
         } else {
             this.direction = 0;
+            iv.setImageResource(con.getResources().getIdentifier("arrow_right", "drawable", con.getPackageName()));
         }
     }
 
@@ -107,7 +114,13 @@ public class UnoGame {
         //Valid move if...
         //[1] Colors Match
         //[2] Values Match (check for Action, as Action Cards have a value of -1)
-        //[3] If the card is a Wild Card or a Wild Draw Four (and you have no other choices)
+        //[3] Actions Match
+        //[4] If the card is a Wild Card or a Wild Draw Four (and you have no other choices)
+        Log.d("Test","Test1: "+Boolean.toString(card.getColor() == dispCard.getColor()));
+        Log.d("Test","Test2: "+Boolean.toString(card.getValue() == dispCard.getValue() && card.getActionType()==Actions.NONE));
+        Log.d("Test","Test3: "+Boolean.toString(card.getActionType() == dispCard.getActionType() && card.getActionType()!=Actions.NONE));
+        Log.d("Test","Test4: "+Boolean.toString(card.getActionType() == Actions.WILD ||
+                (card.getActionType() == Actions.WILD_DRAW_FOUR && !player.getUnoHand().hasColor(dispCard.getColor()))));
         if(card.getColor() == dispCard.getColor() ||
                 (card.getValue() == dispCard.getValue() && card.getActionType()==Actions.NONE) ||
                 (card.getActionType() == dispCard.getActionType() && card.getActionType()!=Actions.NONE)||

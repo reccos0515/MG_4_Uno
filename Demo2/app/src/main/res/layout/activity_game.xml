@@ -24,6 +24,19 @@
         </LinearLayout>
     </HorizontalScrollView>
 
+    <ImageView
+        android:id="@+id/directionArrow"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:srcCompat="@drawable/arrow_right"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.25"
+        app:layout_constraintHorizontal_bias=".5"/>
+
     <Button
         android:id="@+id/dealHands"
         android:layout_width="wrap_content"
