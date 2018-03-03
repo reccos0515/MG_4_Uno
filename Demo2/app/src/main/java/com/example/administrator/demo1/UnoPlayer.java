@@ -9,14 +9,17 @@ public class UnoPlayer {
     private PlayerType type;
     private int playerNum;
     private UnoHand hand;
+    private String username;
 
-    public UnoPlayer(PlayerType givenType, int givenPlayerNum, UnoHand givenHand) {
+    public UnoPlayer(PlayerType givenType, int givenPlayerNum, UnoHand givenHand, String givenUsername) {
         //Player Type
         type = givenType;
         //Player Number
         playerNum = givenPlayerNum;
         //Player's Uno Hand
         hand = givenHand;
+        //Player's username
+        username = givenUsername;
     }
 
     //Returns the player's type
@@ -33,5 +36,8 @@ public class UnoPlayer {
     public UnoHand getUnoHand() {
         return this.hand;
     }
+
+    //Returns the player's username
+    public String getUsername() { return this.username; }
 
 }

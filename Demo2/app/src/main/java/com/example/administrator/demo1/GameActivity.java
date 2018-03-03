@@ -206,7 +206,11 @@ public class GameActivity extends AppCompatActivity {
 
             //Now, populate it with relevant items...
             TextView tv = new TextView(llc.getContext());
-            tv.setText("Player "+(player.getPlayerNum()+1));
+            if(player.getPlayerType()==PlayerType.HUMAN) {
+                tv.setText(player.getUsername());
+            } else {
+                tv.setText("CPU "+(player.getPlayerNum()+1));
+            }
             tv.setTextSize(20);
             tv.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
             tv.setPadding(5,5,5,5);
@@ -341,12 +345,12 @@ public class GameActivity extends AppCompatActivity {
         ArrayList<UnoPlayer> players = new ArrayList<>();
 
         //Deal the hands to the players (Just player 1 (Human) for now)
-        UnoPlayer player = new UnoPlayer(PlayerType.HUMAN, 0,hands.get(0));
+        UnoPlayer player = new UnoPlayer(PlayerType.HUMAN, 0,hands.get(0),getIntent().getStringExtra("Username"));
         players.add(player);
 
         //Deal the other hands to the AI ***Hard coded 4 for now***
         for(int i = 0; i < 3; i++) {
-            players.add(new UnoPlayer(PlayerType.CPU, i+1,hands.get(i+1)));
+            players.add(new UnoPlayer(PlayerType.CPU,i+1,hands.get(i+1),"CPU"));
         }
 
         //Initialize the disposal card stack
