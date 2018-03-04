@@ -13,45 +13,42 @@
         android:text="Lobby"
         android:textSize="50dp"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintHorizontal_bias=".5"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.05"
-        app:layout_constraintHorizontal_bias=".5" />
-
-    <ScrollView
-        android:layout_width="368dp"
-        android:layout_height="453dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.78">
-
-        <LinearLayout
-            android:id="@+id/playerScroll"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal" >
-
-        </LinearLayout>
-    </ScrollView>
+        app:layout_constraintVertical_bias="0.05" />
 
     <Button
         android:id="@+id/launchUno"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Begin Match"
-        android:textAllCaps="false"
         android:background="@android:color/black"
         android:onClick="onClick"
+        android:text="Begin Match"
+        android:textAllCaps="false"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.9"
-        app:layout_constraintHorizontal_bias=".5"
-        />
+        app:layout_constraintVertical_bias="0.924" />
+
+    <ScrollView
+        android:layout_width="368dp"
+        android:layout_height="339dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <LinearLayout
+            android:id="@+id/playerScroll"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+        </LinearLayout>
+    </ScrollView>
 
 
 </android.support.constraint.ConstraintLayout>
