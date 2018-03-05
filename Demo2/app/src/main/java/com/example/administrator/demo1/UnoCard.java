@@ -42,6 +42,7 @@ public class UnoCard {
         return this.actionType;
     }
 
+    //Debugging method. Translates the card to a usable text string for logging
     public String CardToText() {
         if(this.value>-1) {
             return "Value: " + this.value + " Color: " + this.color;

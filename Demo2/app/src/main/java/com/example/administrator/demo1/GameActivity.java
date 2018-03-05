@@ -7,7 +7,6 @@ import android.graphics.Color;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.ImageView;
@@ -271,11 +270,11 @@ public class GameActivity extends AppCompatActivity {
             if(CPUCard.getActionType()!=Actions.NONE) {
                 handleAction(CPUCard, currentPlayer);
             }
+            //Updates the disposal stack
+            updateDisposal(CPUCard);
+            //Check for a win [CPU]
+            checkForWin();
         }
-        //Updates the disposal stack
-        updateDisposal(CPUCard);
-        //Check for a win [CPU]
-        checkForWin();
         //Update whose turn it is
         currentGame.nextTurn();
         //Update visual display
@@ -379,8 +378,9 @@ public class GameActivity extends AppCompatActivity {
                 toast.setGravity(Gravity.CENTER, 0, 500);
                 toast.show();
             }
-            Intent i1 = new Intent(this, MainActivity.class);
-            startActivity(i1);
+            Intent i = new Intent(this, LobbyActivity.class);
+            i.putExtra("Username", currentGame.getUnoPlayers().get(0).getUsername());
+            startActivity(i);
         }
     }
 
