@@ -240,7 +240,7 @@ public class GameActivity extends AppCompatActivity {
             //Place card in disposal
             updateDisposal(card);
             //Check for a win [HUMAN]
-            checkForWin();
+            checkForWin(currentPlayer);
         }
         //Update whose turn it is/pointer variable
         currentGame.nextTurn();
@@ -273,7 +273,7 @@ public class GameActivity extends AppCompatActivity {
             //Updates the disposal stack
             updateDisposal(CPUCard);
             //Check for a win [CPU]
-            checkForWin();
+            checkForWin(currentPlayer);
         }
         //Update whose turn it is
         currentGame.nextTurn();
@@ -360,10 +360,9 @@ public class GameActivity extends AppCompatActivity {
     }
 
     //Checks for a win for the current player
-    public void checkForWin() {
-        UnoPlayer currentPlayer = currentGame.getUnoPlayers().get(currentGame.getCurrentTurn());
-        if(currentPlayer.getUnoHand().getCards().size()==0) {
-            if(currentPlayer.getPlayerType()==PlayerType.CPU) {
+    public void checkForWin(UnoPlayer player) {
+        if(player.getUnoHand().getCards().size()==0) {
+            if(player.getPlayerType()==PlayerType.CPU) {
                 Context context = getApplicationContext();
                 CharSequence text = "You lose";
                 int duration = Toast.LENGTH_SHORT;
