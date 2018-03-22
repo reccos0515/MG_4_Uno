@@ -19,7 +19,8 @@ import io.socket.emitter.Emitter;
 public class UnoApplication extends Application {
 
     //public static String server = "http://192.168.0.12/";//omie's place
-    public static String server = "http://10.26.1.248:8080/";//library
+    //public static String server = "http://10.26.1.248:8080/";//library
+    public static String server = "http://10.26.3.120:8080/";//library
     //public static String server = "localhost";
     //public static String server = "http://10.29.180.154:8080/";//library
     //public static String server = "http://10.25.68.206:9092";//our server
