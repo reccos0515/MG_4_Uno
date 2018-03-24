@@ -18,13 +18,17 @@ import io.socket.emitter.Emitter;
 
 public class UnoApplication extends Application {
 
-    //public static String server = "http://192.168.0.12/";//omie's place
-    public static String server = "http://10.26.1.248:8080/";//library
-    //public static String server = "localhost";
-    //public static String server = "http://10.29.180.154:8080/";//library
+    //public static String server = "http://192.168.0.12/";//omar's place
+    public static String server = "http://192.168.31.187:8080/";
     //public static String server = "http://10.25.68.206:9092";//our server
 
-    private final Socket gsocket;
+    private static UnoApplication instance;
+    @Override
+    public void onCreate(){
+        super.onCreate();
+        instance = this;
+    }
+    private static Socket gsocket;
     {
         try{
             gsocket = IO.socket(server);

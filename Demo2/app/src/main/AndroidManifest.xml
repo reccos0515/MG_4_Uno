@@ -3,7 +3,7 @@
     package="com.example.administrator.demo1">
 
     <application
-        android:name=".UnoApplication"
+        android:name="UnoApplication"
         android:allowBackup="true"
         android:icon="@mipmap/card_back_alt"
         android:label="Uno"
