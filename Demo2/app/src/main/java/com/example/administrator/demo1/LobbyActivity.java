@@ -3,6 +3,7 @@ package com.example.administrator.demo1;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.LinearLayout;
@@ -14,30 +15,41 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.zip.Inflater;
 
 import io.socket.emitter.Emitter;
 
 public class LobbyActivity extends AppCompatActivity {
-    private io.socket.client.Socket gsocket = null;
+    private io.socket.client.Socket gsocket=null;
     private String username;
-    private ArrayList<String> users;
+    private ArrayList<String> users = new ArrayList<String>();
     UnoApplication app;
-    public static final String TAG = "LobbyActivity";
+    public String TAG = "LobbyActivity";
     private boolean isConnected;
+    LinearLayout llp ;
+    LinearLayout llc ;
+    android.view.LayoutInflater inf;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_lobby);
+
         //Creates the username for view
         username = getIntent().getStringExtra("Username");
-        users = getIntent().getStringArrayListExtra("usersArr");
+
+        llp = findViewById(R.id.playerScroll);
+        llc = new LinearLayout(this);
+        llc.setOrientation(LinearLayout.VERTICAL);
+        inf = getLayoutInflater();
 
         app = (UnoApplication) getApplicationContext();
         gsocket = app.getSocket();
-       // gsocket.on("user joined", onUserJoined);
-        //gsocket.connect();
-
+        gsocket.on(gsocket.EVENT_CONNECT, onConnect);
+        gsocket.on(gsocket.EVENT_DISCONNECT,onDisconnect);
+        gsocket.on("user joined", onUserJoined);
+        gsocket.connect();
+        gsocket.emit("add user",username);
         createPlayer(username);
 
     }
@@ -45,48 +57,39 @@ public class LobbyActivity extends AppCompatActivity {
     //Create onClick listener method
     public void onClick(View v) {
         switch (v.getId()) {
-            //Start the game
             case R.id.launchUno:
                 Intent i = new Intent(this, GameActivity.class);
                 i.putExtra("Username", username);
                 startActivity(i);
                 break;
             case R.id.update_users:
-                gsocket.on("user joined", onUserJoined);
-                gsocket.connect();
-
                 updateUser(users);
+                break;
             default:
                 break;
         }
     }
     public void updateUser(ArrayList<String> arr){
-
         if(arr!=null){
-            LinearLayout llp = findViewById(R.id.playerScroll);
-            for(String user: arr){
-
-                LinearLayout llc = new LinearLayout(this);
-                llc.setOrientation(LinearLayout.VERTICAL);
-                TextView tv = new TextView(llc.getContext());
+            llp.removeView(llc);
+            LinearLayout llnew = new LinearLayout(this);
+            llnew.setOrientation(LinearLayout.VERTICAL);
+            for(int i=0;i<users.size();i++){
+                String user = users.get(i);
+                TextView tv= new TextView(llnew.getContext());
                 tv.setTextSize(30);
                 tv.setText(user);
-                llc.addView(tv);
-                llp.addView(llc);
+                llnew.addView(tv);
             }
+            llp.addView(llnew);
         }else{
             arr.add(username);
             updateUser(arr);
         }
-
-        this.setContentView(findViewById(R.id.playerScroll));
     }
 
     //Creates a player in the scrollview in the lobby area
     public void createPlayer(String username) {
-        LinearLayout llp = findViewById(R.id.playerScroll);
-        LinearLayout llc = new LinearLayout(this);
-        llc.setOrientation(LinearLayout.VERTICAL);
         TextView tv = new TextView(llc.getContext());
         tv.setTextSize(30);
         tv.setText(username);
@@ -94,30 +97,52 @@ public class LobbyActivity extends AppCompatActivity {
         llp.addView(llc);
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        gsocket.disconnect();
+        gsocket.off(gsocket.EVENT_CONNECT, onConnect);
+        gsocket.off(gsocket.EVENT_DISCONNECT, onDisconnect);
+        EventBus.getDefault().unregister(this);
+    }
+    private Emitter.Listener onConnect = new Emitter.Listener() {
+        @Override
+        public void call(Object... args) {
+            isConnected = true;
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    Log.d(TAG, "connected");
+
+                    Toast.makeText(getApplicationContext(),"Connected",Toast.LENGTH_LONG).show();
+                    isConnected = true;
+                }
+            });
+
+        }};
+
+    private Emitter.Listener onDisconnect = new Emitter.Listener() {
+        @Override
+        public void call(Object... args) {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    Log.d(TAG, "diconnected");
+                    isConnected = false;
+                    Toast.makeText(getApplicationContext(),
+                            "Disconnected", Toast.LENGTH_LONG).show();
+                }
+            });
+        }
+    };
 
     private final Emitter.Listener onUserJoined = new Emitter.Listener() {
 
         @Override
         public void call(final Object... args) {
-
-            runOnUiThread(new Runnable() {
-                JSONObject data = (JSONObject) args[0];
-                String username;
-                int numUsers;
-
-                @Override
-                public void run() {
-                    try {
-
-                        username = data.getString("username");
-                        System.out.println(username);
-                        //numUsers = data.getInt("numUsers");
-                    } catch (JSONException e) {
-                        return;
-                    }
-                    users.add(username);
-                }
-            });
+            String data = (String) args[0];
+            users.add(data);
         }
     };
 }
