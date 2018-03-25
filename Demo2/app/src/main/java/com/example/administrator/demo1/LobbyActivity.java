@@ -65,6 +65,15 @@ public class LobbyActivity extends AppCompatActivity {
             case R.id.update_users:
                 updateUser(users);
                 break;
+            case R.id.multiplayer:
+                if(users.size()>1) {
+                    Intent intent = new Intent(this, MultiplayerActivity.class);
+                    intent.putExtra("Users", users);
+                    startActivity(intent);
+                }else{
+                    Toast.makeText(getApplicationContext(),"Waiting for another user...",Toast.LENGTH_LONG).show();
+                }
+                break;
             default:
                 break;
         }

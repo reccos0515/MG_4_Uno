@@ -307,7 +307,7 @@ public class MultiplayerActivity extends AppCompatActivity {
         updateCardSlide();
         //Lay a card down in the disposal pile
         updateDisposal(deck.getCards().remove(0));
-        //Update the playerSlider
+        //Update the playerSlide
         updatePlayerSlider();
         //Update the playerScore
         updateScore();
