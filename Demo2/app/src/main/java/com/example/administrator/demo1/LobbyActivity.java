@@ -45,7 +45,7 @@ public class LobbyActivity extends AppCompatActivity {
         app = (UnoApplication) getApplicationContext();
         gsocket = app.getSocket();
         gsocket.on(gsocket.EVENT_CONNECT, onConnect);
-        gsocket.on(gsocket.EVENT_DISCONNECT,onDisconnect);
+        gsocket.on("user left",onDisconnect);
         gsocket.on("existed users",onExistedUsers);
         //gsocket.on("user joined", onUserJoined);
         gsocket.connect();
@@ -138,6 +138,8 @@ public class LobbyActivity extends AppCompatActivity {
                 public void run() {
                     Log.d(TAG, "diconnected");
                     isConnected = false;
+                    gsocket.emit("user left",username);
+                    gsocket.disconnect();
                     Toast.makeText(getApplicationContext(),
                             "Disconnected", Toast.LENGTH_LONG).show();
                 }
