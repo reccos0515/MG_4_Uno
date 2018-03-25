@@ -31,6 +31,8 @@ public class UnoGame {
     //Direction of game (0 for clockwise, 1 for counter-clockwise)
     private int direction;
 
+
+
     public UnoGame(UnoDeck givenDeck, ArrayList<UnoPlayer> givenPlayers, ArrayList<UnoCard> givenDispStack, int givenCurrentTurn, int givenDirection) {
 
         deck = givenDeck;
@@ -38,6 +40,7 @@ public class UnoGame {
         dispStack = givenDispStack;
         currentTurn = givenCurrentTurn;
         direction = givenDirection;
+
     }
 
     //Returns the deck being used in the game

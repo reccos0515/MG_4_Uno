@@ -17,30 +17,30 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.Random;
 
-public class GameActivity extends AppCompatActivity {
+public class MultiplayerActivity extends AppCompatActivity {
 
     //Game to be used in the GameActivity class
     private UnoGame currentGame;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_game);
+        setContentView(R.layout.activity_multiplayer);
     }
 
-    //Create onClick listener method
     public void onClick(View v) {
         switch(v.getId()) {
             //Deal button
-            case R.id.dealHands:
+            case R.id.mdealHands:
                 //Setup the initial game window
                 setUpGame(v);
                 //Turn on the draw stack
-                ImageView v2 = findViewById(R.id.drawStack);
+                ImageView v2 = findViewById(R.id.mdrawStack);
                 v2.setVisibility(View.VISIBLE);
                 break;
             //Draw pile tap
-            case R.id.drawStack:
+            case R.id.mdrawStack:
                 //Check to see if it's the players turn ***CHANGE WHEN USING MULTI-PLAYER
                 if(0 == currentGame.getCurrentTurn()) {
                     UnoCard card;
@@ -56,12 +56,12 @@ public class GameActivity extends AppCompatActivity {
                 }
                 break;
             //Deposit Stack tap
-            case R.id.depositStack:
+            case R.id.mdepositStack:
                 if(currentGame.getDisposalCards().size()!=0) {
                     //If the card was a wild card
                     UnoCard curCard = currentGame.getDisposalCards().get(0);
                     if(curCard.getActionType() == Actions.WILD ||
-                        curCard.getActionType() == Actions.WILD_DRAW_FOUR) {
+                            curCard.getActionType() == Actions.WILD_DRAW_FOUR) {
                         //Get the color of the wild card
                         Colors color = curCard.getColor();
                         //Create toast
@@ -82,7 +82,7 @@ public class GameActivity extends AppCompatActivity {
     //Updates the horizontal slider with the card (Human Players only)
     public void updateCardSlide() {
         //Clear the slider
-        LinearLayout ll = findViewById(R.id.cardSlide);
+        LinearLayout ll = findViewById(R.id.mcardSlide);
         ll.removeAllViews();
         //Get the player's hand [Only updates the client's hand]
         UnoHand playerHand = currentGame.getUnoPlayers().get(0).getUnoHand();
@@ -147,7 +147,7 @@ public class GameActivity extends AppCompatActivity {
     public void updateDisposal(UnoCard card) {
         //Fetches the stack icon and retrieves the card on top
         ImageView tempView;
-        tempView = findViewById(R.id.depositStack);
+        tempView = findViewById(R.id.mdepositStack);
         //Before laying down card, see if the previous was a wild card. If so, get rid of it's color
         if(currentGame.getDisposalCards().size()!=0) {
             if(currentGame.getDisposalCards().get(0).getActionType() == Actions.WILD_DRAW_FOUR
@@ -163,7 +163,7 @@ public class GameActivity extends AppCompatActivity {
     //Updates the Horizontal Scroller for each player ***UPDATE WHEN USING MULTI-PLAYER***
     public void updatePlayerSlider() {
         //First, get the parent LinearLayout and clear it
-        LinearLayout llp = findViewById(R.id.playerSlide);
+        LinearLayout llp = findViewById(R.id.mplayerSlide);
         llp.removeAllViews();
         //Update the status of each player
         for(UnoPlayer player: currentGame.getUnoPlayers()) {
@@ -407,5 +407,4 @@ public class GameActivity extends AppCompatActivity {
             }
         }
     }
-
 }

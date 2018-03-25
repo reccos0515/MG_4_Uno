@@ -119,7 +119,6 @@ public class LobbyActivity extends AppCompatActivity {
                     isConnected = true;
                 }
             });
-
         }};
 
     private Emitter.Listener onDisconnect = new Emitter.Listener() {
