@@ -15,7 +15,7 @@ import com.corundumstudio.socketio.listener.ConnectListener;
 
 public class ServerSocketApplication {
 	
-	ArrayList<String> users = new ArrayList<String>();
+	private static ArrayList<String> users = new ArrayList<String>();
 	public static void main(String[] args) {
 		
 		Configuration config = new Configuration();
@@ -30,6 +30,18 @@ public class ServerSocketApplication {
         		System.out.println("New client connected");
         	}
         });
+        
+        server.addEventListener("user left", String.class, new DataListener<String>() {
+        	public void onData(SocketIOClient arg0, String username, AckRequest arg2) throws Exception {
+				System.out.println("user " + username);
+				for(int i=0;i<users.size();i++) {
+					if(username.equals(users.get(i))) {
+						users.remove(i);
+					}
+				}
+				server.getBroadcastOperations().sendEvent("existed users", users);
+				System.out.println(users.toString());
+        }});
        
         server.addEventListener("add user", String.class, new DataListener<String>() {
         		public void onData(SocketIOClient arg0, String username, AckRequest arg2) throws Exception {
