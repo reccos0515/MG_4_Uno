@@ -99,4 +99,8 @@
         "when a user tries to pick up one of cards.\n\n"
     </string>
     <string name="action_settings">Settings</string>
+    <string name="multiplayer">multiplayer</string>
+    <string name="begin_match">Begin Match</string>
+    <string name="lobby">Lobby</string>
+    <string name="sigle_player">single player</string>
 </resources>
