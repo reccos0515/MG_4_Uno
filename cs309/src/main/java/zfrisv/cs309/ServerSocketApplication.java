@@ -34,7 +34,10 @@ public class ServerSocketApplication {
         server.addEventListener("add user", String.class, new DataListener<String>() {
         		public void onData(SocketIOClient arg0, String username, AckRequest arg2) throws Exception {
 				System.out.println("user " + username);
-				server.getBroadcastOperations().sendEvent("user joined", username);
+				users.add(username);
+				//server.getBroadcastOperations().sendEvent("user joined", username);
+				server.getBroadcastOperations().sendEvent("existed users", users);
+				System.out.println(users.toString());
         }});
         
         server.start();

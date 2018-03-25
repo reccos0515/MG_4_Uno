@@ -11,6 +11,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import org.greenrobot.eventbus.EventBus;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -28,7 +29,6 @@ public class LobbyActivity extends AppCompatActivity {
     private boolean isConnected;
     LinearLayout llp ;
     LinearLayout llc ;
-    android.view.LayoutInflater inf;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,13 +41,13 @@ public class LobbyActivity extends AppCompatActivity {
         llp = findViewById(R.id.playerScroll);
         llc = new LinearLayout(this);
         llc.setOrientation(LinearLayout.VERTICAL);
-        inf = getLayoutInflater();
 
         app = (UnoApplication) getApplicationContext();
         gsocket = app.getSocket();
         gsocket.on(gsocket.EVENT_CONNECT, onConnect);
         gsocket.on(gsocket.EVENT_DISCONNECT,onDisconnect);
-        gsocket.on("user joined", onUserJoined);
+        gsocket.on("existed users",onExistedUsers);
+        //gsocket.on("user joined", onUserJoined);
         gsocket.connect();
         gsocket.emit("add user",username);
         createPlayer(username);
@@ -137,13 +137,32 @@ public class LobbyActivity extends AppCompatActivity {
         }
     };
 
+    /*//newest user NOT In used
     private final Emitter.Listener onUserJoined = new Emitter.Listener() {
 
         @Override
         public void call(final Object... args) {
+
             String data = (String) args[0];
             users.add(data);
+            }
+    };*/
+
+    private final Emitter.Listener onExistedUsers = new Emitter.Listener() {
+
+        @Override
+        public void call(final Object... args) {
+
+            JSONArray jsarr = (JSONArray) args[0];
+            for (int i = 0; i < jsarr.length(); i++) {
+                try {
+                    String obj = jsarr.get(i).toString();
+                    String name = obj;
+                    users.add(name);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
         }
     };
 }
-
