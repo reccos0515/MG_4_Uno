@@ -139,7 +139,6 @@ public class LobbyActivity extends AppCompatActivity {
                     Log.d(TAG, "diconnected");
                     isConnected = false;
                     gsocket.emit("user left",username);
-                    gsocket.disconnect();
                     Toast.makeText(getApplicationContext(),
                             "Disconnected", Toast.LENGTH_LONG).show();
                 }
