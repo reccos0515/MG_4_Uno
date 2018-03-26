@@ -51,6 +51,7 @@ public class LobbyActivity extends AppCompatActivity {
         gsocket.connect();
         gsocket.emit("add user",username);
         createPlayer(username);
+        //updateUser(users);
 
     }
 
@@ -104,6 +105,7 @@ public class LobbyActivity extends AppCompatActivity {
         tv.setText(username);
         llc.addView(tv);
         llp.addView(llc);
+        //updateUser(users);
     }
 
     @Override

@@ -279,7 +279,9 @@ public class MultiplayerActivity extends AppCompatActivity {
         //Update visual display
         updateUI();
     }
-
+    /*
+    need to set up so setUpGame can be deployed on the server and recieve JSON object through socket
+     */
     public void setUpGame(View v) {
         //Get rid of the deal button and make visible the direction arrow
         v.setVisibility(View.GONE);
