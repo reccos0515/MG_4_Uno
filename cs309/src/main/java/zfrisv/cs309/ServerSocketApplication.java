@@ -6,6 +6,7 @@ import com.corundumstudio.socketio.AckCallback;
 import com.corundumstudio.socketio.AckRequest;
 import com.corundumstudio.socketio.Configuration;
 import com.corundumstudio.socketio.SocketIOClient;
+import com.corundumstudio.socketio.SocketIONamespace;
 import com.corundumstudio.socketio.SocketIOServer;
 import com.corundumstudio.socketio.VoidAckCallback;
 import com.corundumstudio.socketio.listener.DataListener;
@@ -16,7 +17,7 @@ import com.corundumstudio.socketio.listener.ConnectListener;
 public class ServerSocketApplication {
 	
 	private static ArrayList<String> users = new ArrayList<String>();
-	public static void main(String[] args) {
+	public static void run() {
 		
 		Configuration config = new Configuration();
         //config.setHostname("10.25.68.206");
