@@ -45,7 +45,7 @@ public class LobbyActivity extends AppCompatActivity {
         app = (UnoApplication) getApplicationContext();
         gsocket = app.getSocket();
         gsocket.on(gsocket.EVENT_CONNECT, onConnect);
-        gsocket.on("user left",onDisconnect);
+        gsocket.on("disconnect",onDisconnect);
         gsocket.on("existed users",onExistedUsers);
         //gsocket.on("user joined", onUserJoined);
         gsocket.connect();
@@ -66,13 +66,18 @@ public class LobbyActivity extends AppCompatActivity {
                 updateUser(users);
                 break;
             case R.id.multiplayer:
-                if(users.size()>1) {
+                if(users.size()==3) {
                     Intent intent = new Intent(this, MultiplayerActivity.class);
                     intent.putExtra("Users", users);
                     startActivity(intent);
-                }else{
+                }else if(users.size()<3){
                     Toast.makeText(getApplicationContext(),"Waiting for another user...",Toast.LENGTH_LONG).show();
+                }else{
+                    Toast.makeText(getApplicationContext(),"Room is full, Try again later...",Toast.LENGTH_LONG).show();
                 }
+                break;
+            case R.id.finish:
+               finish();
                 break;
             default:
                 break;
@@ -109,7 +114,7 @@ public class LobbyActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-
+        gsocket.emit("user left",username);
         gsocket.disconnect();
         gsocket.off(gsocket.EVENT_CONNECT, onConnect);
         gsocket.off(gsocket.EVENT_DISCONNECT, onDisconnect);
@@ -138,8 +143,7 @@ public class LobbyActivity extends AppCompatActivity {
                 public void run() {
                     Log.d(TAG, "diconnected");
                     isConnected = false;
-                    gsocket.emit("user left",username);
-                    gsocket.disconnect();
+                    //gsocket.emit("user left",username);
                     Toast.makeText(getApplicationContext(),
                             "Disconnected", Toast.LENGTH_LONG).show();
                 }

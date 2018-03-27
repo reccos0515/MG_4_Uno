@@ -52,6 +52,26 @@ public class ServerSocketApplication {
 				System.out.println(users.toString());
         }});
         
+        //To users in room1, set game in server, haven't tested yet.Need to be debugged.Utilize namespace function in socketio.
+		final SocketIONamespace room1 = server.addNamespace("/room1");
+		final ArrayList<UnoPlayer> players = new ArrayList<UnoPlayer>();
+		final UnoDeck deck1 =new UnoDeck();
+		final ArrayList<UnoHand> hands = deck1.dealHands(3);
+		room1.addEventListener("Join a game", String.class, new DataListener<String>() {	
+            public void onData(SocketIOClient arg0, String username, AckRequest arg2) {				
+				int i=0;	
+				if(i<3 	&& players.get(i)==null) {
+					players.add(new UnoPlayer(i,hands.get(i),username));
+					i++;		
+				}else if(i==3){
+					ArrayList<UnoCards> disposal_Stack = new ArrayList<UnoCards>();
+					UnoGame game1 = new UnoGame(deck1,players,disposal_Stack, 0,0);
+					room1.getBroadcastOperations().sendEvent("set game", game1);
+				}
+            }
+
+		});
+        
         server.start();
         System.out.println("Server started...");
         try {
