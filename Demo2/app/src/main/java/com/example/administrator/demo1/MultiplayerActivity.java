@@ -14,19 +14,36 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 import java.util.Random;
+
+import io.socket.client.Manager;
+import io.socket.emitter.Emitter;
 
 public class MultiplayerActivity extends AppCompatActivity {
 
     //Game to be used in the GameActivity class
     private UnoGame currentGame;
-
-
+    UnoApplication app;
+    private io.socket.client.Socket gsocket;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_multiplayer);
+        /* TODO: finish building namespace and receive the game from server
+        app = (UnoApplication) getApplication();
+        gsocket=app.getSocket();
+        gsocket.on("set game", new Emitter.Listener() {
+            JSONObject gameobj = new JSONObject();
+            @Override
+            public void call(Object... args) {
+                UnoDeck deck = gameobj.getJSONArray("");
+            }
+        });*/
+
+
     }
 
     public void onClick(View v) {
@@ -35,6 +52,7 @@ public class MultiplayerActivity extends AppCompatActivity {
             case R.id.mdealHands:
                 //Setup the initial game window
                 setUpGame(v);
+
                 //Turn on the draw stack
                 ImageView v2 = findViewById(R.id.mdrawStack);
                 v2.setVisibility(View.VISIBLE);
@@ -287,6 +305,7 @@ public class MultiplayerActivity extends AppCompatActivity {
         v.setVisibility(View.GONE);
         ImageView v2 = findViewById(R.id.directionArrow);
         v2.setVisibility(View.VISIBLE);
+        //Todo: from here
         //Create and Shuffle Deck
         UnoDeck deck = new UnoDeck();
         deck.shuffleCards();
@@ -305,6 +324,7 @@ public class MultiplayerActivity extends AppCompatActivity {
         ArrayList<UnoCard> disposal_Stack = new ArrayList<>();
         //Create the UnoGame Object
         currentGame = new UnoGame(deck,players,disposal_Stack, 0,0);
+        //Todo: to here, this process had been moved to server to set up the game. Need to be removed after debugging.
         //Update the slider
         updateCardSlide();
         //Lay a card down in the disposal pile
