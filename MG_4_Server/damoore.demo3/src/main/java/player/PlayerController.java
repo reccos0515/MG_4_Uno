@@ -27,10 +27,20 @@ public class PlayerController {
 	private PlayerRepository playerRepository;
 	
 	
-	@RequestMapping(method = RequestMethod.POST, path = "/add")
+	@RequestMapping(method = RequestMethod.POST, path = "/addJSON")
 	public char[] newPlayer(@RequestBody Player p) {
 		playerRepository.save(p);
 		return (p.getUsername() + " saved").toCharArray();
+	}
+	
+	@GetMapping(path="/add")
+	public @ResponseBody String addPlayer(@RequestParam String name, @RequestParam Integer games, @RequestParam Integer wins) {
+		Player p = new Player();
+		p.setUsername(name);
+		p.setNumGames(games);
+		p.setNumWins(wins);
+		playerRepository.save(p);
+		return name + " saved with " + games + " games played and " + wins + " games won.";
 	}
 	
 	@GetMapping(path="/find/{name}")
