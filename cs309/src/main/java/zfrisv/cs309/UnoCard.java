@@ -1,4 +1,4 @@
-package com.example.administrator.demo1;
+package zfrisv.cs309;
 
 /**
  * Created by Xemnaes on 1/24/2018.
@@ -31,8 +31,6 @@ public class UnoCard {
     public int getValue() {
         return this.value;
     }
-
-    public void setValue(int value) { this.value = value;}
 
     public Colors getColor() {
         return this.color;

@@ -1,17 +1,22 @@
 package zfrisv.cs309;
 
+/**
+ * Created by Xemnaes on 1/28/2018.
+ */
+
 import java.util.ArrayList;
 
 public class UnoHand {
-	//ArrayList of cards
-    private ArrayList<UnoCards> unoCards;
 
-    public UnoHand(ArrayList<UnoCards> givenUnoCards) {
+    //ArrayList of cards
+    private ArrayList<UnoCard> unoCards;
+
+    public UnoHand(ArrayList<UnoCard> givenUnoCards) {
         unoCards = givenUnoCards;
     }
 
     //Returns the ArrayList of UnoCards
-    public ArrayList<UnoCards> getCards() {
+    public ArrayList<UnoCard> getCards() {
         return this.unoCards;
     }
 
@@ -21,19 +26,26 @@ public class UnoHand {
     }
 
     //Adds an uno card to the hand
-    public void addCard(UnoCards givenCard) {
+    public void addCard(UnoCard givenCard) {
         this.unoCards.add(givenCard);
     }
 
     //Removes a given card from the hand
-    public void removeCard(UnoCards givenCard) {
-        this.unoCards.remove(givenCard);
+    public void removeCard(UnoCard givenCard) {
+    	for(UnoCard c : this.unoCards) {
+    		if(c.getActionType() == givenCard.getActionType() && (c.getColor() == givenCard.getColor() ||
+    				givenCard.getActionType()==Actions.WILD || givenCard.getActionType()==Actions.WILD_DRAW_FOUR)
+    				&& c.getValue() == givenCard.getValue()) {
+    			this.unoCards.remove(c);
+    			return;
+    		}
+    	}
     }
 
     //Returns total point value of hand
     public int totalScore() {
         int totScore = 0; //Initial value
-        for(UnoCards card: this.getCards()) {
+        for(UnoCard card: this.getCards()) {
             if(card.getActionType()==Actions.NONE) { //Go by face-value
                 totScore += card.getValue();
             } else {
@@ -50,7 +62,7 @@ public class UnoHand {
 
     //Returns true if the hand has the color, false if not
     public boolean hasColor(Colors givenColor) {
-        for(UnoCards card: this.getCards()) {
+        for(UnoCard card: this.getCards()) {
             if(card.getColor()==givenColor) {
                 return true;
             }

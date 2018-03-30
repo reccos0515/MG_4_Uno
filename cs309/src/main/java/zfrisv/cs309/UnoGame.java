@@ -1,16 +1,22 @@
 package zfrisv.cs309;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 
+/**
+ * Created by Xemnaes on 1/28/2018.
+ */
+
 public class UnoGame {
-	//Deck to be used in the game
+
+    //Deck to be used in the game
     private UnoDeck deck;
 
     //Hands to be used in the game
     private ArrayList<UnoPlayer> players;
 
     //Current card in the disposal stack
-    private ArrayList<UnoCards> dispStack;
+    private ArrayList<UnoCard> dispStack;
 
     //Index of the current player in the ArrayList of UnoPlayers
     private int currentTurn;
@@ -20,7 +26,7 @@ public class UnoGame {
 
 
 
-    public UnoGame(UnoDeck givenDeck, ArrayList<UnoPlayer> givenPlayers, ArrayList<UnoCards> givenDispStack, int givenCurrentTurn, int givenDirection) {
+    public UnoGame(UnoDeck givenDeck, ArrayList<UnoPlayer> givenPlayers, ArrayList<UnoCard> givenDispStack, int givenCurrentTurn, int givenDirection) {
 
         deck = givenDeck;
         players = givenPlayers;
@@ -36,7 +42,7 @@ public class UnoGame {
     }
 
     //Returns the ArrayList of UnoCards in the disposal stack
-    public ArrayList<UnoCards> getDisposalCards() {
+    public ArrayList<UnoCard> getDisposalCards() {
         return this.dispStack;
     }
 
@@ -86,21 +92,18 @@ public class UnoGame {
         }
     }
 
-    /*Update this in client side //Upon calling, it will change the flow of the game
-    public void changeDirection(Context con) {
-        ImageView iv = ((Activity) con).findViewById(R.id.directionArrow);
+    //Upon calling, it will change the flow of the game
+    public void changeDirection() {
         if(this.direction==0) {
             this.direction = 1;
-            iv.setImageResource(con.getResources().getIdentifier("arrow_left", "drawable", con.getPackageName()));
         } else {
             this.direction = 0;
-            iv.setImageResource(con.getResources().getIdentifier("arrow_right", "drawable", con.getPackageName()));
         }
-    }*/
+    }
 
     //Checks to see if the move is legal
-    public boolean checkMove(UnoCards card, UnoPlayer player) {
-        UnoCards dispCard = this.dispStack.get(0);
+    public boolean checkMove(UnoCard card, UnoPlayer player) {
+        UnoCard dispCard = this.dispStack.get(0);
         //Valid move if...
         //[1] Colors Match
         //[2] Values Match (check for Action, as Action Cards have a value of -1)
@@ -118,8 +121,8 @@ public class UnoGame {
     }
 
     //Returns an UnoCard to play from the Computer player (CPU)
-    public UnoCards getValidCard(UnoPlayer player) {
-        for(UnoCards card: player.getUnoHand().getCards()) {
+    public UnoCard getValidCard(UnoPlayer player) {
+        for(UnoCard card: player.getUnoHand().getCards()) {
             //If the move is valid
             if(checkMove(card,player)) {
                 return card;
@@ -130,14 +133,14 @@ public class UnoGame {
     }
 
     //Retrieves a card from the deck to add to a player's hand
-    public UnoCards getCardFromDeck() {
+    public UnoCard getCardFromDeck() {
         //From the card from the deck
-        UnoCards card = this.deck.getCards().remove(0);
+        UnoCard card = this.deck.getCards().remove(0);
 
         //If the deck is empty, recombine the deck and disposal [leaving the top card to stay]
         if(this.deck.getCards().size()==0) {
-            UnoCards tempCard = this.dispStack.remove(0);
-            ArrayList<UnoCards> dispCards = new ArrayList<UnoCards>(this.dispStack);
+            UnoCard tempCard = this.dispStack.remove(0);
+            ArrayList<UnoCard> dispCards = new ArrayList<UnoCard>(this.dispStack);
             this.dispStack.clear();
             this.deck.getCards().addAll(dispCards);
             this.dispStack.add(tempCard);
@@ -145,6 +148,10 @@ public class UnoGame {
 
         return card;
     }
-}
-
     
+    //Returns the direction of the UnoGame
+    public int getCurrentDirection() {
+    	return this.direction;
+    }
+
+}

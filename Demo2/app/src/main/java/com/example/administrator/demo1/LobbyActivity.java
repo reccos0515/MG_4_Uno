@@ -23,12 +23,10 @@ import io.socket.emitter.Emitter;
 public class LobbyActivity extends AppCompatActivity {
     private io.socket.client.Socket gsocket=null;
     private String username;
-    private ArrayList<String> users = new ArrayList<String>();
+    private ArrayList<String> users = new ArrayList<>();
     UnoApplication app;
     public String TAG = "LobbyActivity";
     private boolean isConnected;
-    LinearLayout llp ;
-    LinearLayout llc ;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,20 +36,14 @@ public class LobbyActivity extends AppCompatActivity {
         //Creates the username for view
         username = getIntent().getStringExtra("Username");
 
-        llp = findViewById(R.id.playerScroll);
-        llc = new LinearLayout(this);
-        llc.setOrientation(LinearLayout.VERTICAL);
-
         app = (UnoApplication) getApplicationContext();
         gsocket = app.getSocket();
         gsocket.on(gsocket.EVENT_CONNECT, onConnect);
         gsocket.on("disconnect",onDisconnect);
         gsocket.on("existed users",onExistedUsers);
-        //gsocket.on("user joined", onUserJoined);
+        gsocket.on("multiplayer",onStartMultiplayer);
         gsocket.connect();
         gsocket.emit("add user",username);
-        createPlayer(username);
-        //updateUser(users);
 
     }
 
@@ -63,14 +55,10 @@ public class LobbyActivity extends AppCompatActivity {
                 i.putExtra("Username", username);
                 startActivity(i);
                 break;
-            case R.id.update_users:
-                updateUser(users);
-                break;
             case R.id.multiplayer:
                 if(users.size()==3) {
-                    Intent intent = new Intent(this, MultiplayerActivity.class);
-                    intent.putExtra("Users", users);
-                    startActivity(intent);
+                    Log.d("Test","POOO");
+                    gsocket.emit("multiplayer");
                 }else if(users.size()<3){
                     Toast.makeText(getApplicationContext(),"Waiting for another user...",Toast.LENGTH_LONG).show();
                 }else{
@@ -85,32 +73,21 @@ public class LobbyActivity extends AppCompatActivity {
         }
     }
     public void updateUser(ArrayList<String> arr){
-        if(arr!=null){
-            llp.removeView(llc);
+        if(arr!=null) {
+            Log.d("Test",Integer.toString(arr.size()));
+            LinearLayout llp = findViewById(R.id.playerScroll);
+            llp.removeAllViews();
             LinearLayout llnew = new LinearLayout(this);
             llnew.setOrientation(LinearLayout.VERTICAL);
-            for(int i=0;i<users.size();i++){
+            for (int i = 0; i < users.size(); i++) {
                 String user = users.get(i);
-                TextView tv= new TextView(llnew.getContext());
+                TextView tv = new TextView(llnew.getContext());
                 tv.setTextSize(30);
                 tv.setText(user);
                 llnew.addView(tv);
             }
             llp.addView(llnew);
-        }else{
-            arr.add(username);
-            updateUser(arr);
         }
-    }
-
-    //Creates a player in the scrollview in the lobby area
-    public void createPlayer(String username) {
-        TextView tv = new TextView(llc.getContext());
-        tv.setTextSize(30);
-        tv.setText(username);
-        llc.addView(tv);
-        llp.addView(llc);
-        //updateUser(users);
     }
 
     @Override
@@ -125,6 +102,7 @@ public class LobbyActivity extends AppCompatActivity {
     private Emitter.Listener onConnect = new Emitter.Listener() {
         @Override
         public void call(Object... args) {
+            Log.d("Test","User joined");
             isConnected = true;
             runOnUiThread(new Runnable() {
                 @Override
@@ -140,6 +118,7 @@ public class LobbyActivity extends AppCompatActivity {
     private Emitter.Listener onDisconnect = new Emitter.Listener() {
         @Override
         public void call(Object... args) {
+            Log.d("Test","User disconnected");
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
@@ -153,22 +132,11 @@ public class LobbyActivity extends AppCompatActivity {
         }
     };
 
-    /*//newest user NOT In used
-    private final Emitter.Listener onUserJoined = new Emitter.Listener() {
-
-        @Override
-        public void call(final Object... args) {
-
-            String data = (String) args[0];
-            users.add(data);
-            }
-    };*/
-
     private final Emitter.Listener onExistedUsers = new Emitter.Listener() {
 
         @Override
         public void call(final Object... args) {
-
+            users.clear();
             JSONArray jsarr = (JSONArray) args[0];
             for (int i = 0; i < jsarr.length(); i++) {
                 try {
@@ -179,6 +147,22 @@ public class LobbyActivity extends AppCompatActivity {
                     e.printStackTrace();
                 }
             }
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    updateUser(users);
+                }
+            });
+        }
+    };
+
+    private final Emitter.Listener onStartMultiplayer = new Emitter.Listener() {
+
+        @Override
+        public void call(final Object... args) {
+            Intent intent = new Intent(LobbyActivity.this, MultiplayerActivity.class);
+            intent.putExtra("Username", username);
+            startActivity(intent);
         }
     };
 }
