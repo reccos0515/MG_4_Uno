@@ -1,7 +1,13 @@
 package socket;
 
-public class UnoCards {
-	private int value;
+/**
+ * Created by Xemnaes on 1/24/2018.
+ */
+
+public class UnoCard {
+
+    //-1: Action Card
+    private int value;
 
     private Colors color;
 
@@ -13,7 +19,7 @@ public class UnoCards {
     //Wild Draw Four Card
     private Actions actionType;
 
-    public UnoCards(int givenValue, Colors givenColor, Actions givenActionType) {
+    public UnoCard(int givenValue, Colors givenColor, Actions givenActionType) {
         //# on Card
         value = givenValue;
         //Color of card
