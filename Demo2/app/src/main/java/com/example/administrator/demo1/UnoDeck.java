@@ -72,4 +72,14 @@ public class UnoDeck {
 
         }
 
+        //Adds a card to the deck
+        public void addCard(UnoCard card) {
+            this.cards.add(card);
+        }
+
+        //Clears the deck's cards
+        public void clearDeck() {
+            this.cards.clear();
+        }
+
 }

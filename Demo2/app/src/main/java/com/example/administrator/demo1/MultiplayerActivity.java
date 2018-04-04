@@ -2,11 +2,11 @@ package com.example.administrator.demo1;
 
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.graphics.Color;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.ImageView;
@@ -14,62 +14,223 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.gson.Gson;
+
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
-
 import java.util.ArrayList;
-import java.util.Random;
 
-import io.socket.client.Manager;
 import io.socket.emitter.Emitter;
 
 public class MultiplayerActivity extends AppCompatActivity {
 
     //Game to be used in the GameActivity class
     private UnoGame currentGame;
+    //Username for the client
+    private String username;
+    //Socket.io integration
     UnoApplication app;
     private io.socket.client.Socket gsocket;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_multiplayer);
-        /* TODO: finish building namespace and receive the game from server
-        app = (UnoApplication) getApplication();
-        gsocket=app.getSocket();
-        gsocket.on("set game", new Emitter.Listener() {
-            JSONObject gameobj = new JSONObject();
-            @Override
-            public void call(Object... args) {
-                UnoDeck deck = gameobj.getJSONArray("");
-            }
-        });*/
+        //Fetches the username for the client
+        username = getIntent().getStringExtra("Username");
 
+        //Setup Emitters [Server -----> Client]
+        app = (UnoApplication) getApplicationContext();
+        gsocket = app.getSocket();
+        gsocket.on("fetch game", fetchGame);
+        gsocket.on("finish game", finishGame);
+        gsocket.connect();
 
+        //Start Game
+        //Fetch the (now populated) game state
+        gsocket.emit("fetch game",currentGame);
     }
 
+    /**
+     * Server returns an updated version of currentGame
+     */
+    private final Emitter.Listener fetchGame = new Emitter.Listener() {
+
+        @Override
+        public void call(final Object... args) {
+            Log.d("Test","UnoGame Object: "+args[0].toString());
+            JSONObject obj = (JSONObject) args[0];
+            JSONArray deck = null;
+            try {
+                deck = obj.getJSONObject("deck").getJSONArray("cards");
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+            //Populate the deck [1/5]
+            UnoDeck mDeck = new UnoDeck();
+            mDeck.clearDeck();
+            for(int i = 0; i < deck.length(); i++) {
+                try {
+                    int value = Integer.parseInt(deck.getJSONObject(i).getString("value"));
+                    Colors color = setColor(deck.getJSONObject(i).getString("color"));
+                    Actions action = setActionType(deck.getJSONObject(i).getString("actionType"));
+                    mDeck.addCard(new UnoCard(value, color, action));
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+
+            //Populate the players [2/5]
+            JSONArray players = null;
+            try {
+                players = obj.getJSONArray("unoPlayers");
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            ArrayList<UnoPlayer> mPlayers = new ArrayList<>();
+            JSONObject curPlayer = null;
+            for(int i = 0; i < players.length(); i++) {
+                try {
+                    curPlayer = players.getJSONObject(i);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                try {
+                    int num = Integer.parseInt(curPlayer.getString("playerNum"));
+                    JSONArray hCards = curPlayer.getJSONObject("unoHand").getJSONArray("cards");
+                    ArrayList<UnoCard> tempCards = new ArrayList<>(); //Will this work?
+                    for(int j = 0; j < hCards.length(); j++) {
+                        int value = Integer.parseInt(hCards.getJSONObject(j).getString("value"));
+                        Colors color = setColor(hCards.getJSONObject(j).getString("color"));
+                        Actions action = setActionType(hCards.getJSONObject(j).getString("actionType"));
+                        tempCards.add(new UnoCard(value, color, action));
+                    }
+                    UnoHand hand = new UnoHand(tempCards);
+                    PlayerType type = setPlayerType(players.getJSONObject(i).getString("playerType"));
+                    String user = players.getJSONObject(i).getString("username");
+                    mPlayers.add(new UnoPlayer(type, num, hand, user));
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+            //Populate the disposal stack [3/5]
+            ArrayList<UnoCard> mDisp = new ArrayList<>();
+            try {
+                JSONArray disp = obj.getJSONArray("disposalCards");
+                for(int i = 0; i < disp.length(); i++) {
+                    int value = Integer.parseInt(disp.getJSONObject(i).getString("value"));
+                    Colors color = setColor(disp.getJSONObject(i).getString("color"));
+                    Actions action = setActionType(disp.getJSONObject(i).getString("actionType"));
+                    mDisp.add(new UnoCard(value, color, action));
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+            //Populate the current turn [4/5]
+            int mCurrentTurn = 0;
+            try {
+                mCurrentTurn = Integer.parseInt(obj.getString("currentTurn"));
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+            //Populate the current direction [5/5]
+            int mDirection = 0;
+            try {
+                mDirection = Integer.parseInt(obj.getString("currentDirection"));
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+            currentGame = new UnoGame(mDeck, mPlayers, mDisp, mCurrentTurn, mDirection);
+            Log.d("Test","Current turn is: "+currentGame.getCurrentTurn()+" Stack: "+currentGame.getDisposalCards().get(0).CardToText());
+
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    updateUI();
+                }
+            });
+        }
+    };
+
+    public Colors setColor(String color) {
+        switch(color) {
+            case "BLUE":
+                return Colors.BLUE;
+            case "GREEN":
+                return Colors.GREEN;
+            case "YELLOW":
+                return Colors.YELLOW;
+            case "RED":
+                return Colors.RED;
+            case "NONE":
+                return Colors.NONE;
+        }
+        return null;
+    }
+
+    public Actions setActionType(String actionType) {
+        switch(actionType) {
+            case "DRAW_TWO":
+                return Actions.DRAW_TWO;
+            case "SKIP":
+                return Actions.SKIP;
+            case "REVERSE":
+                return Actions.REVERSE;
+            case "WILD":
+                return Actions.WILD;
+            case "WILD_DRAW_FOUR":
+                return Actions.WILD_DRAW_FOUR;
+            case "NONE":
+                return Actions.NONE;
+        }
+        return null;
+    }
+
+    public PlayerType setPlayerType(String playerType) {
+        switch(playerType) {
+            case "HUMAN":
+                return PlayerType.HUMAN;
+            case "CPU":
+                return PlayerType.CPU;
+        }
+        return null;
+    }
+
+    /**
+     * Server returns the name of the winner
+     */
+    private final Emitter.Listener finishGame = new Emitter.Listener() {
+
+        @Override
+        public void call(final Object... args) {
+            String winner = (String) args[0];
+        }
+    };
+
+    /**
+     * Handles the user's click events on the screen
+     * @param v The button (view) they toggled
+     */
     public void onClick(View v) {
         switch(v.getId()) {
-            //Deal button
-            case R.id.mdealHands:
-                //Setup the initial game window
-                setUpGame(v);
-
-                //Turn on the draw stack
-                ImageView v2 = findViewById(R.id.mdrawStack);
-                v2.setVisibility(View.VISIBLE);
-                break;
             //Draw pile tap
             case R.id.mdrawStack:
-                //Check to see if it's the players turn ***CHANGE WHEN USING MULTI-PLAYER
-                if(0 == currentGame.getCurrentTurn()) {
+                //Check to see if it's the players turn
+                if(getPlayerIndex().getPlayerNum() == currentGame.getCurrentTurn()) {
                     UnoCard card;
-                    card = currentGame.getValidCard(currentGame.getUnoPlayers().get(0));
+                    card = currentGame.getValidCard(getPlayerIndex());
                     //If the user really doesn't have a card they can play
                     if (card == null) {
-                        //Retrieve card from the draw pile
-                        card = currentGame.getCardFromDeck();
-                        currentGame.getUnoPlayers().get(0).getUnoHand().addCard(card);
                         //Go to the next player
-                        simulateTurn(null);
+                        UnoCard newCard = new UnoCard(-1, Colors.NONE,  Actions.NONE);
+                        Gson gson = new Gson();
+                        String jsonCard = gson.toJson(newCard);
+                        gsocket.emit("simulate turn", jsonCard);
                     }
                 }
                 break;
@@ -103,7 +264,8 @@ public class MultiplayerActivity extends AppCompatActivity {
         LinearLayout ll = findViewById(R.id.mcardSlide);
         ll.removeAllViews();
         //Get the player's hand [Only updates the client's hand]
-        UnoHand playerHand = currentGame.getUnoPlayers().get(0).getUnoHand();
+        final UnoPlayer player = getPlayerIndex();
+        UnoHand playerHand = player.getUnoHand();
         //Update the slider for each card
         for(UnoCard card : playerHand.getCards()) {
             //Create a new ImageView
@@ -116,8 +278,8 @@ public class MultiplayerActivity extends AppCompatActivity {
                 @Override
                 public void onClick(View view) {
                     final UnoCard card = (UnoCard) view.getTag();
-                    boolean validMove = currentGame.checkMove(card, currentGame.getUnoPlayers().get(currentGame.getCurrentTurn()));
-                    if(validMove) {
+                    boolean validMove = currentGame.checkMove(card, player);
+                    if(validMove && currentGame.getCurrentTurn()==player.getPlayerNum()) {
                         //Perform the turn
                         if(card.getActionType()==Actions.WILD || card.getActionType()==Actions.WILD_DRAW_FOUR) {
                             CharSequence colors[] = new CharSequence[] {"Red", "Green", "Blue", "Yellow"};
@@ -140,20 +302,33 @@ public class MultiplayerActivity extends AppCompatActivity {
                                             card.setColor(Colors.YELLOW);
                                             break;
                                     }
-                                    simulateTurn(card);
+                                    Gson gson = new Gson();
+                                    String jsonCard = gson.toJson(card);
+                                    gsocket.emit("simulate turn", jsonCard);
                                 }
                             });
                             builder.show();
                         } else {
-                            simulateTurn(card);
+                            Gson gson = new Gson();
+                            String jsonCard = gson.toJson(card);
+                            gsocket.emit("simulate turn", jsonCard);
                         }
                     } else {
-                        Context context = getApplicationContext();
-                        CharSequence text = "Please select a valid move";
-                        int duration = Toast.LENGTH_SHORT;
-                        Toast toast = Toast.makeText(context, text, duration);
-                        toast.setGravity(Gravity.CENTER,0,500);
-                        toast.show();
+                        if(currentGame.getCurrentTurn()!=player.getPlayerNum()) {
+                            Context context = getApplicationContext();
+                            CharSequence text = "Please wait your turn";
+                            int duration = Toast.LENGTH_SHORT;
+                            Toast toast = Toast.makeText(context, text, duration);
+                            toast.setGravity(Gravity.CENTER,0,500);
+                            toast.show();
+                        } else {
+                            Context context = getApplicationContext();
+                            CharSequence text = "Please select a valid move";
+                            int duration = Toast.LENGTH_SHORT;
+                            Toast toast = Toast.makeText(context, text, duration);
+                            toast.setGravity(Gravity.CENTER,0,500);
+                            toast.show();
+                        }
                     }
                 }
             });
@@ -162,23 +337,15 @@ public class MultiplayerActivity extends AppCompatActivity {
     }
 
     //Updates the card in the disposed stack
-    public void updateDisposal(UnoCard card) {
+    public void updateDisposal() {
         //Fetches the stack icon and retrieves the card on top
         ImageView tempView;
         tempView = findViewById(R.id.mdepositStack);
-        //Before laying down card, see if the previous was a wild card. If so, get rid of it's color
-        if(currentGame.getDisposalCards().size()!=0) {
-            if(currentGame.getDisposalCards().get(0).getActionType() == Actions.WILD_DRAW_FOUR
-                    || currentGame.getDisposalCards().get(0).getActionType() == Actions.WILD) {
-                currentGame.getDisposalCards().get(0).setColor(Colors.NONE);
-            }
-        }
-        currentGame.getDisposalCards().add(0, card);
         //Get the right image for the card
-        tempView.setImageResource(getCardImageID(card));
+        tempView.setImageResource(getCardImageID(currentGame.getDisposalCards().get(0)));
     }
 
-    //Updates the Horizontal Scroller for each player ***UPDATE WHEN USING MULTI-PLAYER***
+    //Updates the Horizontal Scroller for each player
     public void updatePlayerSlider() {
         //First, get the parent LinearLayout and clear it
         LinearLayout llp = findViewById(R.id.mplayerSlide);
@@ -226,180 +393,15 @@ public class MultiplayerActivity extends AppCompatActivity {
         }
     }
 
-    //Updates the score on the activity (User Only) ***UPDATE WHEN USING MULTI-PLAYER***
+    //Updates the score on the activity
     public void updateScore() {
         //Retrieve the player
-        UnoPlayer player = currentGame.getUnoPlayers().get(0);
-        //Turn on the score title
-        TextView scoreTitle = (findViewById(R.id.scoretitle));
-        scoreTitle.setVisibility(View.VISIBLE);
-        //Turn on the actual score
-        TextView score = (findViewById(R.id.score));
-        score.setVisibility(View.VISIBLE);
+        UnoPlayer player = getPlayerIndex();
         // Update the score
         int player_score;
         player_score = player.getUnoHand().totalScore();
+        TextView score = (findViewById(R.id.mscore));
         score.setText(Integer.toString(player_score));
-    }
-
-    //Simulates a turn in the Uno Game [Aka laying down a card, initiated by a human player]
-    public void simulateTurn(UnoCard card) {
-        //Pointer variable for ease of use
-        UnoPlayer currentPlayer = currentGame.getUnoPlayers().get(currentGame.getCurrentTurn());
-        //If the play didn't actually draw a card
-        if(card!=null) {
-            //Remove the card from the player's hand and update disposal
-            currentPlayer.getUnoHand().removeCard(card);
-            //Check for action card [HUMAN]
-            if(card.getActionType()!=Actions.NONE) {
-                handleAction(card, currentPlayer);
-            }
-            //Place card in disposal
-            updateDisposal(card);
-            //Check for a win [HUMAN]
-            checkForWin(currentPlayer);
-        }
-        //Update whose turn it is/pointer variable
-        currentGame.nextTurn();
-        //Update the onscreen display
-        updateUI();
-        //New player updated
-        currentPlayer = currentGame.getUnoPlayers().get(currentGame.getCurrentTurn());
-        while(currentPlayer.getPlayerType() == PlayerType.CPU) {
-            CPUTurn();
-            //Update the currentPlayer
-            currentPlayer = currentGame.getUnoPlayers().get(currentGame.getCurrentTurn());
-        }
-    }
-
-    public void CPUTurn() {
-        //Retrieve a card from the currentPlayer
-        UnoPlayer currentPlayer = currentGame.getUnoPlayers().get(currentGame.getCurrentTurn());
-        UnoCard CPUCard = currentGame.getValidCard(currentPlayer);
-        //If it couldn't get a card, draw from the pile and move to the next turn
-        if(CPUCard==null) {
-            CPUCard = currentGame.getCardFromDeck();
-            currentPlayer.getUnoHand().addCard(CPUCard);
-        } else {
-            //Removes the card from the hand
-            currentPlayer.getUnoHand().removeCard(CPUCard);
-            //If it's an action card, deal with it
-            if(CPUCard.getActionType()!=Actions.NONE) {
-                handleAction(CPUCard, currentPlayer);
-            }
-            //Updates the disposal stack
-            updateDisposal(CPUCard);
-            //Check for a win [CPU]
-            checkForWin(currentPlayer);
-        }
-        //Update whose turn it is
-        currentGame.nextTurn();
-        //Update visual display
-        updateUI();
-    }
-
-    public void setUpGame(View v) {
-        //Get rid of the deal button and make visible the direction arrow
-        v.setVisibility(View.GONE);
-        ImageView v2 = findViewById(R.id.directionArrow);
-        v2.setVisibility(View.VISIBLE);
-        //Todo: from here
-        //Create and Shuffle Deck
-        UnoDeck deck = new UnoDeck();
-        deck.shuffleCards();
-        //Deal cards to hands
-        ArrayList<UnoHand> hands = deck.dealHands(4);
-        //Create an ArrayList of the players
-        ArrayList<UnoPlayer> players = new ArrayList<>();
-        //Deal the hands to the players (Just player 1 (Human) for now)
-        UnoPlayer player = new UnoPlayer(PlayerType.HUMAN, 0,hands.get(0),getIntent().getStringExtra("Username"));
-        players.add(player);
-        //Deal the other hands to the AI ***UPDATE WHEN USING MULTI-PLAYER***
-        for(int i = 0; i < 3; i++) {
-            players.add(new UnoPlayer(PlayerType.CPU,i+1,hands.get(i+1),"CPU"));
-        }
-        //Initialize the disposal card stack
-        ArrayList<UnoCard> disposal_Stack = new ArrayList<>();
-        //Create the UnoGame Object
-        currentGame = new UnoGame(deck,players,disposal_Stack, 0,0);
-        //Todo: to here, this process had been moved to server to set up the game. Need to be removed after debugging.
-        //Update the slider
-        updateCardSlide();
-        //Lay a card down in the disposal pile
-        updateDisposal(deck.getCards().remove(0));
-        //Update the playerSlide
-        updatePlayerSlider();
-        //Update the playerScore
-        updateScore();
-    }
-
-    //CPU chooses a random color
-    public void chooseColor(UnoCard card) {
-        Random random = new Random();
-        Colors randomColor = Colors.values()[random.nextInt(Colors.values().length)];
-        //Cannot pick NONE for a color
-        while(randomColor == Colors.NONE) {
-            randomColor = Colors.values()[random.nextInt(Colors.values().length)];
-        }
-        card.setColor(randomColor);
-    }
-
-    //Deals with the action cards
-    public void handleAction(UnoCard card, UnoPlayer currentPlayer) {
-        switch (card.getActionType()) {
-            case WILD_DRAW_FOUR:
-                int nextPlayer = currentGame.nextPlayer();
-                for(int i = 0; i < 4; i++) {
-                    UnoCard takenCard = currentGame.getCardFromDeck();
-                    currentGame.getUnoPlayers().get(nextPlayer).getUnoHand().addCard(takenCard);
-                }
-                if(currentPlayer.getPlayerType() == PlayerType.CPU) {
-                    chooseColor(card);
-                }
-                break;
-            case WILD:
-                if(currentPlayer.getPlayerType() == PlayerType.CPU) {
-                    chooseColor(card);
-                }
-                break;
-            case SKIP:
-                currentGame.nextTurn();
-                break;
-            case REVERSE:
-                currentGame.changeDirection(this);
-                break;
-            case DRAW_TWO:
-                nextPlayer = currentGame.nextPlayer();
-                for(int i = 0; i < 2; i++) {
-                    UnoCard takenCard = currentGame.getCardFromDeck();
-                    currentGame.getUnoPlayers().get(nextPlayer).getUnoHand().addCard(takenCard);
-                }
-                break;
-        }
-    }
-
-    //Checks for a win for the current player
-    public void checkForWin(UnoPlayer player) {
-        if(player.getUnoHand().getCards().size()==0) {
-            if(player.getPlayerType()==PlayerType.CPU) {
-                Context context = getApplicationContext();
-                CharSequence text = "You lose";
-                int duration = Toast.LENGTH_SHORT;
-                Toast toast = Toast.makeText(context, text, duration);
-                toast.setGravity(Gravity.CENTER, 0, 500);
-                toast.show();
-            } else {
-                Context context = getApplicationContext();
-                CharSequence text = "You win!";
-                int duration = Toast.LENGTH_SHORT;
-                Toast toast = Toast.makeText(context, text, duration);
-                toast.setGravity(Gravity.CENTER, 0, 500);
-                toast.show();
-            }
-            Intent i = new Intent(this, LobbyActivity.class);
-            i.putExtra("Username", currentGame.getUnoPlayers().get(0).getUsername());
-            startActivity(i);
-        }
     }
 
     //Updates the onscreen UI
@@ -407,6 +409,18 @@ public class MultiplayerActivity extends AppCompatActivity {
         updateCardSlide();
         updatePlayerSlider();
         updateScore();
+        updateDisposal();
+        updateDirectionalArrow();
+    }
+
+    //Updates the directional arrow
+    public void updateDirectionalArrow() {
+        ImageView iv = findViewById(R.id.mdirectionArrow);
+        if(currentGame.getCurrentDirection()==0) {
+            iv.setImageResource(getResources().getIdentifier("arrow_right", "drawable", getPackageName()));
+        } else {
+            iv.setImageResource(getResources().getIdentifier("arrow_left", "drawable", getPackageName()));
+        }
     }
 
     //Retrieves the correct id for the card desired
@@ -426,5 +440,15 @@ public class MultiplayerActivity extends AppCompatActivity {
                 return getResources().getIdentifier(action,"drawable",getPackageName());
             }
         }
+    }
+
+    //Retrieves index of player from username
+    public UnoPlayer getPlayerIndex() {
+        for(UnoPlayer player : currentGame.getUnoPlayers()) {
+            if(player.getUsername().equals(username)) {
+                return player;
+            }
+        }
+        return null; //Shouldn't go here
     }
 }

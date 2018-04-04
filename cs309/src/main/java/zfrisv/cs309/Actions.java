@@ -1,20 +1,9 @@
 package zfrisv.cs309;
 
-public class Actions {
-	public static Actions NONE;
-	public static Actions DRAW_TWO;
-	public static Actions SKIP;
-	public static Actions REVERSE;
-	public static Actions WILD ;
-	public static Actions WILD_DRAW_FOUR;
-	
-	/*public Actions() {
-		/*this.NONE = NONE;
-		this.DRAW_TWO = DRAW_TWO;
-		this.SKIP = SKIP;
-		this.REVERSE = REVERSE;
-		this.WILD = WILD;
-		this.WILD_DRAW_FOUR = WILD_DRAW_FOUR;
-	}*/
-	
+/**
+ * Created by Xemnaes on 1/26/2018.
+ */
+
+public enum Actions {
+    NONE, DRAW_TWO, SKIP, REVERSE, WILD, WILD_DRAW_FOUR
 }

@@ -4,6 +4,8 @@ package com.example.administrator.demo1;
  * Created by Xemnaes on 1/28/2018.
  */
 
+import android.util.Log;
+
 import java.util.ArrayList;
 
 public class UnoHand {

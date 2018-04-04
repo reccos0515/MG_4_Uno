@@ -63,6 +63,9 @@ public class UnoGame {
         return this.currentTurn;
     }
 
+    //Returns the current direction of the game
+    public int getCurrentDirection() { return this.direction; }
+
     //Returns the index of the next player in the game
     public int nextPlayer() {
         int nextPlayer;
