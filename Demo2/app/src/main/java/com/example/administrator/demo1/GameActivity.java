@@ -376,7 +376,7 @@ public class GameActivity extends AppCompatActivity {
                 toast.setGravity(Gravity.CENTER, 0, 500);
                 toast.show();
             }
-            Intent i = new Intent(this, LobbyActivity.class);
+            Intent i = new Intent(this, HubActivity.class);
             i.putExtra("Username", currentGame.getUnoPlayers().get(0).getUsername());
             startActivity(i);
         }
