@@ -313,7 +313,10 @@ public class GameActivity extends AppCompatActivity {
         updateScore();
     }
 
-    //CPU chooses a random color
+    /**
+     * Chooses a color for the CPU to play
+     * @param card
+     */
     public void chooseColor(UnoCard card) {
         Random random = new Random();
         Colors randomColor = Colors.values()[random.nextInt(Colors.values().length)];
