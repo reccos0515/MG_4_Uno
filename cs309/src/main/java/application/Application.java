@@ -16,16 +16,8 @@ public class Application {
 				ServerSocketApplication.runSocket();
 			}
 		}).start();
-		new Thread(new Runnable() {
-			public void run() {
-				PlayerApp.run();
-			}
-		}).start();
-		/*new Thread(new Runnable() {
-			public void run() {
-				LeaderboardApp.run();
-			}
-		}).start();*/
+		SpringApplication.run(PlayerApp.class);
+		//SpringApplication.run(LeaderboardApp.class);
 	}
 
 }

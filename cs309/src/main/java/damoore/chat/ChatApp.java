@@ -1,15 +1,15 @@
-package damoore.player;
+package damoore.chat;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-import damoore.leaderboard.*;
+import damoore.leaderboard.LeaderboardApp;
 
 @SpringBootApplication
-public class PlayerApp {
-	
-	public static void run() {
-		SpringApplication.run(PlayerApp.class);
-	}
+public class ChatApp {
 
+	public static void run() {
+		SpringApplication.run(ChatApp.class);
+	}
+	
 }
