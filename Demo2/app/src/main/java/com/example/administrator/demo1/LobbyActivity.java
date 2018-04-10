@@ -50,11 +50,6 @@ public class LobbyActivity extends AppCompatActivity {
     //Create onClick listener method
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.launchUno:
-                Intent i = new Intent(this, GameActivity.class);
-                i.putExtra("Username", username);
-                startActivity(i);
-                break;
             case R.id.multiplayer:
                 if(users.size()==3) {
                     Log.d("Test","POOO");

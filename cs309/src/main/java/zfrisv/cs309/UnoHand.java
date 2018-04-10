@@ -6,31 +6,51 @@ package zfrisv.cs309;
 
 import java.util.ArrayList;
 
+/**
+ * Constructs and implements an UnoHand object
+ * @author Xemnaes
+ *
+ */
 public class UnoHand {
 
-    //ArrayList of cards
     private ArrayList<UnoCard> unoCards;
 
+    /**
+     * Constructs an UnoHand object
+     * @param givenUnoCards UnoCards to be used by the UnoHand
+     */
     public UnoHand(ArrayList<UnoCard> givenUnoCards) {
         unoCards = givenUnoCards;
     }
 
-    //Returns the ArrayList of UnoCards
+    /**
+     * Returns all UnoCard in the UnoHand
+     * @return ArrayList of UnoCard
+     */
     public ArrayList<UnoCard> getCards() {
         return this.unoCards;
     }
 
-    //Returns the # of UnoCards in hand
+    /**
+     * Returns the number of UnoCard in the UnoHand
+     * @return Number of UnoCard in the UnoHand
+     */
     public int getCardNum() {
         return this.unoCards.size();
     }
 
-    //Adds an uno card to the hand
+    /**
+     * Adds an UnoCard to the UnoHand
+     * @param givenCard UnoCard to add
+     */
     public void addCard(UnoCard givenCard) {
         this.unoCards.add(givenCard);
     }
 
-    //Removes a given card from the hand
+    /**
+     * Removes an UnoCard from the UnoHand
+     * @param givenCard UnoCard to remove
+     */
     public void removeCard(UnoCard givenCard) {
     	for(UnoCard c : this.unoCards) {
     		if(c.getActionType() == givenCard.getActionType() && (c.getColor() == givenCard.getColor() ||
@@ -42,6 +62,10 @@ public class UnoHand {
     	}
     }
 
+    /**
+     * Returns the total point value of the UnoHand
+     * @return Value of the UnoHand
+     */
     //Returns total point value of hand
     public int totalScore() {
         int totScore = 0; //Initial value
@@ -60,7 +84,11 @@ public class UnoHand {
         return totScore;
     }
 
-    //Returns true if the hand has the color, false if not
+    /**
+     * Returns boolean as to whether or not UnoHand contains a Color
+     * @param givenColor Color enum
+     * @return True if UnoHand contains UnoCard with that color, false if not
+     */
     public boolean hasColor(Colors givenColor) {
         for(UnoCard card: this.getCards()) {
             if(card.getColor()==givenColor) {

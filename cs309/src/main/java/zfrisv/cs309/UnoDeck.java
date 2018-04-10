@@ -7,10 +7,18 @@ import java.util.Collections;
  * Created by Xemnaes on 1/24/2018.
  */
 
+/**
+ * Constructs and implements the UnoDeck object.
+ * @author Xemnaes
+ *
+ */
 public class UnoDeck {
 
         private ArrayList<UnoCard> cards = new ArrayList<UnoCard>();
 
+        /**
+         * Constructs the UnoDeck object (108 UnoCards in all)
+         */
         public UnoDeck() {
             //For each color...
             for(Colors tempColor: Colors.values()) {
@@ -39,17 +47,26 @@ public class UnoDeck {
             }
         }
 
-        // Shuffles the deck
+        /**
+         * Shuffles the deck
+         */
         public void shuffleCards() {
             Collections.shuffle(this.cards);
         }
 
-        //Returns all the cards in the deck
+        /**
+         * Returns all the cards in the deck
+         * @return ArrayList of UnoCard
+         */
         public ArrayList<UnoCard> getCards() {
             return this.cards;
         }
 
-        // Returns an ArrayList of UnoHands using the UnoDeck
+        /**
+         * Returns an ArryaList of UnoHands created using the UnoDeck
+         * @param playerNum Number of players in the UnoGame
+         * @return ArrayList of UnoHand
+         */
         public ArrayList<UnoHand> dealHands(int playerNum) {
             int i, j;
             //Create ArrayList of UnoHands
@@ -67,9 +84,12 @@ public class UnoDeck {
             return hands;
         }
 
-        //Adds an ArrayList of cards to the deck //TODO
+        /**
+         * Adds an ArrayList of cards to the UnoDeck
+         * @param dispStack Current UnoGame disposal stack
+         */
         public void combineDisposal(ArrayList<UnoCard> dispStack) {
-
+        	//TODO
         }
 
 }

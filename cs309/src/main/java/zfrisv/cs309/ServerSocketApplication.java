@@ -16,13 +16,17 @@ import com.corundumstudio.socketio.listener.ConnectListener;
 import org.json.*;
 
 
-
+/**
+ * Begins the UnoGame multiplayer server-handler.
+ * @author Administrator
+ *
+ */
 public class ServerSocketApplication {
 
 	private static ArrayList<String> users = new ArrayList<String>();
 	private static UnoGame currentGame;
 	public static void runSocket() {
-		
+		System.out.println("test");
 		Configuration config = new Configuration();
         config.setPort(8080);
         
@@ -30,6 +34,9 @@ public class ServerSocketApplication {
         
         server.addConnectListener(new ConnectListener() {
         	
+        	/**
+        	 * When a user connects to the socket.
+        	 */
         	public void onConnect(SocketIOClient client) {
         		System.out.println("New client connected");
         	}
@@ -99,6 +106,11 @@ public class ServerSocketApplication {
         server.stop();
 	}
 	
+	/**
+	 * Sets the color for an UnoCard.
+	 * @param color UnoCard color (String format)
+	 * @return Color enum
+	 */
 	public static Colors setColor(String color) {
         switch(color) {
             case "BLUE":
@@ -115,6 +127,11 @@ public class ServerSocketApplication {
         return null;
     }
 
+	/**
+	 * Sets the action for an UnoCard
+	 * @param actionType UnoCard action (String format)
+	 * @return Action enum
+	 */
     public static Actions setActionType(String actionType) {
         switch(actionType) {
             case "DRAW_TWO":
@@ -133,7 +150,9 @@ public class ServerSocketApplication {
         return null;
     }
 	
-	
+	/**
+	 * Sets up the multiplayer game and broadcasts it to all the players
+	 */
 	public static void setUpGame() {
 		//Create and Shuffle Deck
 	    UnoDeck deck = new UnoDeck();
@@ -161,7 +180,10 @@ public class ServerSocketApplication {
 	    currentGame.getDisposalCards().add(0,deck.getCards().remove(0));
 	}
     
-	//Resets a wild card (if there is one) and places a card down
+	/**
+	 * Resets a wild card (if there is one) and places a card down
+	 * @param card UnoCard to be placed in the disposal deck
+	 */
     public static void placeCard(UnoCard card) {
         //Before laying down card, see if the previous was a wild card. If so, get rid of it's color
         if(currentGame.getDisposalCards().size()!=0) {
@@ -173,7 +195,10 @@ public class ServerSocketApplication {
         currentGame.getDisposalCards().add(0, card);
     }
     
-  //Simulates a turn in the Uno Game [AKA laying down a card, initiated by a human player]
+    /**
+     * Simulates a turn in the Uno Game [AKA laying down a card, initiated by a human player]
+     * @param card UnoCard which was played
+     */
     public static void simulateTurn(UnoCard card) {
     	System.out.println(card.CardToText());
         //Pointer variable for ease of use
@@ -205,7 +230,10 @@ public class ServerSocketApplication {
             currentPlayer = currentGame.getUnoPlayers().get(currentGame.getCurrentTurn());
         }
     }
-
+    
+    /**
+     * Simulates a CPU UnoGame turn.
+     */
     public static void CPUTurn() {
         //Retrieve a card from the currentPlayer
         UnoPlayer currentPlayer = currentGame.getUnoPlayers().get(currentGame.getCurrentTurn());
@@ -230,7 +258,10 @@ public class ServerSocketApplication {
         currentGame.nextTurn();
     }
     
-  //CPU chooses a random color
+    /**
+     * CPU chooses a random color
+     * @param card UnoCard whose color will be set (Wild or Draw Four Wild)
+     */
     public static void chooseColor(UnoCard card) {
         Random random = new Random();
         Colors randomColor = Colors.values()[random.nextInt(Colors.values().length)];
@@ -241,7 +272,11 @@ public class ServerSocketApplication {
         card.setColor(randomColor);
     }
     
-  //Deals with the action cards
+    /**
+     * Deals with the actio cards dealt
+     * @param card UnoCard (Action type is not NONE)
+     * @param currentPlayer Current UnoGame player (who placed the card)
+     */
     public static void handleAction(UnoCard card, UnoPlayer currentPlayer) {
         switch (card.getActionType()) {
             case WILD_DRAW_FOUR:
@@ -275,7 +310,10 @@ public class ServerSocketApplication {
         }
     }
     
-  //Checks for a win for the current player
+    /**
+     * Checks for a win for the current player
+     * @param player Current UnoGame player
+     */
     public static void checkForWin(UnoPlayer player) {
         //TODO Implement multiplayer wins/loses
     }
