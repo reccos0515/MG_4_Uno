@@ -6,6 +6,11 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 import zfrisv.cs309.*;
 
+/**
+ * Launches the server application.
+ * @author Administrator
+ *
+ */
 @SpringBootApplication
 public class Application {
 	
