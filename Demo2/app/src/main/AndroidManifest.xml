@@ -22,7 +22,11 @@
         <activity android:name=".MultiplayerActivity" />
         <activity android:name=".HubActivity" />
         <activity android:name=".ProfileActivity" />
-        <activity android:name=".LeaderboardActivity"></activity>
+        <activity android:name=".LeaderboardActivity" />
+        <activity
+            android:name=".selectLobbyActivity"
+            android:label="@string/title_activity_select_lobby"
+            android:theme="@style/Theme.AppCompat.NoActionBar"></activity>
     </application>
 
 </manifest>
