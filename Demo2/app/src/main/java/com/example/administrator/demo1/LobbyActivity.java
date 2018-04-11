@@ -50,16 +50,11 @@ public class LobbyActivity extends AppCompatActivity {
     //Create onClick listener method
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.launchUno:
-                Intent i = new Intent(this, GameActivity.class);
-                i.putExtra("Username", username);
-                startActivity(i);
-                break;
             case R.id.multiplayer:
-                if(users.size()==3) {
+                if(users.size()==2) {
                     Log.d("Test","POOO");
                     gsocket.emit("multiplayer");
-                }else if(users.size()<3){
+                }else if(users.size()<2){
                     Toast.makeText(getApplicationContext(),"Waiting for another user...",Toast.LENGTH_LONG).show();
                 }else{
                     Toast.makeText(getApplicationContext(),"Room is full, Try again later...",Toast.LENGTH_LONG).show();
@@ -97,7 +92,6 @@ public class LobbyActivity extends AppCompatActivity {
         gsocket.disconnect();
         gsocket.off(gsocket.EVENT_CONNECT, onConnect);
         gsocket.off(gsocket.EVENT_DISCONNECT, onDisconnect);
-        EventBus.getDefault().unregister(this);
     }
     private Emitter.Listener onConnect = new Emitter.Listener() {
         @Override

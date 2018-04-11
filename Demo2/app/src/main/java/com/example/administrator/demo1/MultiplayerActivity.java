@@ -23,6 +23,7 @@ import java.util.ArrayList;
 
 import io.socket.emitter.Emitter;
 
+
 public class MultiplayerActivity extends AppCompatActivity {
 
     //Game to be used in the GameActivity class
@@ -33,6 +34,11 @@ public class MultiplayerActivity extends AppCompatActivity {
     UnoApplication app;
     private io.socket.client.Socket gsocket;
 
+    /**
+     * Takes the saved information from the previous activity, get the global socket and create turn on the listeners for fetch game and finish game.
+     * Connect the socket to the server, and send request to server to get the game data set.
+     * @param savedInstanceState
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -53,7 +59,9 @@ public class MultiplayerActivity extends AppCompatActivity {
     }
 
     /**
-     * Server returns an updated version of currentGame
+     * Listener of fetch game. After a player move, server will update and returns an updated version of currentGame state,
+     * this listener will parse the json data set to game objects, and it will throw exception when the variable does not match our setting.
+     * Such as UNO Deck, UnoCards, player's current turn, uno players.
      */
     private final Emitter.Listener fetchGame = new Emitter.Listener() {
 
@@ -157,6 +165,11 @@ public class MultiplayerActivity extends AppCompatActivity {
         }
     };
 
+    /**
+     * This is a helper method for fetch game listener, this methos helps to set a uno card's color. It takes string parsed from server and return a color object.
+     * @param color
+     * @return
+     */
     public Colors setColor(String color) {
         switch(color) {
             case "BLUE":
@@ -173,6 +186,12 @@ public class MultiplayerActivity extends AppCompatActivity {
         return null;
     }
 
+    /**
+     * A helper method for fetch game listener, it takes a String and return a action type object for Uno card.
+     * It returns null when the string does not match any action type case.
+     * @param actionType
+     * @return
+     */
     public Actions setActionType(String actionType) {
         switch(actionType) {
             case "DRAW_TWO":
@@ -191,6 +210,11 @@ public class MultiplayerActivity extends AppCompatActivity {
         return null;
     }
 
+    /**
+     * This is a helper method for recognizing a user type, it returns null when the string input doesn't match any cases.
+     * @param playerType
+     * @return
+     */
     public PlayerType setPlayerType(String playerType) {
         switch(playerType) {
             case "HUMAN":
@@ -202,7 +226,7 @@ public class MultiplayerActivity extends AppCompatActivity {
     }
 
     /**
-     * Server returns the name of the winner
+     * This is a listener for the winner. After server returns the name of the winner, it parse the winner's username and return a string.
      */
     private final Emitter.Listener finishGame = new Emitter.Listener() {
 
@@ -213,7 +237,7 @@ public class MultiplayerActivity extends AppCompatActivity {
     };
 
     /**
-     * Handles the user's click events on the screen
+     * Handles the user's click events on the screen, after a user click, the method convert the card data into jason object and send the card data to the server. Or on disposal stack, if the card is a wild card, after user's click, it generate toast information about color on the screen.
      * @param v The button (view) they toggled
      */
     public void onClick(View v) {
@@ -230,7 +254,9 @@ public class MultiplayerActivity extends AppCompatActivity {
                         UnoCard newCard = new UnoCard(-1, Colors.NONE,  Actions.NONE);
                         Gson gson = new Gson();
                         String jsonCard = gson.toJson(newCard);
+                        System.out.println("Sending turn with json\n" + jsonCard);
                         gsocket.emit("simulate turn", jsonCard);
+                        System.out.println("Sent?");
                     }
                 }
                 break;
@@ -258,7 +284,12 @@ public class MultiplayerActivity extends AppCompatActivity {
         }
     }
 
-    //Updates the horizontal slider with the card (Human Players only)
+    /**
+     * Updates the horizontal slider with the card (Human Players only). After all the cards data parsed,
+     * this method will update the views for displaying cards on the screen.
+     * when there is a wild card, this will create a dialog view for user to choose a color.
+     * This restrict user's card selection when the selected card does not match the color or number or action type.
+     */
     public void updateCardSlide() {
         //Clear the slider
         LinearLayout ll = findViewById(R.id.mcardSlide);
@@ -304,14 +335,19 @@ public class MultiplayerActivity extends AppCompatActivity {
                                     }
                                     Gson gson = new Gson();
                                     String jsonCard = gson.toJson(card);
+                                    System.out.println("Sending turn with json\n" + jsonCard);
                                     gsocket.emit("simulate turn", jsonCard);
+                                    System.out.println("Sent?");
                                 }
                             });
                             builder.show();
                         } else {
                             Gson gson = new Gson();
                             String jsonCard = gson.toJson(card);
+                            System.out.println("Sending turn with json\n" + jsonCard);
                             gsocket.emit("simulate turn", jsonCard);
+                            System.out.println("Sent?");
+
                         }
                     } else {
                         if(currentGame.getCurrentTurn()!=player.getPlayerNum()) {
@@ -336,7 +372,9 @@ public class MultiplayerActivity extends AppCompatActivity {
         }
     }
 
-    //Updates the card in the disposed stack
+    /**
+     * Updates the card in the disposed stack, and update the views for the disposal cards.
+     */
     public void updateDisposal() {
         //Fetches the stack icon and retrieves the card on top
         ImageView tempView;
@@ -345,7 +383,10 @@ public class MultiplayerActivity extends AppCompatActivity {
         tempView.setImageResource(getCardImageID(currentGame.getDisposalCards().get(0)));
     }
 
-    //Updates the Horizontal Scroller for each player
+    /**
+     * Updates the Horizontal Scroller for each player
+     *
+     */
     public void updatePlayerSlider() {
         //First, get the parent LinearLayout and clear it
         LinearLayout llp = findViewById(R.id.mplayerSlide);
@@ -393,7 +434,10 @@ public class MultiplayerActivity extends AppCompatActivity {
         }
     }
 
-    //Updates the score on the activity
+    /**
+     * Updates the score on the activity
+     *
+     */
     public void updateScore() {
         //Retrieve the player
         UnoPlayer player = getPlayerIndex();
@@ -404,7 +448,10 @@ public class MultiplayerActivity extends AppCompatActivity {
         score.setText(Integer.toString(player_score));
     }
 
-    //Updates the onscreen UI
+    /**
+     * Updates the onscreen UI
+     *
+     */
     public void updateUI() {
         updateCardSlide();
         updatePlayerSlider();
@@ -413,7 +460,9 @@ public class MultiplayerActivity extends AppCompatActivity {
         updateDirectionalArrow();
     }
 
-    //Updates the directional arrow
+    /**
+     * Updates the directional arrow
+     */
     public void updateDirectionalArrow() {
         ImageView iv = findViewById(R.id.mdirectionArrow);
         if(currentGame.getCurrentDirection()==0) {
@@ -423,7 +472,11 @@ public class MultiplayerActivity extends AppCompatActivity {
         }
     }
 
-    //Retrieves the correct id for the card desired
+    /**Retrieves the correct id for the card desired
+     *
+     * @param givenCard
+     * @return
+     */
     public int getCardImageID(UnoCard givenCard) {
         //Not an action card
         if(givenCard.getActionType()==Actions.NONE) {
@@ -442,7 +495,10 @@ public class MultiplayerActivity extends AppCompatActivity {
         }
     }
 
-    //Retrieves index of player from username
+    /**
+     * Retrieves index of player from username, returns uno players
+     * @return
+     */
     public UnoPlayer getPlayerIndex() {
         for(UnoPlayer player : currentGame.getUnoPlayers()) {
             if(player.getUsername().equals(username)) {
@@ -450,5 +506,17 @@ public class MultiplayerActivity extends AppCompatActivity {
             }
         }
         return null; //Shouldn't go here
+    }
+
+    /**
+     * when the game activity is finished, disconnect the socket and turn off the listeners.
+     */
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        gsocket.emit("user left",username);
+        gsocket.disconnect();
+        gsocket.off("fetch game", fetchGame);
+        gsocket.off("finish game", finishGame);
     }
 }
