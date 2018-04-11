@@ -18,13 +18,26 @@ import org.springframework.web.bind.annotation.RestController;
 import damoore.player.Player;
 import damoore.player.PlayerRepository;
 
+
+/*
+ * TODO
+ */
 @Controller
 @RequestMapping(path="/player")
 public class PlayerController {
 	
+	
 	@Autowired
 	private PlayerRepository playerRepository;
 	
+	/**
+	 * adds a new player to the database
+	 * @param name
+	 * @param password
+	 * @param numGames
+	 * @param numWins
+	 * @return name added
+	 */
 	@GetMapping(path="/add")
 	public @ResponseBody String addPlayer(@RequestParam String name, @RequestParam String password,
 			@RequestParam Integer numGames, @RequestParam Integer numWins) {
@@ -37,11 +50,22 @@ public class PlayerController {
 		return name + " added";
 	}
 	
+	
+	/**
+	 * returns the player object
+	 * @param name
+	 * @return player
+	 */
 	@GetMapping(path="/find/{name}")
 	public @ResponseBody Iterable<Player> getPlayer(@PathVariable String name) {
 		return playerRepository.find(name);
 	}
 	
+	
+	/**
+	 * returns all players in database
+	 * @return all players
+	 */
 	@GetMapping(path="/all")
 	public @ResponseBody Iterable<Player> getAllPlayers() {
 		return playerRepository.findAll();
