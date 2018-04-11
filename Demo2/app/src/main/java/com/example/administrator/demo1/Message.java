@@ -1,7 +1,7 @@
 package com.example.administrator.demo1;
 
 /**
- * Created by Conghui.
+ * This is the message format will be implemented in the chat activity.
  */
 
 public class Message {
@@ -27,7 +27,9 @@ public class Message {
         return mUsername;
     }
 
-
+    /**
+     * builder buildes the message contains user's username, text input.
+     */
     public static class Builder {
         private final int mType;
         private String mUsername;

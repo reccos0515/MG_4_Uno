@@ -19,6 +19,9 @@ import java.util.ArrayList;
 import io.socket.client.Socket;
 import io.socket.emitter.Emitter;
 
+/**
+ * The view when user first entered the application.
+ */
 public class MainActivity extends AppCompatActivity{
     private static final String TAG = "MainActivity";
     public String username;
@@ -30,6 +33,10 @@ public class MainActivity extends AppCompatActivity{
         setContentView(R.layout.activity_main);
     }
 
+    /**
+     * allows users to select play game and input their usernames in pop up dialog.
+     * @param v
+     */
     //Create onClick listener method
     public void onClick(View v) {
         switch (v.getId()) {
@@ -61,7 +68,10 @@ public class MainActivity extends AppCompatActivity{
         }
     }
 
-  //Launch the lobby activity
+    /**
+     *  Launch the HUB activity, carray username intent.
+     */
+
     public void launchLobbyActivity(String username) {
         Intent i = new Intent(MainActivity.this, HubActivity.class);
         i.putExtra("Username", username);

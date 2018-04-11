@@ -3,6 +3,10 @@ package com.example.administrator.demo1;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
+/**
+ * This activity is for users to view their profile information.
+ */
+
 public class ProfileActivity extends AppCompatActivity {
     private String username;
 

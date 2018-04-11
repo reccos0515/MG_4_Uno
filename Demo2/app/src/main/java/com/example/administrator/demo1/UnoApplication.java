@@ -12,14 +12,14 @@ import io.socket.client.Socket;
 import io.socket.emitter.Emitter;
 
 /**
- * Created by Conghui.
+ * This class is for creating a global socket with a defined port and ip address, that can be used in all activities.
  */
 
 
 public class UnoApplication extends Application {
 
 
-    public static String server = "http://192.168.31.187:8080/";
+    public static String server = "http://10.29.207.77:8080/";
 
 
     private static UnoApplication instance;
@@ -28,6 +28,10 @@ public class UnoApplication extends Application {
         super.onCreate();
         instance = this;
     }
+
+    /**
+     * this create a static socket for all activities.
+     */
     private static Socket gsocket;
     {
         try{
@@ -38,6 +42,10 @@ public class UnoApplication extends Application {
         }
     }
 
+    /**
+     * method for getting the socket.
+     * @return
+     */
     public Socket getSocket(){
         return this.gsocket;
     }
