@@ -179,11 +179,7 @@ public class UnoGame {
 
         //If the deck is empty, recombine the deck and disposal [leaving the top card to stay]
         if(this.deck.getCards().size()==0) {
-            UnoCard tempCard = this.dispStack.remove(0);
-            ArrayList<UnoCard> dispCards = new ArrayList<UnoCard>(this.dispStack);
-            this.dispStack.clear();
-            this.deck.getCards().addAll(dispCards);
-            this.dispStack.add(tempCard);
+        	this.getDeck().combineDisposal(this.dispStack);
         }
 
         return card;

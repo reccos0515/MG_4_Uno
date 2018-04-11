@@ -89,7 +89,11 @@ public class UnoDeck {
          * @param dispStack Current UnoGame disposal stack
          */
         public void combineDisposal(ArrayList<UnoCard> dispStack) {
-        	//TODO
+        	UnoCard tempCard = dispStack.remove(0);
+            ArrayList<UnoCard> dispCards = new ArrayList<UnoCard>(dispStack);
+            dispStack.clear();
+            this.getCards().addAll(dispCards);
+            dispStack.add(tempCard);
         }
 
 }
