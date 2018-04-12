@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 import damoore.player.Player;
 import damoore.player.PlayerRepository;
 
+<<<<<<< HEAD
 /**
  * A web controller class that maps weblinks after /player and adds or returns data from the player table using the PlayerRepository.
  * @author damoore
@@ -25,6 +26,7 @@ import damoore.player.PlayerRepository;
 @Controller
 @RequestMapping(path="/player")
 public class PlayerController {
+	
 	
 	@Autowired
 	private PlayerRepository playerRepository;
@@ -49,6 +51,7 @@ public class PlayerController {
 		return name + " added";
 	}
 	
+<<<<<<< HEAD
 	/**
 	 * This method is used to retrieve a specific player from the player table.
 	 * @param name String This is the username of the player you want to find.
@@ -59,6 +62,7 @@ public class PlayerController {
 		return playerRepository.find(name);
 	}
 	
+<<<<<<< HEAD
 	/**
 	 * This method is used to retrieve all players from the player table.
 	 * @return An iterable Player list of all the players from the player table.
