@@ -1,14 +1,14 @@
 package zfrisv.cs309;
 
 /**
- * Created by Xemnaes on 1/28/2018.
+ * Created by Alexander Schulz on 1/28/2018.
  */
 
 import java.util.ArrayList;
 
 /**
  * Constructs and implements an UnoHand object
- * @author Xemnaes
+ * @author Alexander Schulz
  *
  */
 public class UnoHand {

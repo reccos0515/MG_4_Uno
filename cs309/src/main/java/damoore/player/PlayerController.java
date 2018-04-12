@@ -59,7 +59,7 @@ public class PlayerController {
 	public @ResponseBody Iterable<Player> getPlayer(@PathVariable String name) {
 		return playerRepository.find(name);
 	}
-	
+
 	/**
 	 * This method is used to retrieve all players from the player table.
 	 * @return An iterable Player list of all the players from the player table.

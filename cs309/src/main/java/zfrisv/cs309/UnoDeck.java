@@ -4,12 +4,12 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 /**
- * Created by Xemnaes on 1/24/2018.
+ * Created by Alexander Schulz on 1/24/2018.
  */
 
 /**
  * Constructs and implements the UnoDeck object.
- * @author Xemnaes
+ * @author Alexander Schulz
  *
  */
 public class UnoDeck {

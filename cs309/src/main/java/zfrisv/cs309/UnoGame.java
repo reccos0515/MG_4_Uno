@@ -4,12 +4,12 @@ import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 /**
- * Created by Xemnaes on 1/28/2018.
+ * Created by Alexander Schulz on 1/28/2018.
  */
 
 /**
  * Constructs and implements an UnoGame object.
- * @author Xemnaes
+ * @author Alexander Schulz
  *
  */
 public class UnoGame {
