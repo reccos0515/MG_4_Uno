@@ -8,7 +8,7 @@ import zfrisv.cs309.*;
 
 /**
  * Launches the server application.
- * @author Administrator
+ * @author Dakota Moore
  *
  */
 @SpringBootApplication

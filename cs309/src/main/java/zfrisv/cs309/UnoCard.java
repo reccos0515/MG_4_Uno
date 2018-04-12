@@ -1,12 +1,12 @@
 package zfrisv.cs309;
 
 /**
- * Created by Xemnaes on 1/24/2018.
+ * Created by Alexander Schulz on 1/24/2018.
  */
 
 /**
  * Handles construction and implementation of the UnoCard object.
- * @author Xemnaes
+ * @author Alexander Schulz
  *
  */
 public class UnoCard {
