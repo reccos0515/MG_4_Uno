@@ -1,4 +1,4 @@
-package damoore.player;
+package application;
 
 import java.util.List;
 import java.util.Optional;
@@ -14,9 +14,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
-
-import damoore.player.Player;
-import damoore.player.PlayerRepository;
 
 /**
  * A web controller class that maps weblinks after /player and adds or returns data from the player table using the PlayerRepository.

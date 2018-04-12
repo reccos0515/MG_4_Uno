@@ -25,7 +25,7 @@ public class ServerSocketApplication {
 
 	private static ArrayList<String> users = new ArrayList<String>();
 	private static UnoGame currentGame;
-	public static void runSocket() {
+	public static void run() {
 		System.out.println("test");
 		Configuration config = new Configuration();
         config.setPort(8080);

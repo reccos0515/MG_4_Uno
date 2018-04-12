@@ -1,4 +1,4 @@
-package damoore.chat;
+package application;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 

@@ -1,4 +1,4 @@
-package damoore.player;
+package application;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
