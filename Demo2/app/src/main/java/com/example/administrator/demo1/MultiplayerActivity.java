@@ -29,6 +29,8 @@ public class MultiplayerActivity extends AppCompatActivity {
     private UnoGame currentGame;
     //Username for the client
     private String username;
+    //Host boolean for the client
+    private boolean host;
     //Socket.io integration
     UnoApplication app;
     private io.socket.client.Socket gsocket;
@@ -39,6 +41,7 @@ public class MultiplayerActivity extends AppCompatActivity {
         setContentView(R.layout.activity_multiplayer);
         //Fetches the username for the client
         username = getIntent().getStringExtra("Username");
+        host = getIntent().getBooleanExtra("Host",false);
 
         //Setup Emitters [Server -----> Client]
         app = (UnoApplication) getApplicationContext();
@@ -49,7 +52,9 @@ public class MultiplayerActivity extends AppCompatActivity {
 
         //Start Game
         //Fetch the (now populated) game state
-        gsocket.emit("fetch game",currentGame);
+        if(host==true){
+            gsocket.emit("fetch game",currentGame);
+        }
     }
 
     /**

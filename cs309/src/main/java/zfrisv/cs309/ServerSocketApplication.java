@@ -47,7 +47,9 @@ public class ServerSocketApplication {
          */
         server.addEventListener("fetch game", String.class, new DataListener<String>() {
         	public void onData(SocketIOClient arg0, String username, AckRequest arg2) throws Exception {
+        		System.out.println("Before: "+currentGame.getDeck().getCards().size());
 				server.getBroadcastOperations().sendEvent("fetch game", currentGame);
+				System.out.println("After: "+currentGame.getDeck().getCards().size());
         }});
         	
         /**
