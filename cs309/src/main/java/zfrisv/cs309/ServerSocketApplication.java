@@ -24,6 +24,7 @@ import org.json.*;
 public class ServerSocketApplication {
 
 	private static ArrayList<String> users = new ArrayList<String>();
+	private static String winner;
 	private static UnoGame currentGame;
 	public static void run() {
 		System.out.println("test");
@@ -47,9 +48,12 @@ public class ServerSocketApplication {
          */
         server.addEventListener("fetch game", String.class, new DataListener<String>() {
         	public void onData(SocketIOClient arg0, String username, AckRequest arg2) throws Exception {
-        		System.out.println("Before: "+currentGame.getDeck().getCards().size());
-				server.getBroadcastOperations().sendEvent("fetch game", currentGame);
-				System.out.println("After: "+currentGame.getDeck().getCards().size());
+        		server.getBroadcastOperations().sendEvent("get deck", currentGame.getDeck());
+        		server.getBroadcastOperations().sendEvent("get players", currentGame.getUnoPlayers());
+        		server.getBroadcastOperations().sendEvent("get disp", currentGame.getDisposalCards());
+        		server.getBroadcastOperations().sendEvent("get turn", currentGame.getCurrentTurn());
+        		server.getBroadcastOperations().sendEvent("get direction", currentGame.getCurrentDirection());
+        		server.getBroadcastOperations().sendEvent("set game");
         }});
         	
         /**
@@ -62,8 +66,17 @@ public class ServerSocketApplication {
         		Colors tColor = setColor(obj.getString("color"));
         		int tValue = obj.getInt("value");
         		simulateTurn(new UnoCard(tValue, tColor, tAction));
-        		System.out.println("Current turn is: "+currentGame.getCurrentTurn());
-				server.getBroadcastOperations().sendEvent("fetch game", currentGame);
+        		if(winner!=null) {
+        			System.out.println("We here");
+        			server.getBroadcastOperations().sendEvent("finish game",winner);
+        		} else {
+	        		server.getBroadcastOperations().sendEvent("get deck", currentGame.getDeck());
+	        		server.getBroadcastOperations().sendEvent("get players", currentGame.getUnoPlayers());
+	        		server.getBroadcastOperations().sendEvent("get disp", currentGame.getDisposalCards());
+	        		server.getBroadcastOperations().sendEvent("get turn", currentGame.getCurrentTurn());
+	        		server.getBroadcastOperations().sendEvent("get direction", currentGame.getCurrentDirection());
+	        		server.getBroadcastOperations().sendEvent("set game");
+        		}
         }});
         
         /**
@@ -317,6 +330,8 @@ public class ServerSocketApplication {
      * @param player Current UnoGame player
      */
     public static void checkForWin(UnoPlayer player) {
-        //TODO Implement multiplayer wins/loses
+       if(player.getUnoHand().getCardNum()==0) {
+    	   winner = player.getUsername();
+       }
     }
 }

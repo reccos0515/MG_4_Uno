@@ -51,10 +51,9 @@ public class LobbyActivity extends AppCompatActivity {
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.multiplayer:
-                if(users.size()==3) {
-                    Log.d("Test","POOO");
+                if(users.size()>1) {
                     gsocket.emit("multiplayer");
-                }else if(users.size()<3){
+                }else if(users.size()<2){
                     Toast.makeText(getApplicationContext(),"Waiting for another user...",Toast.LENGTH_LONG).show();
                 }else{
                     Toast.makeText(getApplicationContext(),"Room is full, Try again later...",Toast.LENGTH_LONG).show();
