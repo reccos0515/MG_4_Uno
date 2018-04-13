@@ -236,25 +236,30 @@ public class MultiplayerActivity extends AppCompatActivity {
 
         @Override
         public void call(final Object... args) {
-            String winner = (String) args[0];
+            final String winner = (String) args[0];
             Log.d("Test","Winner is: "+winner);
-            if(winner!=username) {
-                Context context = getApplicationContext();
-                CharSequence text = "You lose";
-                int duration = Toast.LENGTH_SHORT;
-                Toast toast = Toast.makeText(context, text, duration);
-                toast.setGravity(Gravity.CENTER, 0, 500);
-                toast.show();
-            } else {
-                Context context = getApplicationContext();
-                CharSequence text = "You win!";
-                int duration = Toast.LENGTH_SHORT;
-                Toast toast = Toast.makeText(context, text, duration);
-                toast.setGravity(Gravity.CENTER, 0, 500);
-                toast.show();
-            }
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    if(!winner.equals(username)) {
+                        Context context = getApplicationContext();
+                        CharSequence text = "You lose";
+                        int duration = Toast.LENGTH_SHORT;
+                        Toast toast = Toast.makeText(context, text, duration);
+                        toast.setGravity(Gravity.CENTER, 0, 500);
+                        toast.show();
+                    } else {
+                        Context context = getApplicationContext();
+                        CharSequence text = "You win!";
+                        int duration = Toast.LENGTH_SHORT;
+                        Toast toast = Toast.makeText(context, text, duration);
+                        toast.setGravity(Gravity.CENTER, 0, 500);
+                        toast.show();
+                    }
+                }
+            });
             Intent i = new Intent(MultiplayerActivity.this, HubActivity.class);
-            i.putExtra("Username", currentGame.getUnoPlayers().get(0).getUsername());
+            i.putExtra("Username", username);
             startActivity(i);
         }
     };

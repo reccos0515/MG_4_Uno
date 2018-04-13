@@ -69,6 +69,8 @@ public class ServerSocketApplication {
         		if(winner!=null) {
         			System.out.println("We here");
         			server.getBroadcastOperations().sendEvent("finish game",winner);
+        			users.clear();
+        			server.getAllClients().clear();
         		} else {
 	        		server.getBroadcastOperations().sendEvent("get deck", currentGame.getDeck());
 	        		server.getBroadcastOperations().sendEvent("get players", currentGame.getUnoPlayers());
