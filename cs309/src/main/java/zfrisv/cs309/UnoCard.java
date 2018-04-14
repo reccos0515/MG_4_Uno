@@ -1,48 +1,64 @@
 package zfrisv.cs309;
 
 /**
- * Created by Xemnaes on 1/24/2018.
+ * Created by Alexander Schulz on 1/24/2018.
  */
 
+/**
+ * Handles construction and implementation of the UnoCard object.
+ * @author Alexander Schulz
+ *
+ */
 public class UnoCard {
 
-    //-1: Action Card
     private int value;
 
     private Colors color;
 
-    //Action Types:
-    //Draw Two Card
-    //Skip Card
-    //Reverse Card
-    //Wild Card
-    //Wild Draw Four Card
     private Actions actionType;
 
+    /**
+     * Constructs an UnoCard object
+     * @param givenValue Numerical value of the card
+     * @param givenColor Color value of the card
+     * @param givenActionType Action value of the card
+     */
     public UnoCard(int givenValue, Colors givenColor, Actions givenActionType) {
-        //# on Card
         value = givenValue;
-        //Color of card
         color = givenColor;
-        //Action type of card
         actionType = givenActionType;
     }
 
+    /**
+     * Retrieves the numerical value of the UnoCard
+     * @return Numerical value of the UnoCard
+     */
     public int getValue() {
         return this.value;
     }
 
+    /**
+     * Retrieves the color value of the UnoCard
+     * @return Color value of the UnoCard
+     */
     public Colors getColor() {
         return this.color;
     }
 
+    /**
+     * Sets the color of the UnoCard
+     * @param color Color enum to set for UnoCard
+     */
     public void setColor(Colors color) { this.color = color; }
 
     public Actions getActionType() {
         return this.actionType;
     }
 
-    //Debugging method. Translates the card to a usable text string for logging
+    /**
+     * Debugging method. Translates the card to a usable text string for logging
+     * @return String equivalent of UnoCard
+     */
     public String CardToText() {
         if(this.value>-1) {
             return "Value: " + this.value + " Color: " + this.color;

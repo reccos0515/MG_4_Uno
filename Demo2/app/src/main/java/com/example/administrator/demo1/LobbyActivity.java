@@ -51,8 +51,9 @@ public class LobbyActivity extends AppCompatActivity {
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.multiplayer:
-                if(users.size()==2) {
-                    Log.d("Test","POOO");
+
+                if(users.size()>1) {
+
                     gsocket.emit("multiplayer");
                 }else if(users.size()<2){
                     Toast.makeText(getApplicationContext(),"Waiting for another user...",Toast.LENGTH_LONG).show();
@@ -156,6 +157,11 @@ public class LobbyActivity extends AppCompatActivity {
         public void call(final Object... args) {
             Intent intent = new Intent(LobbyActivity.this, MultiplayerActivity.class);
             intent.putExtra("Username", username);
+            if(users.get(0).equals(username)) {
+                intent.putExtra("Host",true);
+            } else {
+                intent.putExtra("Host",false);
+            }
             startActivity(intent);
         }
     };

@@ -1,9 +1,10 @@
 package zfrisv.cs309;
 
 /**
- * Created by Xemnaes on 2/8/2018.
+ * Constructs and implements the UnoPlayer object
+ * @author Alexander Schulz
+ *
  */
-
 public class UnoPlayer {
 
     private PlayerType type;

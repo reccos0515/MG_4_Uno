@@ -2,6 +2,7 @@ package com.example.administrator.demo1;
 
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Color;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -28,8 +29,15 @@ public class MultiplayerActivity extends AppCompatActivity {
 
     //Game to be used in the GameActivity class
     private UnoGame currentGame;
+    private UnoDeck serverDeck;
+    private ArrayList<UnoPlayer> serverPlayers;
+    private ArrayList<UnoCard> serverDisp;
+    private int serverTurn;
+    private int serverDirection;
     //Username for the client
     private String username;
+    //Host boolean for the client
+    private boolean host;
     //Socket.io integration
     UnoApplication app;
     private io.socket.client.Socket gsocket;
@@ -45,38 +53,42 @@ public class MultiplayerActivity extends AppCompatActivity {
         setContentView(R.layout.activity_multiplayer);
         //Fetches the username for the client
         username = getIntent().getStringExtra("Username");
+        host = getIntent().getBooleanExtra("Host",false);
 
         //Setup Emitters [Server -----> Client]
         app = (UnoApplication) getApplicationContext();
         gsocket = app.getSocket();
-        gsocket.on("fetch game", fetchGame);
+        //gsocket.on("fetch game", fetchGame);
+        gsocket.on("get deck", getDeck);
+        gsocket.on("get players", getPlayers);
+        gsocket.on("get disp", getDisp);
+        gsocket.on("get turn", getTurn);
+        gsocket.on("get direction", getDirection);
+        gsocket.on("set game",setGame);
         gsocket.on("finish game", finishGame);
         gsocket.connect();
 
         //Start Game
         //Fetch the (now populated) game state
-        gsocket.emit("fetch game",currentGame);
+        if(host==true){
+            gsocket.emit("fetch game",currentGame);
+        }
     }
 
-    /**
-     * Listener of fetch game. After a player move, server will update and returns an updated version of currentGame state,
-     * this listener will parse the json data set to game objects, and it will throw exception when the variable does not match our setting.
-     * Such as UNO Deck, UnoCards, player's current turn, uno players.
-     */
-    private final Emitter.Listener fetchGame = new Emitter.Listener() {
+
+    private final Emitter.Listener getDeck = new Emitter.Listener() {
+
 
         @Override
         public void call(final Object... args) {
-            Log.d("Test","UnoGame Object: "+args[0].toString());
             JSONObject obj = (JSONObject) args[0];
             JSONArray deck = null;
             try {
-                deck = obj.getJSONObject("deck").getJSONArray("cards");
+                deck = obj.getJSONArray("cards");
             } catch (JSONException e) {
                 e.printStackTrace();
             }
 
-            //Populate the deck [1/5]
             UnoDeck mDeck = new UnoDeck();
             mDeck.clearDeck();
             for(int i = 0; i < deck.length(); i++) {
@@ -89,16 +101,17 @@ public class MultiplayerActivity extends AppCompatActivity {
                     e.printStackTrace();
                 }
             }
+            serverDeck = mDeck;
+        }
+    };
 
-            //Populate the players [2/5]
-            JSONArray players = null;
-            try {
-                players = obj.getJSONArray("unoPlayers");
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
+    private final Emitter.Listener getPlayers = new Emitter.Listener() {
+
+        @Override
+        public void call(final Object... args) {
+            JSONArray players = (JSONArray) args[0];
             ArrayList<UnoPlayer> mPlayers = new ArrayList<>();
-            JSONObject curPlayer = null;
+            JSONObject curPlayer = new JSONObject();
             for(int i = 0; i < players.length(); i++) {
                 try {
                     curPlayer = players.getJSONObject(i);
@@ -123,10 +136,17 @@ public class MultiplayerActivity extends AppCompatActivity {
                     e.printStackTrace();
                 }
             }
-            //Populate the disposal stack [3/5]
+            serverPlayers = mPlayers;
+        }
+    };
+
+    private final Emitter.Listener getDisp = new Emitter.Listener() {
+
+        @Override
+        public void call(final Object... args) {
+            JSONArray disp = (JSONArray) args[0];
             ArrayList<UnoCard> mDisp = new ArrayList<>();
             try {
-                JSONArray disp = obj.getJSONArray("disposalCards");
                 for(int i = 0; i < disp.length(); i++) {
                     int value = Integer.parseInt(disp.getJSONObject(i).getString("value"));
                     Colors color = setColor(disp.getJSONObject(i).getString("color"));
@@ -136,26 +156,34 @@ public class MultiplayerActivity extends AppCompatActivity {
             } catch (JSONException e) {
                 e.printStackTrace();
             }
+            serverDisp = mDisp;
+        }
+    };
 
-            //Populate the current turn [4/5]
-            int mCurrentTurn = 0;
-            try {
-                mCurrentTurn = Integer.parseInt(obj.getString("currentTurn"));
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
+    private final Emitter.Listener getTurn = new Emitter.Listener() {
 
-            //Populate the current direction [5/5]
-            int mDirection = 0;
-            try {
-                mDirection = Integer.parseInt(obj.getString("currentDirection"));
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
+        @Override
+        public void call(final Object... args) {
+            int turn = (int) args[0];
+            serverTurn = turn;
+        }
+    };
 
-            currentGame = new UnoGame(mDeck, mPlayers, mDisp, mCurrentTurn, mDirection);
-            Log.d("Test","Current turn is: "+currentGame.getCurrentTurn()+" Stack: "+currentGame.getDisposalCards().get(0).CardToText());
+    private final Emitter.Listener getDirection = new Emitter.Listener() {
 
+        @Override
+        public void call(final Object... args) {
+            int direction = Integer.parseInt(args[0].toString());
+            serverDirection = direction;
+        }
+    };
+
+    private final Emitter.Listener setGame = new Emitter.Listener() {
+
+        @Override
+        public void call(final Object... args) {
+            currentGame = new UnoGame(serverDeck, serverPlayers, serverDisp, serverTurn, serverDirection);
+            Log.d("Test","Size of deck: "+serverDeck.getCards().size());
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
@@ -232,7 +260,31 @@ public class MultiplayerActivity extends AppCompatActivity {
 
         @Override
         public void call(final Object... args) {
-            String winner = (String) args[0];
+            final String winner = (String) args[0];
+            Log.d("Test","Winner is: "+winner);
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    if(!winner.equals(username)) {
+                        Context context = getApplicationContext();
+                        CharSequence text = "You lose";
+                        int duration = Toast.LENGTH_SHORT;
+                        Toast toast = Toast.makeText(context, text, duration);
+                        toast.setGravity(Gravity.CENTER, 0, 500);
+                        toast.show();
+                    } else {
+                        Context context = getApplicationContext();
+                        CharSequence text = "You win!";
+                        int duration = Toast.LENGTH_SHORT;
+                        Toast toast = Toast.makeText(context, text, duration);
+                        toast.setGravity(Gravity.CENTER, 0, 500);
+                        toast.show();
+                    }
+                }
+            });
+            Intent i = new Intent(MultiplayerActivity.this, HubActivity.class);
+            i.putExtra("Username", username);
+            startActivity(i);
         }
     };
 
@@ -516,7 +568,7 @@ public class MultiplayerActivity extends AppCompatActivity {
         super.onDestroy();
         gsocket.emit("user left",username);
         gsocket.disconnect();
-        gsocket.off("fetch game", fetchGame);
+        //gsocket.off("fetch game", fetchGame);
         gsocket.off("finish game", finishGame);
     }
 }
