@@ -17,6 +17,9 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.Random;
 
+/**
+ * Implements and constructs a new offline game activity
+ */
 public class GameActivity extends AppCompatActivity {
 
     //Game to be used in the GameActivity class
@@ -79,7 +82,9 @@ public class GameActivity extends AppCompatActivity {
         }
     }
 
-    //Updates the horizontal slider with the card (Human Players only)
+    /**
+     * Updates the horizontal slider with the card (Human Players only)
+     */
     public void updateCardSlide() {
         //Clear the slider
         LinearLayout ll = findViewById(R.id.cardSlide);
@@ -143,7 +148,10 @@ public class GameActivity extends AppCompatActivity {
         }
     }
 
-    //Updates the card in the disposed stack
+    /**
+     * Updates the card in the disposal stack
+     * @param card UnoCard to be placed in the disposal deck
+     */
     public void updateDisposal(UnoCard card) {
         //Fetches the stack icon and retrieves the card on top
         ImageView tempView;
@@ -160,7 +168,9 @@ public class GameActivity extends AppCompatActivity {
         tempView.setImageResource(getCardImageID(card));
     }
 
-    //Updates the Horizontal Scroller for each player ***UPDATE WHEN USING MULTI-PLAYER***
+    /**
+     * Updates the horizontal scroller for each player
+     */
     public void updatePlayerSlider() {
         //First, get the parent LinearLayout and clear it
         LinearLayout llp = findViewById(R.id.playerSlide);
@@ -208,7 +218,9 @@ public class GameActivity extends AppCompatActivity {
         }
     }
 
-    //Updates the score on the activity (User Only) ***UPDATE WHEN USING MULTI-PLAYER***
+    /**
+     * Updates the score on the activity (User only)
+     */
     public void updateScore() {
         //Retrieve the player
         UnoPlayer player = currentGame.getUnoPlayers().get(0);
@@ -224,7 +236,10 @@ public class GameActivity extends AppCompatActivity {
         score.setText(Integer.toString(player_score));
     }
 
-    //Simulates a turn in the Uno Game [Aka laying down a card, initiated by a human player]
+    /**
+     * Simulates a turn in the UnoGame [AKA laying down a card, initiated by a human player]
+     * @param card UnoCard played by a human player
+     */
     public void simulateTurn(UnoCard card) {
         //Pointer variable for ease of use
         UnoPlayer currentPlayer = currentGame.getUnoPlayers().get(currentGame.getCurrentTurn());
@@ -254,6 +269,9 @@ public class GameActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Simulates a turn for the CPU
+     */
     public void CPUTurn() {
         //Retrieve a card from the currentPlayer
         UnoPlayer currentPlayer = currentGame.getUnoPlayers().get(currentGame.getCurrentTurn());
@@ -280,6 +298,10 @@ public class GameActivity extends AppCompatActivity {
         updateUI();
     }
 
+    /**
+     * Sets up the UnoGame structure for a new offline game
+     * @param v The deal button view
+     */
     public void setUpGame(View v) {
         //Get rid of the deal button and make visible the direction arrow
         v.setVisibility(View.GONE);
@@ -313,7 +335,10 @@ public class GameActivity extends AppCompatActivity {
         updateScore();
     }
 
-    //CPU chooses a random color
+    /**
+     * CPU chooses a random color
+     * @param card Wild card from the CPU
+     */
     public void chooseColor(UnoCard card) {
         Random random = new Random();
         Colors randomColor = Colors.values()[random.nextInt(Colors.values().length)];
@@ -324,7 +349,11 @@ public class GameActivity extends AppCompatActivity {
         card.setColor(randomColor);
     }
 
-    //Deals with the action cards
+    /**
+     * Deals with the action cards
+     * @param card The UnoCard in play
+     * @param currentPlayer The current player in the UnoGame
+     */
     public void handleAction(UnoCard card, UnoPlayer currentPlayer) {
         switch (card.getActionType()) {
             case WILD_DRAW_FOUR:
@@ -358,7 +387,10 @@ public class GameActivity extends AppCompatActivity {
         }
     }
 
-    //Checks for a win for the current player
+    /**
+     * Checks for a win for the current player
+     * @param player The current player in the UnoGame
+     */
     public void checkForWin(UnoPlayer player) {
         if(player.getUnoHand().getCards().size()==0) {
             if(player.getPlayerType()==PlayerType.CPU) {
@@ -382,14 +414,20 @@ public class GameActivity extends AppCompatActivity {
         }
     }
 
-    //Updates the onscreen UI
+    /**
+     * Updates the onscreen UI
+     */
     public void updateUI() {
         updateCardSlide();
         updatePlayerSlider();
         updateScore();
     }
 
-    //Retrieves the correct id for the card desired
+    /**
+     * Retrieves the correct id for the card desired
+     * @param givenCard The given UnoCard
+     * @return int representation of the UnoCard image
+     */
     public int getCardImageID(UnoCard givenCard) {
         //Not an action card
         if(givenCard.getActionType()==Actions.NONE) {

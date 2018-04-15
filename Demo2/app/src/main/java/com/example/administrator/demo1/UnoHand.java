@@ -1,10 +1,8 @@
 package com.example.administrator.demo1;
 
 /**
- * Created by Xemnaes on 1/28/2018.
+ * Implements the UnoHand object
  */
-
-import android.util.Log;
 
 import java.util.ArrayList;
 
@@ -13,31 +11,50 @@ public class UnoHand {
     //ArrayList of cards
     private ArrayList<UnoCard> unoCards;
 
+    /**
+     * Constructs the UnoHand object
+     * @param givenUnoCards
+     */
     public UnoHand(ArrayList<UnoCard> givenUnoCards) {
         unoCards = givenUnoCards;
     }
 
-    //Returns the ArrayList of UnoCards
+    /**
+     * Returns the ArrayList of UnoCards
+     * @return ArrayList of UnoCards
+     */
     public ArrayList<UnoCard> getCards() {
         return this.unoCards;
     }
 
-    //Returns the # of UnoCards in hand
+    /**
+     * Returns the # of UnoCards in UnoHand
+     * @return # of UnoCards
+     */
     public int getCardNum() {
         return this.unoCards.size();
     }
 
-    //Adds an uno card to the hand
+    /**
+     * Adds an UnoCard to the hand
+     * @param givenCard The UnoCard to add
+     */
     public void addCard(UnoCard givenCard) {
         this.unoCards.add(givenCard);
     }
 
-    //Removes a given card from the hand
+    /**
+     * Removes a given UnoCard from the hand
+     * @param givenCard UnoCard to remove
+     */
     public void removeCard(UnoCard givenCard) {
         this.unoCards.remove(givenCard);
     }
 
-    //Returns total point value of hand
+    /**
+     * Returns total point value of the UnoHand
+     * @return Point value of the UnoHand
+     */
     public int totalScore() {
         int totScore = 0; //Initial value
         for(UnoCard card: this.getCards()) {
@@ -55,7 +72,11 @@ public class UnoHand {
         return totScore;
     }
 
-    //Returns true if the hand has the color, false if not
+    /**
+     * Returns true if the hand has the color, false otherwise
+     * @param givenColor Color
+     * @return True if in UnoHand, false otherwise
+     */
     public boolean hasColor(Colors givenColor) {
         for(UnoCard card: this.getCards()) {
             if(card.getColor()==givenColor) {

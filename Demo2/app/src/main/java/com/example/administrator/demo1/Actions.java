@@ -1,7 +1,7 @@
 package com.example.administrator.demo1;
 
 /**
- * Created by Xemnaes on 1/26/2018.
+ * Class containing the list of Actions
  */
 
 public enum Actions {

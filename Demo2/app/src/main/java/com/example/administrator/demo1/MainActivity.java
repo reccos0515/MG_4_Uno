@@ -61,7 +61,10 @@ public class MainActivity extends AppCompatActivity{
         }
     }
 
-  //Launch the lobby activity
+    /**
+     * Launches the hub activity
+     * @param username Username of the current user
+     */
     public void launchLobbyActivity(String username) {
         Intent i = new Intent(MainActivity.this, HubActivity.class);
         i.putExtra("Username", username);
