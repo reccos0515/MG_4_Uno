@@ -24,7 +24,7 @@
         <activity android:name=".ProfileActivity" />
         <activity android:name=".LeaderboardActivity" />
         <activity
-            android:name=".selectLobbyActivity"
+            android:name=".SelectLobbyActivity"
             android:label="@string/title_activity_select_lobby"
             android:theme="@style/Theme.AppCompat.NoActionBar"></activity>
     </application>

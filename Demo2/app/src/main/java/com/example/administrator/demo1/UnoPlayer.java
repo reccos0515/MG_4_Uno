@@ -10,6 +10,7 @@ public class UnoPlayer {
     private int playerNum;
     private UnoHand hand;
     private String username;
+    private int lobby;
 
     public UnoPlayer(PlayerType givenType, int givenPlayerNum, UnoHand givenHand, String givenUsername) {
         //Player Type
@@ -20,6 +21,9 @@ public class UnoPlayer {
         hand = givenHand;
         //Player's username
         username = givenUsername;
+        //Player's lobby    **0 if not in a lobby**
+        lobby = 0;
+
     }
 
     //Returns the player's type
