@@ -29,6 +29,8 @@ import java.util.ArrayList;
 import io.socket.client.Socket;
 import io.socket.emitter.Emitter;
 
+import static android.app.PendingIntent.getActivity;
+
 public class MainActivity extends AppCompatActivity{
     private static final String TAG = "MainActivity";
     public String username;
@@ -39,6 +41,10 @@ public class MainActivity extends AppCompatActivity{
 
     private TextView txtResponse;
     private String jsonResponse;
+
+    private String players[];
+
+    private boolean existing = false;
 
     @Override
     //Create items needed for initial setup
@@ -53,6 +59,7 @@ public class MainActivity extends AppCompatActivity{
 
             //Start the game
             case R.id.playGame:
+                existing = false;
                 AlertDialog.Builder builder = new AlertDialog.Builder(v.getContext());
                 builder.setTitle("Please provide a username:");
                 final EditText input = new EditText(this);
@@ -62,7 +69,14 @@ public class MainActivity extends AppCompatActivity{
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         username = input.getText().toString();
-                        launchLobbyActivity(username);
+                        for(int i = 0; i <players.length; i++)
+                        {
+                            if(username==players[i]) { existing = true; }
+                        }
+                        if(!existing) { launchLobbyActivity(username); }
+                        else {
+                            Toast.makeText(getApplicationContext(), "Username take, please enter another", Toast.LENGTH_LONG).show();
+                        }
                     }
                 });
                 builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -78,7 +92,7 @@ public class MainActivity extends AppCompatActivity{
         }
     }
 
-    private void makeJsonArrayRequest() {
+    private void getAllPlayers() {
 
         JsonArrayRequest req = new JsonArrayRequest(allPlayersUrl,
                 new Response.Listener<JSONArray>() {
@@ -90,17 +104,22 @@ public class MainActivity extends AppCompatActivity{
                             jsonResponse = "";
                             for(int i = 0; i < response.length(); i++) {
                                 JSONObject player = (JSONObject) response.get(i);
-                                String username = player.getString("username");
+                                String name = player.getString("username");
                                 String password = player.getString("password");
                                 String numGames = player.getString("numGames");
                                 String numWins = player.getString("numWins");
 
+                                players[i] = name;
+
+
+
+                                /*
                                 jsonResponse += "Username: " + username + "\n\n";
                                 jsonResponse += "Password: " + password + "\n\n";
                                 jsonResponse += "Number of Games: " + numGames + "\n\n";
-                                jsonResponse += "Number of Wins: " + numWins + "\n\n";
+                                jsonResponse += "Number of Wins: " + numWins + "\n\n";*/
                             }
-                            txtResponse.setText(jsonResponse);
+                            //txtResponse.setText(jsonResponse);
                         } catch (JSONException e) {
                             e.printStackTrace();
                             Toast.makeText(getApplicationContext(),
