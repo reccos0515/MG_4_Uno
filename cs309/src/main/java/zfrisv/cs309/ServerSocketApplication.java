@@ -66,9 +66,9 @@ public class ServerSocketApplication {
         		int tValue = obj.getInt("value");
         		simulateTurn(new UnoCard(tValue, tColor, tAction));
         		if(winner!=null) {
+        			System.out.println("Winner!");
         			server.getBroadcastOperations().sendEvent("finish game",winner);
         			users.clear();
-        			server.getAllClients().clear();
         			winner = null;
         		} else {
 	        		server.getBroadcastOperations().sendEvent("get deck", currentGame.getDeck());
