@@ -62,7 +62,7 @@ public class MainActivity extends AppCompatActivity{
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         username = input.getText().toString();
-                        launchLobbyActivity(username);
+                        launchHubActivity(username);
                     }
                 });
                 builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -124,7 +124,7 @@ public class MainActivity extends AppCompatActivity{
      * Launches the hub activity
      * @param username Username of the current user
      */
-    public void launchLobbyActivity(String username) {
+    public void launchHubActivity(String username) {
         Intent i = new Intent(MainActivity.this, HubActivity.class);
         i.putExtra("Username", username);
         startActivity(i);

@@ -66,9 +66,7 @@ public class MultiplayerActivity extends AppCompatActivity {
 
         //Start Game
         //Fetch the (now populated) game state
-        if(host){
-            gsocket.emit("fetch game",currentGame);
-        }
+        gsocket.emit("fetch game",currentGame);
     }
 
     /**
