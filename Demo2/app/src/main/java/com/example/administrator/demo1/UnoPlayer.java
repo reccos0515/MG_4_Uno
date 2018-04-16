@@ -21,8 +21,8 @@ public class UnoPlayer {
         hand = givenHand;
         //Player's username
         username = givenUsername;
-        //Player's lobby    **0 if not in a lobby**
-        lobby = 0;
+        //Player's lobby **-1 if not in a lobby**
+        lobby = -1;
 
     }
 
@@ -43,5 +43,11 @@ public class UnoPlayer {
 
     //Returns the player's username
     public String getUsername() { return this.username; }
+
+    /**
+     * Returns the player's lobby number
+     * @return number of lobby the player is in, -1 if not in a lobby
+     */
+    public int getLobby() {return this.lobby; }
 
 }

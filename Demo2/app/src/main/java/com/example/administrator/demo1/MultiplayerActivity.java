@@ -64,9 +64,8 @@ public class MultiplayerActivity extends AppCompatActivity {
 
         //Start Game
         //Fetch the (now populated) game state
-        if(host==true){
             gsocket.emit("fetch game",currentGame);
-        }
+
     }
 
     private final Emitter.Listener getDeck = new Emitter.Listener() {
