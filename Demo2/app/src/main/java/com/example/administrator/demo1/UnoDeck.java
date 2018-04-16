@@ -4,14 +4,17 @@ import java.util.ArrayList;
 import java.util.Collections;
 
 /**
- * Created by Xemnaes on 1/24/2018.
+ * Implements the UnoDeck object
  */
 
 public class UnoDeck {
 
         private ArrayList<UnoCard> cards = new ArrayList<>();
 
-        public UnoDeck() {
+    /**
+     * Constructs a new UnoDeck
+     */
+    public UnoDeck() {
             //For each color...
             for(Colors tempColor: Colors.values()) {
                 if (tempColor != Colors.NONE) {
@@ -39,47 +42,56 @@ public class UnoDeck {
             }
         }
 
-        // Shuffles the deck
-        public void shuffleCards() {
+    /**
+     * Shuffles the UnoDeck
+     */
+    public void shuffleCards() {
             Collections.shuffle(this.cards);
         }
 
-        //Returns all the cards in the deck
-        public ArrayList<UnoCard> getCards() {
+    /**
+     * Returns all the cards in the deck
+     * @return ArrayList of UnoCards
+     */
+    public ArrayList<UnoCard> getCards() {
             return this.cards;
         }
 
-        // Returns an ArrayList of UnoHands using the UnoDeck
-        public ArrayList<UnoHand> dealHands(int playerNum) {
-            int i, j;
-            //Create ArrayList of UnoHands
-            ArrayList<UnoHand> hands = new ArrayList<>();
-            for(i = 0; i < playerNum; i++) {
-                // Create an ArrayList of UnoCards
-                ArrayList<UnoCard> currentCards = new ArrayList<>();
-                for(j = 0; j < 7; j++) {
-                    // Add a card to the list, removing it from the deck
-                    currentCards.add(this.cards.remove(0));
-                }
-                // Create a hand from the list of cards pulled
-                hands.add(new UnoHand(currentCards));
+    /**
+     * Returns an ArrayList of UnoHands using the UnoDeck as a template
+     * @param playerNum Number of players (Human and CPU) to make hands for
+     * @return ArrayList of UnoHands
+     */
+    public ArrayList<UnoHand> dealHands(int playerNum) {
+        int i, j;
+        //Create ArrayList of UnoHands
+        ArrayList<UnoHand> hands = new ArrayList<>();
+        for(i = 0; i < playerNum; i++) {
+            // Create an ArrayList of UnoCards
+            ArrayList<UnoCard> currentCards = new ArrayList<>();
+            for(j = 0; j < 7; j++) {
+                // Add a card to the list, removing it from the deck
+                currentCards.add(this.cards.remove(0));
             }
-            return hands;
+            // Create a hand from the list of cards pulled
+            hands.add(new UnoHand(currentCards));
         }
+        return hands;
+    }
 
-        //Adds an ArrayList of cards to the deck //TODO
-        public void combineDisposal(ArrayList<UnoCard> dispStack) {
+    /**
+     * Adds a card to the deck
+     * @param card The UnoCard to add
+     */
+    public void addCard(UnoCard card) {
+        this.cards.add(card);
+    }
 
-        }
-
-        //Adds a card to the deck
-        public void addCard(UnoCard card) {
-            this.cards.add(card);
-        }
-
-        //Clears the deck's cards
-        public void clearDeck() {
-            this.cards.clear();
-        }
+    /**
+     * Clears the UnoDeck of all UnoCards
+     */
+    public void clearDeck() {
+        this.cards.clear();
+    }
 
 }

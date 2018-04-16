@@ -1,7 +1,7 @@
 package com.example.administrator.demo1;
 
 /**
- * Created by Xemnaes on 1/25/2018.
+ * Class containing the list of Colors
  */
 
 public enum Colors {
