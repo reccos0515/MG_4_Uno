@@ -18,7 +18,7 @@ import org.json.*;
 
 /**
  * Begins the UnoGame multiplayer server-handler.
- * @author Karen Si
+ * @author zfrisv
  *
  */
 public class ServerSocketApplication {
