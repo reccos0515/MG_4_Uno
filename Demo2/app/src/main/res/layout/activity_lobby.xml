@@ -48,13 +48,12 @@
 
     <ScrollView
         android:id="@+id/player_container"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintLeft_toLeftOf="parent"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toTopOf="@id/multiplayer"
+        app:layout_constraintLeft_toLeftOf="@id/lobbyTitle"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintStart_toStartOf="parent">
+        app:layout_constraintTop_toBottomOf="@id/lobbyTitle">
 
         <LinearLayout
             android:id="@+id/playerScroll"
