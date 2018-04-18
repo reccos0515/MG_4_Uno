@@ -24,9 +24,14 @@ import java.util.ArrayList;
 
 import io.socket.emitter.Emitter;
 
-public class MultiplayerActivity extends AppCompatActivity  {
 
-    //Game to be used in the GameActivity class
+/**
+ * Class for handling client updates in an Online Game
+ */
+public class MultiplayerActivity extends AppCompatActivity {
+
+
+    //Game to be used in the GameActivity class (and related components)
     private UnoGame currentGame;
     private UnoDeck serverDeck;
     private ArrayList<UnoPlayer> serverPlayers;
@@ -53,7 +58,6 @@ public class MultiplayerActivity extends AppCompatActivity  {
         //Setup Emitters [Server -----> Client]
         app = (UnoApplication) getApplicationContext();
         gsocket = app.getSocket();
-        //gsocket.on("fetch game", fetchGame);
         gsocket.on("get deck", getDeck);
         gsocket.on("get players", getPlayers);
         gsocket.on("get disp", getDisp);
@@ -67,17 +71,17 @@ public class MultiplayerActivity extends AppCompatActivity  {
 
         //Start Game
         //Fetch the (now populated) game state
-        if(host==true){
-            gsocket.emit("fetch game",currentGame);
-        }
+        gsocket.emit("fetch game",currentGame);
     }
     private final Emitter.Listener ChatMessage= new Emitter.Listener() {
         @Override
         public void call(Object... args) {
             JSONObject obj = (JSONObject) args[0];
 
+
         }
     };
+
     private final Emitter.Listener getDeck = new Emitter.Listener() {
 
         @Override
@@ -106,6 +110,9 @@ public class MultiplayerActivity extends AppCompatActivity  {
         }
     };
 
+    /**
+     * Fetches the ArrayList of UnoPlayers from the server
+     */
     private final Emitter.Listener getPlayers = new Emitter.Listener() {
 
         @Override
@@ -142,6 +149,9 @@ public class MultiplayerActivity extends AppCompatActivity  {
         }
     };
 
+    /**
+     * Fetches the disposal deck from the server
+     */
     private final Emitter.Listener getDisp = new Emitter.Listener() {
 
         @Override
@@ -162,39 +172,58 @@ public class MultiplayerActivity extends AppCompatActivity  {
         }
     };
 
+    /**
+     * Fetches the current turn from the server
+     */
     private final Emitter.Listener getTurn = new Emitter.Listener() {
 
         @Override
         public void call(final Object... args) {
-            int turn = (int) args[0];
-            serverTurn = turn;
+            serverTurn = (int) args[0];
         }
     };
 
+    /**
+     * Fetches the current direction from the server
+     */
     private final Emitter.Listener getDirection = new Emitter.Listener() {
 
         @Override
         public void call(final Object... args) {
-            int direction = Integer.parseInt(args[0].toString());
-            serverDirection = direction;
+            serverDirection = Integer.parseInt(args[0].toString());
         }
     };
 
+    /**
+     * Sets the UnoGame with the new server game components
+     */
     private final Emitter.Listener setGame = new Emitter.Listener() {
 
         @Override
         public void call(final Object... args) {
             currentGame = new UnoGame(serverDeck, serverPlayers, serverDisp, serverTurn, serverDirection);
-            Log.d("Test","Size of deck: "+serverDeck.getCards().size());
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
                     updateUI();
+                    if(currentGame.getUnoPlayers().get(serverTurn).getUsername().equals(username)) {
+                        Context context = getApplicationContext();
+                        CharSequence text = "It's your turn";
+                        int duration = Toast.LENGTH_SHORT;
+                        Toast toast = Toast.makeText(context, text, duration);
+                        toast.setGravity(Gravity.CENTER, 0, 500);
+                        toast.show();
+                    }
                 }
             });
         }
     };
 
+    /**
+     * Returns the Colors enum of it's string equivalent
+     * @param color The color (string format)
+     * @return The color (Colors enum)
+     */
     public Colors setColor(String color) {
         switch(color) {
             case "BLUE":
@@ -211,6 +240,11 @@ public class MultiplayerActivity extends AppCompatActivity  {
         return null;
     }
 
+    /**
+     * Returns the Actions enum of it's string equivalent
+     * @param actionType The action (string format)
+     * @return The action (Actions enum)
+     */
     public Actions setActionType(String actionType) {
         switch(actionType) {
             case "DRAW_TWO":
@@ -229,6 +263,11 @@ public class MultiplayerActivity extends AppCompatActivity  {
         return null;
     }
 
+    /**
+     * Returns the PlayerType enum of it's string equivalent
+     * @param playerType The PlayerType (string format)
+     * @return The PlayerType (PlayerType format)
+     */
     public PlayerType setPlayerType(String playerType) {
         switch(playerType) {
             case "HUMAN":
@@ -322,7 +361,9 @@ public class MultiplayerActivity extends AppCompatActivity  {
         }
     }
 
-    //Updates the horizontal slider with the card (Human Players only)
+    /**
+     * Updates the horizontal slider with the card (Human Players only)
+     */
     public void updateCardSlide() {
         //Clear the slider
         LinearLayout ll = findViewById(R.id.mcardSlide);
@@ -400,7 +441,9 @@ public class MultiplayerActivity extends AppCompatActivity  {
         }
     }
 
-    //Updates the card in the disposed stack
+    /**
+     * Updates the card in the disposal stack
+     */
     public void updateDisposal() {
         //Fetches the stack icon and retrieves the card on top
         ImageView tempView;
@@ -409,7 +452,9 @@ public class MultiplayerActivity extends AppCompatActivity  {
         tempView.setImageResource(getCardImageID(currentGame.getDisposalCards().get(0)));
     }
 
-    //Updates the Horizontal Scroller for each player
+    /**
+     * Updates the horizontal scroller for each player
+     */
     public void updatePlayerSlider() {
         //First, get the parent LinearLayout and clear it
         LinearLayout llp = findViewById(R.id.mplayerSlide);
@@ -457,7 +502,9 @@ public class MultiplayerActivity extends AppCompatActivity  {
         }
     }
 
-    //Updates the score on the activity
+    /**
+     * Updates the score on the activity
+     */
     public void updateScore() {
         //Retrieve the player
         UnoPlayer player = getPlayerIndex();
@@ -468,7 +515,9 @@ public class MultiplayerActivity extends AppCompatActivity  {
         score.setText(Integer.toString(player_score));
     }
 
-    //Updates the onscreen UI
+    /**
+     * Updates the onscreen UI
+     */
     public void updateUI() {
         updateCardSlide();
         updatePlayerSlider();
@@ -477,7 +526,10 @@ public class MultiplayerActivity extends AppCompatActivity  {
         updateDirectionalArrow();
     }
 
-    //Updates the directional arrow
+
+    /**
+     * Updates the directional arrow
+     */
     public void updateDirectionalArrow() {
         ImageView iv = findViewById(R.id.mdirectionArrow);
         if(currentGame.getCurrentDirection()==0) {
@@ -487,7 +539,11 @@ public class MultiplayerActivity extends AppCompatActivity  {
         }
     }
 
-    //Retrieves the correct id for the card desired
+    /**
+     * Retrieves the correct id for the card desired
+     * @param givenCard UnoCard provided
+     * @return image id in int form of the UnoCard
+     */
     public int getCardImageID(UnoCard givenCard) {
         //Not an action card
         if(givenCard.getActionType()==Actions.NONE) {
@@ -506,7 +562,10 @@ public class MultiplayerActivity extends AppCompatActivity  {
         }
     }
 
-    //Retrieves index of player from username
+    /**
+     * Retrieves index of the player from a username
+     * @return Index of player
+     */
     public UnoPlayer getPlayerIndex() {
         for(UnoPlayer player : currentGame.getUnoPlayers()) {
             if(player.getUsername().equals(username)) {

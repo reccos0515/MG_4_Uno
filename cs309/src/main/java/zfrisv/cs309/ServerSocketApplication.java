@@ -27,7 +27,6 @@ public class ServerSocketApplication {
 	private static String winner;
 	private static UnoGame currentGame;
 	public static void run() {
-		System.out.println("test");
 		Configuration config = new Configuration();
         config.setPort(8080);
         
@@ -67,10 +66,10 @@ public class ServerSocketApplication {
         		int tValue = obj.getInt("value");
         		simulateTurn(new UnoCard(tValue, tColor, tAction));
         		if(winner!=null) {
-        			System.out.println("We here");
+        			System.out.println("Winner!");
         			server.getBroadcastOperations().sendEvent("finish game",winner);
         			users.clear();
-        			server.getAllClients().clear();
+        			winner = null;
         		} else {
 	        		server.getBroadcastOperations().sendEvent("get deck", currentGame.getDeck());
 	        		server.getBroadcastOperations().sendEvent("get players", currentGame.getUnoPlayers());
@@ -113,7 +112,6 @@ public class ServerSocketApplication {
     	}});
         
         server.start();
-        System.out.println("Server started...");
         try {
 			Thread.sleep(Integer.MAX_VALUE);
 		} catch (InterruptedException e) {
