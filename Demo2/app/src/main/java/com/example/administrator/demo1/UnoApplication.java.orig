@@ -18,9 +18,11 @@ import io.socket.emitter.Emitter;
 
 public class UnoApplication extends Application {
 
-
+<<<<<<< HEAD
+    public static String server = "http://10.29.205.241:8080/";
+=======
     public static String server = "http://10.26.156.246:8080/";
-
+>>>>>>> master
 
     private static UnoApplication instance;
     @Override
