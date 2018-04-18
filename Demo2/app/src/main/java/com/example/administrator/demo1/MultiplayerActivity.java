@@ -65,7 +65,7 @@ public class MultiplayerActivity extends AppCompatActivity {
         gsocket.on("get direction", getDirection);
         gsocket.on("set game",setGame);
         gsocket.on("finish game", finishGame);
-        gsocket.on("get message", ChatMessage);
+        //gsocket.on("get message", ChatMessage);
         gsocket.connect();
 
 
@@ -73,6 +73,7 @@ public class MultiplayerActivity extends AppCompatActivity {
         //Fetch the (now populated) game state
         gsocket.emit("fetch game",currentGame);
     }
+    /*
     private final Emitter.Listener ChatMessage= new Emitter.Listener() {
         @Override
         public void call(Object... args) {
@@ -80,7 +81,7 @@ public class MultiplayerActivity extends AppCompatActivity {
 
 
         }
-    };
+    };*/
 
     private final Emitter.Listener getDeck = new Emitter.Listener() {
 

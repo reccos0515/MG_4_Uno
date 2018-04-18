@@ -183,6 +183,7 @@ public class LobbyActivity extends AppCompatActivity {
                 intent.putExtra("Host",false);
             }
             startActivity(intent);
+            finish();
         }
     };
 }
