@@ -65,7 +65,7 @@ public class MultiplayerActivity extends AppCompatActivity {
         gsocket.on("get direction", getDirection);
         gsocket.on("set game",setGame);
         gsocket.on("finish game", finishGame);
-        gsocket.on("get message", ChatMessage);
+        //gsocket.on("get message", ChatMessage);
         gsocket.connect();
 
 
@@ -139,7 +139,7 @@ public class MultiplayerActivity extends AppCompatActivity {
                     UnoHand hand = new UnoHand(tempCards);
                     PlayerType type = setPlayerType(players.getJSONObject(i).getString("playerType"));
                     String user = players.getJSONObject(i).getString("username");
-                    chatUsers.add(user);
+                    //chatUsers.add(user);
                     mPlayers.add(new UnoPlayer(type, num, hand, user));
                 } catch (JSONException e) {
                     e.printStackTrace();
