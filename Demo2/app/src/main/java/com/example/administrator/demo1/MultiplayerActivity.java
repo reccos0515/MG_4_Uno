@@ -140,7 +140,7 @@ public class MultiplayerActivity extends AppCompatActivity {
                     UnoHand hand = new UnoHand(tempCards);
                     PlayerType type = setPlayerType(players.getJSONObject(i).getString("playerType"));
                     String user = players.getJSONObject(i).getString("username");
-                    chatUsers.add(user);
+                    //chatUsers.add(user);
                     mPlayers.add(new UnoPlayer(type, num, hand, user));
                 } catch (JSONException e) {
                     e.printStackTrace();
