@@ -105,4 +105,5 @@
     <string name="sigle_player">single player</string>
     <string name="exit">Exit</string>
     <string name="title_activity_select_lobby">selectLobbyActivity</string>
+    <string name="score">Score:</string>
 </resources>

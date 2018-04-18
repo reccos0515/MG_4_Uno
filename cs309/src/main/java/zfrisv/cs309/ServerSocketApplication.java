@@ -26,6 +26,7 @@ public class ServerSocketApplication {
 	private static ArrayList<String> users = new ArrayList<String>();
 	private static String winner;
 	private static UnoGame currentGame;
+	
 	public static void run() {
 		System.out.println("test");
 		Configuration config = new Configuration();
@@ -111,6 +112,12 @@ public class ServerSocketApplication {
     		setUpGame();
 			server.getBroadcastOperations().sendEvent("multiplayer");
     	}});
+        
+        /*server.addEventListener(sendMessage, String.class, new DataListener<String>(){
+        	public void onData(SocketIOClient arg0, String username, AckRequest arg2) throws Exception {
+        		
+        	}
+        });Unfinished event listener*/
         
         server.start();
         System.out.println("Server started...");

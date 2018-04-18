@@ -68,6 +68,11 @@ public class LobbyActivity extends AppCompatActivity {
                 break;
         }
     }
+
+    /**
+     * Updates the UI of users in the lobby
+     * @param arr ArrayList of usernames
+     */
     public void updateUser(ArrayList<String> arr){
         if(arr!=null) {
             Log.d("Test",Integer.toString(arr.size()));
@@ -86,6 +91,9 @@ public class LobbyActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Toggles when a user leaves
+     */
     @Override
     protected void onDestroy() {
         super.onDestroy();
@@ -94,6 +102,10 @@ public class LobbyActivity extends AppCompatActivity {
         gsocket.off(gsocket.EVENT_CONNECT, onConnect);
         gsocket.off(gsocket.EVENT_DISCONNECT, onDisconnect);
     }
+
+    /**
+     * Toggles when a user connects
+     */
     private Emitter.Listener onConnect = new Emitter.Listener() {
         @Override
         public void call(Object... args) {
@@ -110,6 +122,9 @@ public class LobbyActivity extends AppCompatActivity {
             });
         }};
 
+    /**
+     * Toggles when a user disconnects
+     */
     private Emitter.Listener onDisconnect = new Emitter.Listener() {
         @Override
         public void call(Object... args) {
@@ -117,7 +132,6 @@ public class LobbyActivity extends AppCompatActivity {
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    Log.d(TAG, "diconnected");
                     isConnected = false;
                     gsocket.emit("user left",username);
                     Toast.makeText(getApplicationContext(),
@@ -127,6 +141,9 @@ public class LobbyActivity extends AppCompatActivity {
         }
     };
 
+    /**
+     * Toggles when a user connects
+     */
     private final Emitter.Listener onExistedUsers = new Emitter.Listener() {
 
         @Override
@@ -151,6 +168,9 @@ public class LobbyActivity extends AppCompatActivity {
         }
     };
 
+    /**
+     * Toggles when the host launches a multiplayer Uno game
+     */
     private final Emitter.Listener onStartMultiplayer = new Emitter.Listener() {
 
         @Override

@@ -1,7 +1,7 @@
 package com.example.administrator.demo1;
 
 /**
- * Created by Xemnaes on 2/8/2018.
+ * Class containing the list of PlayerType
  */
 
 public enum PlayerType {

@@ -9,22 +9,36 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
+
+import com.android.volley.VolleyError;
+import com.android.volley.VolleyLog;
+import com.android.volley.toolbox.JsonArrayRequest;
+import com.example.administrator.demo1.*;
+import com.android.volley.Response;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 
 import io.socket.client.Socket;
 import io.socket.emitter.Emitter;
 
-/**
- * The view when user first entered the application.
- */
 public class MainActivity extends AppCompatActivity{
     private static final String TAG = "MainActivity";
     public String username;
+
+    private String allPlayersUrl = "http://localhost:8090/player/all";
+    private String addPlayerUrl = "http://localhost:8090/player/add?";
+    private String findPlayerUrl = "http://localhost:8090/player/find/";
+
+    private TextView txtResponse;
+    private String jsonResponse;
 
     @Override
     //Create items needed for initial setup
@@ -33,10 +47,6 @@ public class MainActivity extends AppCompatActivity{
         setContentView(R.layout.activity_main);
     }
 
-    /**
-     * allows users to select play game and input their usernames in pop up dialog.
-     * @param v
-     */
     //Create onClick listener method
     public void onClick(View v) {
         switch (v.getId()) {
@@ -52,7 +62,7 @@ public class MainActivity extends AppCompatActivity{
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         username = input.getText().toString();
-                        launchLobbyActivity(username);
+                        launchHubActivity(username);
                     }
                 });
                 builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -68,11 +78,53 @@ public class MainActivity extends AppCompatActivity{
         }
     }
 
-    /**
-     *  Launch the HUB activity, carray username intent.
-     */
+    private void makeJsonArrayRequest() {
 
-    public void launchLobbyActivity(String username) {
+        JsonArrayRequest req = new JsonArrayRequest(allPlayersUrl,
+                new Response.Listener<JSONArray>() {
+                    @Override
+                    public void onResponse(JSONArray response) {
+                        Log.d(TAG, response.toString());
+
+                        try {
+                            jsonResponse = "";
+                            for(int i = 0; i < response.length(); i++) {
+                                JSONObject player = (JSONObject) response.get(i);
+                                String username = player.getString("username");
+                                String password = player.getString("password");
+                                String numGames = player.getString("numGames");
+                                String numWins = player.getString("numWins");
+
+                                jsonResponse += "Username: " + username + "\n\n";
+                                jsonResponse += "Password: " + password + "\n\n";
+                                jsonResponse += "Number of Games: " + numGames + "\n\n";
+                                jsonResponse += "Number of Wins: " + numWins + "\n\n";
+                            }
+                            txtResponse.setText(jsonResponse);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                            Toast.makeText(getApplicationContext(),
+                                    "Error: " + e.getMessage(),
+                                    Toast.LENGTH_LONG).show();
+                        }
+                    }
+
+                }, new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        VolleyLog.d(TAG, "Error: " + error.getMessage());
+                        Toast.makeText(getApplicationContext(), error.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+        });
+        AppController.getInstance().addToRequestQueue(req);
+    }
+
+
+    /**
+     * Launches the hub activity
+     * @param username Username of the current user
+     */
+    public void launchHubActivity(String username) {
         Intent i = new Intent(MainActivity.this, HubActivity.class);
         i.putExtra("Username", username);
         startActivity(i);
