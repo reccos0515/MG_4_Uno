@@ -1,6 +1,7 @@
 package zfrisv.cs309;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Random;
 
 import com.corundumstudio.socketio.AckCallback;
@@ -23,7 +24,15 @@ import org.json.*;
  */
 public class ServerSocketApplication {
 
-	private static ArrayList<String> users = new ArrayList<String>();
+	/**
+	 * Lobby id (matches namespace name) -> [user 1, user 2, ...]
+	 */
+	private static HashMap<String, <ArrayList<String>> > lobbyUsers = 
+			new HashMap<String, <ArrayList<String>> >();
+	private static HashMap<String, SocketIONamespace> namespaceMap;
+	
+	
+//	private static ArrayList<String> users = new ArrayList<String>();
 	private static String winner;
 	private static UnoGame currentGame;
 	public static void run() {
@@ -41,6 +50,24 @@ public class ServerSocketApplication {
         		System.out.println("New client connected");
         	}
         });
+        
+        /**
+         * User joins or creates lobby from client
+         * Client:
+         * 	1) client needs list of lobbies (w/ users)
+         * 	2) User selects lobby (reject if 4/4), addUserToLobby
+         * 	3) User creates, send createLobby (if CPU added, send addUserToLobby)
+         *  4) Game started (by host), send removeLobby
+         * 	
+         * Server:
+         * 	1) server needs event to return lobbies
+         * 	2) event to add user to lobby (namespace) or return full
+         * 	3) addNamespace & user to the namespace
+         *  4) remove lobby event
+         * 
+         * Future:
+         * 	delete lobby?
+         */
         
         /**
          * Fetches the UnoGame object for the client
@@ -71,6 +98,7 @@ public class ServerSocketApplication {
         			users.clear();
         			winner = null;
         		} else {
+//        			server.getRoomOperations(lobbyId)
 	        		server.getBroadcastOperations().sendEvent("get deck", currentGame.getDeck());
 	        		server.getBroadcastOperations().sendEvent("get players", currentGame.getUnoPlayers());
 	        		server.getBroadcastOperations().sendEvent("get disp", currentGame.getDisposalCards());
