@@ -27,9 +27,9 @@ public class ServerSocketApplication {
 	/**
 	 * Lobby id (matches namespace name) -> [user 1, user 2, ...]
 	 */
-	private static HashMap<String, <ArrayList<String>> > lobbyUsers = 
+/*	private static HashMap<String, <ArrayList<String>> > lobbyUsers = 
 			new HashMap<String, <ArrayList<String>> >();
-	private static HashMap<String, SocketIONamespace> namespaceMap;
+	private static HashMap<String, SocketIONamespace> namespaceMap;*/
 	
 	
 //	private static ArrayList<String> users = new ArrayList<String>();
