@@ -24,15 +24,18 @@ import java.util.ArrayList;
 
 import io.socket.emitter.Emitter;
 
+
 /**
  * Class for handling client updates in an Online Game
  */
 public class MultiplayerActivity extends AppCompatActivity {
 
+
     //Game to be used in the GameActivity class (and related components)
     private UnoGame currentGame;
     private UnoDeck serverDeck;
     private ArrayList<UnoPlayer> serverPlayers;
+    private ArrayList<String> chatUsers;
     private ArrayList<UnoCard> serverDisp;
     private int serverTurn;
     private int serverDirection;
@@ -62,7 +65,9 @@ public class MultiplayerActivity extends AppCompatActivity {
         gsocket.on("get direction", getDirection);
         gsocket.on("set game",setGame);
         gsocket.on("finish game", finishGame);
+        //gsocket.on("get message", ChatMessage);
         gsocket.connect();
+
 
         //Start Game
         //Fetch the (now populated) game state
@@ -70,10 +75,15 @@ public class MultiplayerActivity extends AppCompatActivity {
         gsocket.emit("fetch game",currentGame);
 
     }
+    private final Emitter.Listener ChatMessage= new Emitter.Listener() {
+        @Override
+        public void call(Object... args) {
+            JSONObject obj = (JSONObject) args[0];
 
-    /**
-     * Fetches the UnoDeck from the server
-     */
+
+        }
+    };
+
     private final Emitter.Listener getDeck = new Emitter.Listener() {
 
         @Override
@@ -131,6 +141,7 @@ public class MultiplayerActivity extends AppCompatActivity {
                     UnoHand hand = new UnoHand(tempCards);
                     PlayerType type = setPlayerType(players.getJSONObject(i).getString("playerType"));
                     String user = players.getJSONObject(i).getString("username");
+                    //chatUsers.add(user);
                     mPlayers.add(new UnoPlayer(type, num, hand, user));
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -345,6 +356,8 @@ public class MultiplayerActivity extends AppCompatActivity {
                     }
                 }
                 break;
+            /*case R.id.imageButton:
+                break;*/
             default:
                 break;
         }
