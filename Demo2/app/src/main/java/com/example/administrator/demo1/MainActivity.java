@@ -70,25 +70,28 @@ public class MainActivity extends AppCompatActivity{
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         username = input.getText().toString();
-                        Log.d("Test", "Before if");
                         if(players!=null) {
                             Log.d("Test", "Before for");
                             for (int i = 0; i < players.size(); i++) {
-                                Log.d("Test", players.get(i));
-                                Log.d("Test", username);
+                                //Log.d("Test", players.get(i));
+                                //Log.d("Test", username);
                                 if (username.equalsIgnoreCase(players.get(i))) {
                                     existing = true;
                                 }
                             }
                         }
-                        else
-                        {
-                            Log.d("Test", "is null");
+                        if(!existing) {
+                            //TODO: prompt "User doesn't exist, please enter a password: "
+                            //TODO: Have a password and confirm password field
+                            //TODO: Android volley request to add user to the database
                         }
-                        if(!existing) { launchLobbyActivity(username); }
                         else {
                             Toast.makeText(getApplicationContext(), "Username take, please enter another", Toast.LENGTH_LONG).show();
+                            //TODO: prompt "Username already exists, please enter password: "
+                            //TODO: Have a password field that checks the input against the password from the database and a cancel button that returns them to entering a username
+                            //TODO: If password doesn't match show toast message that says wrong password and has them enter another.
                         }
+                        launchLobbyActivity(username);
                     }
                 });
                 builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -126,16 +129,9 @@ public class MainActivity extends AppCompatActivity{
                                 //Log.d(TAG, numWins);
 
                                 players.add(i,name);
+                                //todo: make players a 2d array with password?
 
-
-
-                                /*
-                                jsonResponse += "Username: " + username + "\n\n";
-                                jsonResponse += "Password: " + password + "\n\n";
-                                jsonResponse += "Number of Games: " + numGames + "\n\n";
-                                jsonResponse += "Number of Wins: " + numWins + "\n\n";*/
                             }
-                            //txtResponse.setText(jsonResponse);
                         } catch (JSONException e) {
                             e.printStackTrace();
                             Toast.makeText(getApplicationContext(),

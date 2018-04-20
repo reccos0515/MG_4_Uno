@@ -14,4 +14,6 @@ public class LeaderboardActivity extends AppCompatActivity {
         //Creates the username for view
         username = getIntent().getStringExtra("Username");
     }
+
+    //TODO: Create method to retrieve all the leaderboard entries from database.
 }
