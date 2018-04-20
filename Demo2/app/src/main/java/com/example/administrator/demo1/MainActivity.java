@@ -35,14 +35,14 @@ public class MainActivity extends AppCompatActivity{
     private static final String TAG = "MainActivity";
     public String username;
 
-    private String allPlayersUrl = "http://localhost:8090/player/all";
+    private String allPlayersUrl = "http://192.168.0.105:8090/player/all";
     private String addPlayerUrl = "http://localhost:8090/player/add?";
     private String findPlayerUrl = "http://localhost:8090/player/find/";
 
     private TextView txtResponse;
     private String jsonResponse;
 
-    private String players[];
+    private ArrayList<String> players = new ArrayList<String>();
 
     private boolean existing = false;
 
@@ -55,6 +55,7 @@ public class MainActivity extends AppCompatActivity{
 
     //Create onClick listener method
     public void onClick(View v) {
+        getAllPlayers();
         switch (v.getId()) {
 
             //Start the game
@@ -68,14 +69,21 @@ public class MainActivity extends AppCompatActivity{
                 builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        getAllPlayers();
                         username = input.getText().toString();
+                        Log.d("Test", "Before if");
                         if(players!=null) {
-                            for (int i = 0; i < players.length; i++) {
-                                if (username == players[i]) {
+                            Log.d("Test", "Before for");
+                            for (int i = 0; i < players.size(); i++) {
+                                Log.d("Test", players.get(i));
+                                Log.d("Test", username);
+                                if (username.equalsIgnoreCase(players.get(i))) {
                                     existing = true;
                                 }
                             }
+                        }
+                        else
+                        {
+                            Log.d("Test", "is null");
                         }
                         if(!existing) { launchLobbyActivity(username); }
                         else {
@@ -112,8 +120,12 @@ public class MainActivity extends AppCompatActivity{
                                 String password = player.getString("password");
                                 String numGames = player.getString("numGames");
                                 String numWins = player.getString("numWins");
+                                Log.d(TAG, name);
+                                //Log.d(TAG, password);
+                                //Log.d(TAG, numGames);
+                                //Log.d(TAG, numWins);
 
-                                players[i] = name;
+                                players.add(i,name);
 
 
 

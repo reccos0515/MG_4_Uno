@@ -26,9 +26,9 @@ import com.android.volley.toolbox.Volley;
 public class UnoApplication extends Application {
 
 
-    public static final String TAG = AppController.class.getSimpleName();
+    public static final String TAG = UnoApplication.class.getSimpleName();
     private RequestQueue mRequestQueue;
-    private static AppController mInstance;
+    private static UnoApplication mInstance;
 
 
     public static String server = "http://173.23.120.117:8080/";
@@ -38,6 +38,7 @@ public class UnoApplication extends Application {
     public void onCreate(){
         super.onCreate();
         instance = this;
+        mInstance = this;
     }
     private static Socket gsocket;
     {
@@ -49,54 +50,35 @@ public class UnoApplication extends Application {
         }
     }
 
+    public RequestQueue getRequestQueue() {
+        if (mRequestQueue == null) {
+            mRequestQueue = Volley.newRequestQueue(getApplicationContext());
+        }
+
+        return mRequestQueue;
+    }
+
     public Socket getSocket(){
         return this.gsocket;
     }
 
-    class AppController extends UnoApplication {
+    public <T> void addToRequestQueue(Request<T> req, String tag) {
+        req.setTag(TextUtils.isEmpty(tag) ? TAG : tag);
+        getRequestQueue().add(req);
+    }
 
-        /*
-        public static final String TAG = AppController.class.getSimpleName();
-        private RequestQueue mRequestQueue;
-        private static AppController mInstance;*/
+    public <T> void addToRequestQueue(Request<T> req) {
+        req.setTag(TAG);
+        getRequestQueue().add(req);
+    }
 
-        @Override
-        public void onCreate() {
-            super.onCreate();
-            mInstance = this;
-        }
-
-        /*
-        public static synchronized AppController getInstance() {
-            return mInstance;
-        }*/
-
-        public RequestQueue getRequestQueue() {
-            if (mRequestQueue == null) {
-                mRequestQueue = Volley.newRequestQueue(getApplicationContext());
-            }
-
-            return mRequestQueue;
-        }
-
-        public <T> void addToRequestQueue(Request<T> req, String tag) {
-            req.setTag(TextUtils.isEmpty(tag) ? TAG : tag);
-            getRequestQueue().add(req);
-        }
-
-        public <T> void addToRequestQueue(Request<T> req) {
-            req.setTag(TAG);
-            getRequestQueue().add(req);
-        }
-
-        public void cancelPendingRequests(Object tag) {
-            if (mRequestQueue != null) {
-                mRequestQueue.cancelAll(tag);
-            }
+    public void cancelPendingRequests(Object tag) {
+        if (mRequestQueue != null) {
+            mRequestQueue.cancelAll(tag);
         }
     }
 
-    public static synchronized AppController getInstance() {
+    public static synchronized UnoApplication getInstance() {
         return mInstance;
     }
 
