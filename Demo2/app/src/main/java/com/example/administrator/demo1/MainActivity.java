@@ -68,10 +68,14 @@ public class MainActivity extends AppCompatActivity{
                 builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
+                        getAllPlayers();
                         username = input.getText().toString();
-                        for(int i = 0; i <players.length; i++)
-                        {
-                            if(username==players[i]) { existing = true; }
+                        if(players!=null) {
+                            for (int i = 0; i < players.length; i++) {
+                                if (username == players[i]) {
+                                    existing = true;
+                                }
+                            }
                         }
                         if(!existing) { launchLobbyActivity(username); }
                         else {
@@ -135,7 +139,7 @@ public class MainActivity extends AppCompatActivity{
                         Toast.makeText(getApplicationContext(), error.getMessage(), Toast.LENGTH_SHORT).show();
                     }
         });
-        AppController.getInstance().addToRequestQueue(req);
+        UnoApplication.getInstance().addToRequestQueue(req);
     }
 
 
