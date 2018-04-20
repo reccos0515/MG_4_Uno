@@ -25,8 +25,7 @@ public class LobbyActivity extends AppCompatActivity {
     private String username;
     private ArrayList<String> users = new ArrayList<>();
     UnoApplication app;
-    public String TAG = "LobbyActivity";
-    private boolean isConnected;
+    public String TAG = "LobbyActivity";private boolean isConnected;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,14 +51,14 @@ public class LobbyActivity extends AppCompatActivity {
         switch (v.getId()) {
             case R.id.multiplayer:
 
-                if(users.size()>1) {
+                if(users.size()>=1) {//comment out for testing chat users.size()>1
 
                     gsocket.emit("multiplayer");
-                }else if(users.size()<2){
+                }/*else if(users.size()2){
                     Toast.makeText(getApplicationContext(),"Waiting for another user...",Toast.LENGTH_LONG).show();
                 }else{
                     Toast.makeText(getApplicationContext(),"Room is full, Try again later...",Toast.LENGTH_LONG).show();
-                }
+                }*///TODO change it back
                 break;
             case R.id.finish:
                finish();
@@ -68,7 +67,6 @@ public class LobbyActivity extends AppCompatActivity {
                 break;
         }
     }
-
     /**
      * Updates the UI of users in the lobby
      * @param arr ArrayList of usernames

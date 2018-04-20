@@ -8,6 +8,7 @@
     android:layout_height="match_parent"
     android:layout_marginLeft="16dp"
     android:layout_marginRight="16dp"
+    android:background="@color/colorAccent"
     app:layoutManager="LinearLayoutManager"
-    tools:context="com.example.administrator.demo1.ChatItemFragment"
+    tools:context="com.example.administrator.demo1.MultiplayerChat.ChatItemFragment"
     tools:listitem="@layout/fragment_chatitem" />

@@ -1,4 +1,4 @@
-package com.example.administrator.demo1;
+package com.example.administrator.demo1.MultiplayerChat;
 
 /**
  * This is the message format will be implemented in the chat activity.

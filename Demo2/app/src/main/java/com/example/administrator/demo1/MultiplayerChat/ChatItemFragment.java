@@ -1,18 +1,19 @@
-package com.example.administrator.demo1;
+package com.example.administrator.demo1.MultiplayerChat;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.app.Fragment;
-import android.support.v7.widget.GridLayoutManager;
+
+import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 
-import com.example.administrator.demo1.dummy.DummyContent;
-import com.example.administrator.demo1.dummy.DummyContent.DummyItem;
+import com.example.administrator.demo1.R;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -23,11 +24,18 @@ import java.util.List;
  */
 public class ChatItemFragment extends Fragment {
 
-    // TODO: Customize parameter argument names
+
     private static final String ARG_COLUMN_COUNT = "column-count";
-    // TODO: Customize parameters
+
     private int mColumnCount = 1;
+    private io.socket.client.Socket csocket;
+    private String username;
+    private List<Message> mValue;
     private OnListFragmentInteractionListener mListener;
+    private RecyclerView recycleV;
+    private MyChatItemRecyclerViewAdapter viewAdapter;
+    private Button chatButton;
+
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -36,22 +44,27 @@ public class ChatItemFragment extends Fragment {
     public ChatItemFragment() {
     }
 
-    // TODO: Customize parameter initialization
-    @SuppressWarnings("unused")
-    public static ChatItemFragment newInstance(int columnCount) {
+
+    /*public static ChatItemFragment newInstance() {
         ChatItemFragment fragment = new ChatItemFragment();
         Bundle args = new Bundle();
         args.putInt(ARG_COLUMN_COUNT, columnCount);
         fragment.setArguments(args);
         return fragment;
-    }
+    }*/
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        initDataset();// For testing purpose
 
-        if (getArguments() != null) {
-            mColumnCount = getArguments().getInt(ARG_COLUMN_COUNT);
+    }
+    private void initDataset() {
+        for (int i = 0; i < 10; i++) {
+            Message.Builder mb = new Message.Builder();
+            mb.message("user "+i);
+            mb.message("test message # "+i);
+            mValue.add(i,mb.build());
         }
     }
 
@@ -60,17 +73,25 @@ public class ChatItemFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_chatitem_list, container, false);
 
-        // Set the adapter
+        /*// Set the adapter
         if (view instanceof RecyclerView) {
             Context context = view.getContext();
             RecyclerView recyclerView = (RecyclerView) view;
-            if (mColumnCount <= 1) {
-                recyclerView.setLayoutManager(new LinearLayoutManager(context));
-            } else {
-                recyclerView.setLayoutManager(new GridLayoutManager(context, mColumnCount));
-            }
-            recyclerView.setAdapter(new MyChatItemRecyclerViewAdapter(DummyContent.ITEMS, mListener));
-        }
+            recyclerView.setLayoutManager(new LinearLayoutManager(context));
+
+            recyclerView.setAdapter(new MyChatItemRecyclerViewAdapter(mValue, mListener));
+        }*/
+
+
+        Context context = view.getContext();
+        // BEGIN_INCLUDE(initializeRecyclerView)
+        recycleV = view.findViewById(R.id.list);
+        viewAdapter = new MyChatItemRecyclerViewAdapter(mValue,mListener);
+        // Set CustomAdapter as the adapter for RecyclerView.
+        recycleV.setAdapter(viewAdapter);
+        // END_INCLUDE(initializeRecyclerView)
+        chatButton = (Button) view.findViewById(R.id.imageButton);
+        recycleV.setLayoutManager(new LinearLayoutManager(context));
         return view;
     }
 
@@ -86,6 +107,9 @@ public class ChatItemFragment extends Fragment {
         }
     }
 
+    public void updateChatView(int position){
+
+    }
     @Override
     public void onDetach() {
         super.onDetach();
@@ -104,6 +128,6 @@ public class ChatItemFragment extends Fragment {
      */
     public interface OnListFragmentInteractionListener {
         // TODO: Update argument type and name
-        void onListFragmentInteraction(DummyItem item);
+        //void onListFragmentInteraction(DummyItem item);
     }
 }

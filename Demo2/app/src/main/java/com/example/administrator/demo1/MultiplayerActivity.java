@@ -4,17 +4,23 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.administrator.demo1.MultiplayerChat.ChatItemFragment;
+import com.example.administrator.demo1.MultiplayerChat.Message;
 import com.google.gson.Gson;
 
 import org.json.JSONArray;
@@ -28,14 +34,14 @@ import io.socket.emitter.Emitter;
 /**
  * Class for handling client updates in an Online Game
  */
-public class MultiplayerActivity extends AppCompatActivity {
+public class MultiplayerActivity extends AppCompatActivity implements ChatItemFragment.OnListFragmentInteractionListener {
 
 
     //Game to be used in the GameActivity class (and related components)
     private UnoGame currentGame;
     private UnoDeck serverDeck;
     private ArrayList<UnoPlayer> serverPlayers;
-    private ArrayList<String> chatUsers;
+    private ArrayList<Message> MessageList;
     private ArrayList<UnoCard> serverDisp;
     private int serverTurn;
     private int serverDirection;
@@ -53,7 +59,7 @@ public class MultiplayerActivity extends AppCompatActivity {
         setContentView(R.layout.activity_multiplayer);
         //Fetches the username for the client
         username = getIntent().getStringExtra("Username");
-        host = getIntent().getBooleanExtra("Host",false);
+        host = getIntent().getBooleanExtra("Host", false);
 
         //Setup Emitters [Server -----> Client]
         app = (UnoApplication) getApplicationContext();
@@ -63,7 +69,7 @@ public class MultiplayerActivity extends AppCompatActivity {
         gsocket.on("get disp", getDisp);
         gsocket.on("get turn", getTurn);
         gsocket.on("get direction", getDirection);
-        gsocket.on("set game",setGame);
+        gsocket.on("set game", setGame);
         gsocket.on("finish game", finishGame);
         //gsocket.on("get message", ChatMessage);
         gsocket.connect();
@@ -71,8 +77,44 @@ public class MultiplayerActivity extends AppCompatActivity {
 
         //Start Game
         //Fetch the (now populated) game state
-        gsocket.emit("fetch game",currentGame);
+        gsocket.emit("fetch game", currentGame);
+/*
+        Message.Builder tester = new Message.Builder();
+        tester.username("Karen");
+        tester.message("testing message");
+        Message mtest = tester.build();
+        MessageList.add(mtest);*/
+        ChatItemFragment cfrag = new ChatItemFragment();
+        FragmentManager chatfg = getSupportFragmentManager();
+        ChatShowHideListener(R.id.imageButton,chatfg.findFragmentById(R.id.list));
+
     }
+
+    /**
+     * click chat button, show or hide the chat fragment view
+     * @param buttonID
+     * @param fg
+     */
+        public void ChatShowHideListener(int buttonID, final Fragment fg){
+            final Button chatButton = (Button) findViewById(buttonID);
+            chatButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    FragmentTransaction fgTransaction = getSupportFragmentManager().beginTransaction();
+                    fgTransaction.setCustomAnimations(android.R.animator.fade_in,android.R.animator.fade_out);
+                    if(fg.isHidden()){
+                        fgTransaction.show(fg);
+                    }else{
+                        fgTransaction.hide(fg);
+                    }
+                    fgTransaction.commit();
+                }
+            });
+    }
+    public void onChatClicked(int buttonID){
+
+    }
+
     /*
     private final Emitter.Listener ChatMessage= new Emitter.Listener() {
         @Override
@@ -355,13 +397,20 @@ public class MultiplayerActivity extends AppCompatActivity {
                     }
                 }
                 break;
-            /*case R.id.imageButton:
-                break;*/
+            case R.id.imageButton:
+                break;
             default:
                 break;
         }
     }
 
+    public void onChatSelected(int position){
+        ChatItemFragment chatFrag = (ChatItemFragment)
+                getSupportFragmentManager().findFragmentById(R.id.chatItemFragment);
+        if(chatFrag!=null){
+            chatFrag.updateChatView(position);
+        }
+}
     /**
      * Updates the horizontal slider with the card (Human Players only)
      */
