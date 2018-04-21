@@ -12,9 +12,11 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.Request;
 import com.android.volley.VolleyError;
 import com.android.volley.VolleyLog;
 import com.android.volley.toolbox.JsonArrayRequest;
+import com.android.volley.toolbox.StringRequest;
 import com.example.administrator.demo1.*;
 import com.android.volley.Response;
 
@@ -35,14 +37,15 @@ public class MainActivity extends AppCompatActivity{
     private static final String TAG = "MainActivity";
     public String username;
 
-    private String allPlayersUrl = "http://192.168.0.105:8090/player/all";
-    private String addPlayerUrl = "http://localhost:8090/player/add?";
+    private String allPlayersUrl = "http://10.26.2.165:8090/player/all";
+    private String addPlayerUrl = "http://10.26.2.165:8090/player/add?name=";
     private String findPlayerUrl = "http://localhost:8090/player/find/";
 
     private TextView txtResponse;
     private String jsonResponse;
 
-    private ArrayList<String> players = new ArrayList<String>();
+    private String[][] playerTable = new String[99][5];
+    private String[] profile = new String[5];
 
     private boolean existing = false;
 
@@ -70,28 +73,51 @@ public class MainActivity extends AppCompatActivity{
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         username = input.getText().toString();
-                        if(players!=null) {
+                        if(playerTable!=null) {
                             Log.d("Test", "Before for");
-                            for (int i = 0; i < players.size(); i++) {
-                                //Log.d("Test", players.get(i));
-                                //Log.d("Test", username);
-                                if (username.equalsIgnoreCase(players.get(i))) {
+                            for (int i = 0; playerTable[i][0]!=null; i++) {
+                                Log.d("Test", playerTable[i][0]);
+                                Log.d("Test", username);
+                                if (username.equalsIgnoreCase(playerTable[i][0].toString())) {
                                     existing = true;
+                                    profile[0] = playerTable[i][0];
+                                    profile[1] = playerTable[i][1];
+                                    profile[2] = playerTable[i][2];
+                                    profile[3] = playerTable[i][3];
+                                    profile[4] = playerTable[i][4];
                                 }
                             }
                         }
                         if(!existing) {
+                            profile[0] = username;
                             //TODO: prompt "User doesn't exist, please enter a password: "
                             //TODO: Have a password and confirm password field
+                            //final EditText input2 = new EditText(this);
+                            //profile[2] = input2.getText().toString();
+                            profile[1] = "passwordTest";
+                            profile[2] = "0";
+                            profile[3] = "0";
+                            profile[4] = "0";
+                            addPlayerUrl += profile[0];
+                            addPlayerUrl += "&password=";
+                            addPlayerUrl += profile[1];
+                            addPlayerUrl += "&numGames=0&numWins=0&totalScore=0";
+                            putPlayer();
+                            Toast.makeText(getApplicationContext(), username + " added to database!", Toast.LENGTH_LONG).show();
                             //TODO: Android volley request to add user to the database
+                            launchLobbyActivity(username);
                         }
                         else {
                             Toast.makeText(getApplicationContext(), "Username take, please enter another", Toast.LENGTH_LONG).show();
                             //TODO: prompt "Username already exists, please enter password: "
                             //TODO: Have a password field that checks the input against the password from the database and a cancel button that returns them to entering a username
+                            /*final EditText input3 = new EditText(this);
+                            if(profile[1].equals(input3.getText().toString())) { launchLobbyActivity(username); }
+                            else { Toast.makeText(getApplicationContext(), "Password incorrect, please try again.", Toast.LENGTH_LONG).show();*/
+                            launchLobbyActivity(username);
                             //TODO: If password doesn't match show toast message that says wrong password and has them enter another.
                         }
-                        launchLobbyActivity(username);
+                        //launchLobbyActivity(username);
                     }
                 });
                 builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -123,14 +149,16 @@ public class MainActivity extends AppCompatActivity{
                                 String password = player.getString("password");
                                 String numGames = player.getString("numGames");
                                 String numWins = player.getString("numWins");
+                                String totalScore = player.getString("totalScore");
                                 Log.d(TAG, name);
                                 //Log.d(TAG, password);
                                 //Log.d(TAG, numGames);
                                 //Log.d(TAG, numWins);
-
-                                players.add(i,name);
-                                //todo: make players a 2d array with password?
-
+                                playerTable[i][0] = name;
+                                playerTable[i][1] = password;
+                                playerTable[i][2] = numGames;
+                                playerTable[i][3] = numWins;
+                                playerTable[i][4] = totalScore;
                             }
                         } catch (JSONException e) {
                             e.printStackTrace();
@@ -148,6 +176,23 @@ public class MainActivity extends AppCompatActivity{
                     }
         });
         UnoApplication.getInstance().addToRequestQueue(req);
+    }
+
+    private void putPlayer() {
+
+        StringRequest strReq = new StringRequest(Request.Method.GET, addPlayerUrl, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                Log.d("TEST", response.toString());
+            }
+        },new Response.ErrorListener() {
+
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                VolleyLog.d(TAG, "Error: "+error.getMessage());
+            }
+        });
+        UnoApplication.getInstance().addToRequestQueue(strReq, "string_req");
     }
 
 

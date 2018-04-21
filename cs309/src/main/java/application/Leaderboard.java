@@ -12,7 +12,7 @@ public class Leaderboard {
 	@GeneratedValue(strategy=GenerationType.AUTO)
 	private Integer id; //rank = id
 	
-	private String player;
+	private String username;
 	
 	private Integer avgScore;
 
@@ -24,12 +24,12 @@ public class Leaderboard {
 		this.id = id;
 	}
 
-	public String getPlayer() {
-		return player;
+	public String getUsername() {
+		return username;
 	}
 
-	public void setPlayer(String player) {
-		this.player = player;
+	public void setUsername(String username) {
+		this.username = username;
 	}
 
 	public Integer getAvgScore() {
