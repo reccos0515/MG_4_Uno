@@ -7,7 +7,6 @@ package com.example.administrator.demo1.MultiplayerChat;
 public class Message {
     public static final int TYPE_MESSAGE = 0;
     public static final int TYPE_LOG = 1;
-    public static final int TYPE_ACTION = 2;
 
     private String mMessage;
     private String mUsername;

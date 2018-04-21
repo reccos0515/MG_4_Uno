@@ -51,14 +51,14 @@ public class LobbyActivity extends AppCompatActivity {
         switch (v.getId()) {
             case R.id.multiplayer:
 
-                if(users.size()>=1) {//comment out for testing chat users.size()>1
+                if(users.size()>1) {//comment out for testing chat users.size()>1
 
                     gsocket.emit("multiplayer");
-                }/*else if(users.size()2){
+                }else if(users.size()<2){
                     Toast.makeText(getApplicationContext(),"Waiting for another user...",Toast.LENGTH_LONG).show();
                 }else{
                     Toast.makeText(getApplicationContext(),"Room is full, Try again later...",Toast.LENGTH_LONG).show();
-                }*///TODO change it back
+                }
                 break;
             case R.id.finish:
                finish();
@@ -96,7 +96,7 @@ public class LobbyActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
         gsocket.emit("user left",username);
-        gsocket.disconnect();
+        //gsocket.disconnect();
         gsocket.off(gsocket.EVENT_CONNECT, onConnect);
         gsocket.off(gsocket.EVENT_DISCONNECT, onDisconnect);
     }

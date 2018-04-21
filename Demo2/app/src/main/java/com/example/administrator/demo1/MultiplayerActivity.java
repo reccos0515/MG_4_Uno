@@ -4,44 +4,45 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
+import android.support.design.widget.TextInputEditText;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.KeyEvent;
 import android.view.View;
-import android.widget.Button;
+import android.view.inputmethod.EditorInfo;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.administrator.demo1.MultiplayerChat.ChatItemFragment;
 import com.example.administrator.demo1.MultiplayerChat.Message;
+import com.example.administrator.demo1.MultiplayerChat.MyChatItemRecyclerViewAdapter;
 import com.google.gson.Gson;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import java.util.ArrayList;
-
+import java.util.List;
 import io.socket.emitter.Emitter;
 
 
 /**
  * Class for handling client updates in an Online Game
  */
-public class MultiplayerActivity extends AppCompatActivity implements ChatItemFragment.OnListFragmentInteractionListener {
+public class MultiplayerActivity extends AppCompatActivity  {
 
 
     //Game to be used in the GameActivity class (and related components)
     private UnoGame currentGame;
     private UnoDeck serverDeck;
     private ArrayList<UnoPlayer> serverPlayers;
-    private ArrayList<Message> MessageList;
+    private List<Message> MessageList;
     private ArrayList<UnoCard> serverDisp;
     private int serverTurn;
     private int serverDirection;
@@ -52,6 +53,14 @@ public class MultiplayerActivity extends AppCompatActivity implements ChatItemFr
     //Socket.io integration
     UnoApplication app;
     private io.socket.client.Socket gsocket;
+
+    LinearLayout horz;
+    private TextView name;
+    private TextView mess;
+    private EditText inputMessage;
+    private RecyclerView rv;
+    private RecyclerView.Adapter rvAdapter;
+    private RecyclerView.LayoutManager layoutManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,56 +83,37 @@ public class MultiplayerActivity extends AppCompatActivity implements ChatItemFr
         //gsocket.on("get message", ChatMessage);
         gsocket.connect();
 
-
         //Start Game
         //Fetch the (now populated) game state
         gsocket.emit("fetch game", currentGame);
-/*
-        Message.Builder tester = new Message.Builder();
-        tester.username("Karen");
-        tester.message("testing message");
-        Message mtest = tester.build();
-        MessageList.add(mtest);*/
-        ChatItemFragment cfrag = new ChatItemFragment();
-        FragmentManager chatfg = getSupportFragmentManager();
-        ChatShowHideListener(R.id.imageButton,chatfg.findFragmentById(R.id.list));
 
-    }
-
-    /**
-     * click chat button, show or hide the chat fragment view
-     * @param buttonID
-     * @param fg
-     */
-        public void ChatShowHideListener(int buttonID, final Fragment fg){
-            final Button chatButton = (Button) findViewById(buttonID);
-            chatButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    FragmentTransaction fgTransaction = getSupportFragmentManager().beginTransaction();
-                    fgTransaction.setCustomAnimations(android.R.animator.fade_in,android.R.animator.fade_out);
-                    if(fg.isHidden()){
-                        fgTransaction.show(fg);
-                    }else{
-                        fgTransaction.hide(fg);
-                    }
-                    fgTransaction.commit();
+        rv = new RecyclerView(this);
+        rv = findViewById(R.id.list);
+        horz = new LinearLayout(this);
+        horz = findViewById(R.id.chatItem);
+        name = new TextView(this);
+        name = findViewById(R.id.id);
+        mess = new TextView(this);
+        mess = findViewById(R.id.content);
+        inputMessage = new EditText(this);
+        inputMessage = findViewById(R.id.text_input);
+        inputMessage.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                if(actionId == R.id.Send|| actionId==EditorInfo.IME_NULL){
+                    setContentView(inputMessage);
+                    onInputMessage();
+                    return true;
                 }
-            });
-    }
-    public void onChatClicked(int buttonID){
+                return false;
+            }
+        });
 
     }
+//TODO
+    private void onInputMessage() {
 
-    /*
-    private final Emitter.Listener ChatMessage= new Emitter.Listener() {
-        @Override
-        public void call(Object... args) {
-            JSONObject obj = (JSONObject) args[0];
-
-
-        }
-    };*/
+    }
 
     private final Emitter.Listener getDeck = new Emitter.Listener() {
 
@@ -182,7 +172,6 @@ public class MultiplayerActivity extends AppCompatActivity implements ChatItemFr
                     UnoHand hand = new UnoHand(tempCards);
                     PlayerType type = setPlayerType(players.getJSONObject(i).getString("playerType"));
                     String user = players.getJSONObject(i).getString("username");
-                    //chatUsers.add(user);
                     mPlayers.add(new UnoPlayer(type, num, hand, user));
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -398,19 +387,34 @@ public class MultiplayerActivity extends AppCompatActivity implements ChatItemFr
                 }
                 break;
             case R.id.imageButton:
+                //rv = findViewById(R.id.list);
+                if(rv.getVisibility()==View.GONE){
+                rv.setVisibility(View.VISIBLE);
+                }else{
+                    rv.setVisibility(View.GONE);
+                }
+                break;
+            case R.id.text_input:
+                Message.Builder mb = new Message.Builder();
+                mb.username(username);
+                mb.message(inputMessage.getText().toString());
+                MessageList.add(mb.build());
+
+                name.setText(username);
+                mess.setText(inputMessage.getText().toString().trim());
+                horz.addView(name);
+                horz.addView(mess);
+                rv.addView(horz);
+                break;
+            case R.id.Send:
+                //TODO
                 break;
             default:
                 break;
         }
     }
 
-    public void onChatSelected(int position){
-        ChatItemFragment chatFrag = (ChatItemFragment)
-                getSupportFragmentManager().findFragmentById(R.id.chatItemFragment);
-        if(chatFrag!=null){
-            chatFrag.updateChatView(position);
-        }
-}
+
     /**
      * Updates the horizontal slider with the card (Human Players only)
      */

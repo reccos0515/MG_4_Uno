@@ -1,2 +1,1 @@
-include ':app', ':Application'
-include ':fragmentBasics'
+include ':app'

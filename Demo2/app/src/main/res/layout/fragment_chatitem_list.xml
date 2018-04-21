@@ -11,4 +11,6 @@
     android:background="@color/colorAccent"
     app:layoutManager="LinearLayoutManager"
     tools:context="com.example.administrator.demo1.MultiplayerChat.ChatItemFragment"
-    tools:listitem="@layout/fragment_chatitem" />
+    tools:listitem="@layout/fragment_chatitem">
+
+</android.support.v7.widget.RecyclerView>
