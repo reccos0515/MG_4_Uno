@@ -27,8 +27,7 @@ public class LobbyActivity extends AppCompatActivity {
     private ArrayList<String> users = new ArrayList<>();
     private ArrayList<Integer> usersReady = new ArrayList<>();
     UnoApplication app;
-    public String TAG = "LobbyActivity";
-    private boolean isConnected;
+    public String TAG = "LobbyActivity";private boolean isConnected;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,6 +53,7 @@ public class LobbyActivity extends AppCompatActivity {
     //Create onClick listener method
     public void onClick(View v) {
         switch (v.getId()) {
+
             case R.id.toggleGame:
                 //For the host
                 if(users.get(0).equals(username)) {
@@ -67,6 +67,7 @@ public class LobbyActivity extends AppCompatActivity {
                     }
                 } else {
                     gsocket.emit("set ready", username);
+
                 }
                 break;
             case R.id.exitMatch:
@@ -76,7 +77,6 @@ public class LobbyActivity extends AppCompatActivity {
                 break;
         }
     }
-
     /**
      * Decides whether or not all the players are ready to begin the online match
      * @return True if they are all ready, false if not
@@ -140,10 +140,9 @@ public class LobbyActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
         gsocket.emit("user left",username);
-        gsocket.disconnect();
+        //gsocket.disconnect();
         gsocket.off(gsocket.EVENT_CONNECT, onConnect);
         gsocket.off(gsocket.EVENT_DISCONNECT, onDisconnect);
-        EventBus.getDefault().unregister(this);
     }
 
     /**
@@ -230,6 +229,7 @@ public class LobbyActivity extends AppCompatActivity {
                 intent.putExtra("Host",false);
             }
             startActivity(intent);
+
         }
     };
 }

@@ -18,7 +18,7 @@ import org.json.*;
 
 /**
  * Begins the UnoGame multiplayer server-handler.
- * @author Karen Si
+ * @author zfrisv
  *
  */
 public class ServerSocketApplication {
@@ -193,11 +193,11 @@ public class ServerSocketApplication {
 			System.out.println("Test6");
     	}});
         
-        /*server.addEventListener(sendMessage, String.class, new DataListener<String>(){
-        	public void onData(SocketIOClient arg0, String username, AckRequest arg2) throws Exception {
-        		
+        server.addEventListener("new message", String.class, new DataListener<String>(){
+        	public void onData(SocketIOClient arg0, String message, AckRequest arg2) throws Exception {
+        		server.getBroadcastOperations().sendEvent("update message", message);
         	}
-        });Unfinished event listener*/
+        });
         
         server.start();
         System.out.println("Server started...");
@@ -261,8 +261,8 @@ public class ServerSocketApplication {
 		//Create and Shuffle Deck
 	    UnoDeck deck = new UnoDeck();
 	    deck.shuffleCards();
-	    //Deal cards to hands
-	    ArrayList<UnoHand> hands = deck.dealHands(users.size());
+	    //Deal cards to hands **UPDATE EVENTUALLY
+	    ArrayList<UnoHand> hands = deck.dealHands(users.size()+1);
 	    //Create an ArrayList of the players
 	    ArrayList<UnoPlayer> players = new ArrayList<UnoPlayer>();
 	    //Deal the hands to the players
@@ -273,9 +273,10 @@ public class ServerSocketApplication {
 	        i++;
 	    }
 	    //Deal the other hands to the AI ***UPDATE WHEN USING MULTI-PLAYER***
-	    ///for(int i = 0; i < 3; i++) {
-	        ///players.add(new UnoPlayer(PlayerType.CPU,i+1,hands.get(i+1),"CPU"));
-	    ///}
+	    int numUsers = users.size();
+	    for(int i1 = 0; i1 < 1; i1++) {
+	        players.add(new UnoPlayer(PlayerType.CPU,numUsers+i1,hands.get(numUsers+i1),"CPU"));
+	    }
 	    //Initialize the disposal card stack
 	    ArrayList<UnoCard> disposal_Stack = new ArrayList<UnoCard>();
 	    //Create the UnoGame Object

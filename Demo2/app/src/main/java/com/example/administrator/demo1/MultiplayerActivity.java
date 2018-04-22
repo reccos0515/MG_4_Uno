@@ -9,34 +9,36 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.KeyEvent;
 import android.view.View;
+import android.widget.ArrayAdapter;
+import android.widget.EditText;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.gson.Gson;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import java.util.ArrayList;
-
+import java.util.List;
 import io.socket.emitter.Emitter;
 
 
 /**
  * Class for handling client updates in an Online Game
  */
-public class MultiplayerActivity extends AppCompatActivity {
+public class MultiplayerActivity extends AppCompatActivity  {
 
 
     //Game to be used in the GameActivity class (and related components)
     private UnoGame currentGame;
     private UnoDeck serverDeck;
     private ArrayList<UnoPlayer> serverPlayers;
-    private ArrayList<String> chatUsers;
     private ArrayList<Integer> userCalls;
     private ArrayList<UnoCard> serverDisp;
     private int serverTurn;
@@ -49,13 +51,18 @@ public class MultiplayerActivity extends AppCompatActivity {
     UnoApplication app;
     private io.socket.client.Socket gsocket;
 
+    private List<String> MessageList;
+    private EditText inputMessage;
+    private ListView listView;
+    private String strMessage;
+    private ArrayAdapter adapter;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_multiplayer);
         //Fetches the username for the client
         username = getIntent().getStringExtra("Username");
-        host = getIntent().getBooleanExtra("Host",false);
+        host = getIntent().getBooleanExtra("Host", false);
 
         //Setup Emitters [Server -----> Client]
         app = (UnoApplication) getApplicationContext();
@@ -68,14 +75,23 @@ public class MultiplayerActivity extends AppCompatActivity {
         gsocket.on("update calls", updateCalls);
         gsocket.on("set game",setGame);
         gsocket.on("finish game", finishGame);
-        //gsocket.on("get message", ChatMessage);
+        gsocket.on("update message", ChatMessage);
         gsocket.connect();
-
 
         //Start Game
         //Fetch the (now populated) game state
-        gsocket.emit("fetch game",currentGame);
+        gsocket.emit("fetch game", currentGame);
+
+        MessageList = new ArrayList<>();
+        MessageList.add("Chat content");
+        adapter = new ArrayAdapter<String>(this,
+                R.layout.fragment_chatitem, MessageList);
+        listView = (ListView) findViewById(R.id.listview);
+        listView.setAdapter(adapter);
+        inputMessage = new EditText(this);
+        inputMessage = findViewById(R.id.text_input);
     }
+
 
     private final Emitter.Listener updateCalls= new Emitter.Listener() {
         @Override
@@ -96,14 +112,18 @@ public class MultiplayerActivity extends AppCompatActivity {
     };
 
 
-    private final Emitter.Listener ChatMessage= new Emitter.Listener() {
+    private final Emitter.Listener ChatMessage = new Emitter.Listener() {
         @Override
         public void call(Object... args) {
-            JSONObject obj = (JSONObject) args[0];
-
-
+            String newMess = args[0].toString();
+            MessageList.add(newMess);
         }
     };
+
+    private String onInputMessage() {
+        String outputMessage = "  "+ username + ":  "+ inputMessage.getText().toString();
+        return outputMessage;
+    }
 
     private final Emitter.Listener getDeck = new Emitter.Listener() {
 
@@ -162,7 +182,6 @@ public class MultiplayerActivity extends AppCompatActivity {
                     UnoHand hand = new UnoHand(tempCards);
                     PlayerType type = setPlayerType(players.getJSONObject(i).getString("playerType"));
                     String user = players.getJSONObject(i).getString("username");
-                    //chatUsers.add(user);
                     mPlayers.add(new UnoPlayer(type, num, hand, user));
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -376,17 +395,29 @@ public class MultiplayerActivity extends AppCompatActivity {
                     }
                 }
                 break;
+            case R.id.imageButton:
+                if(listView.getVisibility()==View.GONE){
+                listView.setVisibility(View.VISIBLE);
+                }else{
+                    listView.setVisibility(View.GONE);
+                }
+                break;
+            case R.id.Send:
+                strMessage = onInputMessage();
+                inputMessage.getText().clear();
+                gsocket.emit("new message", strMessage);
+
+                break;
             case R.id.callUno:
                 gsocket.emit("declare uno", username);
                 Button btnUno = (Button) findViewById(R.id.callUno);
                 btnUno.setVisibility(View.INVISIBLE);
                 break;
-            /*case R.id.imageButton:
-                break;*/
             default:
                 break;
         }
     }
+
 
     /**
      * Updates the horizontal slider with the card (Human Players only)
