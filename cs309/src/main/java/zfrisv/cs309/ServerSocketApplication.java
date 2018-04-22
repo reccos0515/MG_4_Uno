@@ -200,11 +200,11 @@ public class ServerSocketApplication {
 			System.out.println("Test6");
     	}});
         
-        /*server.addEventListener(sendMessage, String.class, new DataListener<String>(){
-        	public void onData(SocketIOClient arg0, String username, AckRequest arg2) throws Exception {
-        		
+        server.addEventListener("new message", String.class, new DataListener<String>(){
+        	public void onData(SocketIOClient arg0, String message, AckRequest arg2) throws Exception {
+        		server.getBroadcastOperations().sendEvent("update message", message);
         	}
-        });Unfinished event listener*/
+        });
         
         server.start();
         System.out.println("Server started...");
@@ -404,6 +404,7 @@ public class ServerSocketApplication {
                 if(currentPlayer.getPlayerType() == PlayerType.CPU) {
                     chooseColor(card);
                 }
+                currentGame.nextTurn();
                 break;
             case WILD:
                 if(currentPlayer.getPlayerType() == PlayerType.CPU) {
@@ -425,6 +426,7 @@ public class ServerSocketApplication {
                     UnoCard takenCard = currentGame.getCardFromDeck();
                     currentGame.getUnoPlayers().get(nextPlayer).getUnoHand().addCard(takenCard);
                 }
+                currentGame.nextTurn();
                 //Remove any possible "UNO!" calls that were made from this player
             	usersCallUno.set(nextPlayer, 0);
                 break;

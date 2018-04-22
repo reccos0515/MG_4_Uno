@@ -26,7 +26,7 @@
             android:id="@+id/player_container"
             android:layout_width="fill_parent"
             android:layout_height="0dp"
-            android:layout_weight="0.55">
+            android:layout_weight="0.45">
 
             <LinearLayout
                 android:id="@+id/playerScroll"
@@ -37,16 +37,22 @@
 
         </ScrollView>
 
-        <TextView
-            android:id="@+id/cpuSelector"
+        <ScrollView
             android:layout_width="fill_parent"
             android:layout_height="0dp"
-            android:layout_weight="0.10"
-            android:text="# of CPUs:"
-            android:textSize="30dp"
-            android:gravity="center"
-            android:background="@drawable/back"
-            />
+            android:layout_weight="0.20"
+            android:background="@drawable/back">
+
+            <TextView
+            android:id="@+id/unoRules"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:text="@string/uno_rules"
+            android:textSize="15dp"
+            android:textAlignment="textStart">
+            </TextView>
+        </ScrollView>
+
         <TextView
             android:id="@+id/toggleGame"
             android:onClick="onClick"

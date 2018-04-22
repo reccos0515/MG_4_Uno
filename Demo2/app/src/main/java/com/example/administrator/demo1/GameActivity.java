@@ -7,10 +7,12 @@ import android.graphics.Color;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -189,7 +191,7 @@ public class GameActivity extends AppCompatActivity {
             if(player.getPlayerType()==PlayerType.HUMAN) {
                 tv.setText(player.getUsername());
             } else {
-                String player_name = "CPU "+(player.getPlayerNum()+1);
+                String player_name = player.getUsername();
                 tv.setText(player_name);
             }
             tv.setTextSize(20);
@@ -303,8 +305,12 @@ public class GameActivity extends AppCompatActivity {
      * @param v The deal button view
      */
     public void setUpGame(View v) {
-        //Get rid of the deal button and make visible the direction arrow
+        //Get rid of the deal button and CPU selector and make visible the direction arrow
         v.setVisibility(View.GONE);
+        Spinner spn = findViewById(R.id.cpuSelector);
+        spn.setVisibility(View.INVISIBLE);
+        TextView txt = findViewById(R.id.cpuTitle);
+        txt.setVisibility(View.INVISIBLE);
         ImageView v2 = findViewById(R.id.directionArrow);
         v2.setVisibility(View.VISIBLE);
         //Create and Shuffle Deck
@@ -317,9 +323,10 @@ public class GameActivity extends AppCompatActivity {
         //Deal the hands to the players (Just player 1 (Human) for now)
         UnoPlayer player = new UnoPlayer(PlayerType.HUMAN, 0,hands.get(0),getIntent().getStringExtra("Username"));
         players.add(player);
-        //Deal the other hands to the AI ***UPDATE WHEN USING MULTI-PLAYER***
-        for(int i = 0; i < 3; i++) {
-            players.add(new UnoPlayer(PlayerType.CPU,i+1,hands.get(i+1),"CPU"));
+        //Deal the other hands to the AI
+        int numNPC = Integer.parseInt(spn.getSelectedItem().toString());
+        for(int i = 0; i < numNPC; i++) {
+            players.add(new UnoPlayer(PlayerType.CPU,i+1,hands.get(i+1),"CPU"+(i+1)));
         }
         //Initialize the disposal card stack
         ArrayList<UnoCard> disposal_Stack = new ArrayList<>();
@@ -328,7 +335,17 @@ public class GameActivity extends AppCompatActivity {
         //Update the slider
         updateCardSlide();
         //Lay a card down in the disposal pile
-        updateDisposal(deck.getCards().remove(0));
+        boolean validStart = false;
+        while(!validStart) {
+            UnoCard card = deck.getCards().get(0);
+            if(card.getActionType()==Actions.NONE) {
+                updateDisposal(deck.getCards().remove(0));
+                validStart = true;
+            } else {
+                Log.d("Test","Nooooope");
+                deck.shuffleCards();
+            }
+        }
         //Update the playerSlider
         updatePlayerSlider();
         //Update the playerScore
@@ -365,6 +382,7 @@ public class GameActivity extends AppCompatActivity {
                 if(currentPlayer.getPlayerType() == PlayerType.CPU) {
                     chooseColor(card);
                 }
+                currentGame.nextTurn();
                 break;
             case WILD:
                 if(currentPlayer.getPlayerType() == PlayerType.CPU) {
@@ -383,6 +401,7 @@ public class GameActivity extends AppCompatActivity {
                     UnoCard takenCard = currentGame.getCardFromDeck();
                     currentGame.getUnoPlayers().get(nextPlayer).getUnoHand().addCard(takenCard);
                 }
+                currentGame.nextTurn();
                 break;
         }
     }

@@ -126,6 +126,9 @@ public class MainActivity extends AppCompatActivity{
                 });
                 builder.show();
                 break;
+            //Goto the credits screen
+            case R.id.credits:
+                break;
             default:
                 break;
         }

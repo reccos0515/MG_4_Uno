@@ -16,6 +16,10 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.w3c.dom.Text;
 
+/**
+ * This activity is for users to view their profile information.
+ */
+
 public class ProfileActivity extends AppCompatActivity {
     private static final String TAG = "ProfileActivity";
     private String username;
