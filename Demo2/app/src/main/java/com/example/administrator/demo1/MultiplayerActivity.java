@@ -16,6 +16,12 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.VolleyLog;
+import com.android.volley.toolbox.JsonArrayRequest;
+import com.android.volley.toolbox.StringRequest;
 import com.google.gson.Gson;
 
 import org.json.JSONArray;
@@ -49,6 +55,12 @@ public class MultiplayerActivity extends AppCompatActivity {
     UnoApplication app;
     private io.socket.client.Socket gsocket;
 
+    private String playerUrl = "http://10.26.5.184:8090/player/find/";
+    private String addPlayerUrl = "http://10.26.5.184:8090/player/add?name=";
+
+    private String[] currentPlayer = new String[5];
+    private String[] winningPlayer = new String[5];
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -56,6 +68,8 @@ public class MultiplayerActivity extends AppCompatActivity {
         //Fetches the username for the client
         username = getIntent().getStringExtra("Username");
         host = getIntent().getBooleanExtra("Host",false);
+        playerUrl += username;
+        getAPlayers();
 
         //Setup Emitters [Server -----> Client]
         app = (UnoApplication) getApplicationContext();
@@ -321,6 +335,7 @@ public class MultiplayerActivity extends AppCompatActivity {
                         Toast toast = Toast.makeText(context, text, duration);
                         toast.setGravity(Gravity.CENTER, 0, 500);
                         toast.show();
+
                     } else {
                         Context context = getApplicationContext();
                         CharSequence text = "You win!";
@@ -329,6 +344,27 @@ public class MultiplayerActivity extends AppCompatActivity {
                         toast.setGravity(Gravity.CENTER, 0, 500);
                         toast.show();
                     }
+                    int updateGames = Integer.parseInt(currentPlayer[2]) + 1;
+                    int updateWins;
+                    int updateScore;
+                    if(winner.equals(username)) {
+                        updateWins = Integer.parseInt(currentPlayer[3]) + 1;
+                        updateScore = Integer.parseInt(currentPlayer[4]);
+                        ArrayList<UnoPlayer> total = currentGame.getUnoPlayers();
+                        for (int i = 0; i < total.size(); i++) {
+                            updateScore += total.get(i).getUnoHand().totalScore();
+                        }
+                    }
+                    else
+                    {
+                        updateWins = Integer.parseInt(currentPlayer[3]);
+                        updateScore = Integer.parseInt(currentPlayer[4]);
+                    }
+                    addPlayerUrl += currentPlayer[0] + "&password=" + currentPlayer[1] + "&numGames="+ Integer.toString(updateGames) +
+                            "&numWins=" + updateWins + "&totalScore=" + updateScore;
+                    updatePlayer();
+                    playerUrl = "http://10.26.5.184:8090/player/find/";
+                    addPlayerUrl = "http://10.26.5.184:8090/player/add?name=";
                 }
             });
             Intent i = new Intent(MultiplayerActivity.this, HubActivity.class);
@@ -336,6 +372,62 @@ public class MultiplayerActivity extends AppCompatActivity {
             startActivity(i);
         }
     };
+
+    private void updatePlayer() {
+
+        StringRequest strReq = new StringRequest(Request.Method.GET, addPlayerUrl, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                Log.d("TEST", response.toString());
+            }
+        },new Response.ErrorListener() {
+
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                VolleyLog.d("Error", "Error: "+error.getMessage());
+            }
+        });
+        UnoApplication.getInstance().addToRequestQueue(strReq, "string_req");
+    }
+
+    private void getAPlayers() {
+
+        JsonArrayRequest req = new JsonArrayRequest(playerUrl,
+                new Response.Listener<JSONArray>() {
+                    @Override
+                    public void onResponse(JSONArray response) {
+                        try {
+                            for(int i = 0; i < response.length(); i++) {
+                                JSONObject player = (JSONObject) response.get(i);
+                                String name = player.getString("username");
+                                String password = player.getString("password");
+                                String numGames = player.getString("numGames");
+                                String numWins = player.getString("numWins");
+                                String totalScore = player.getString("totalScore");
+                                Log.d("Test", "\n"+name + "\n" + password + "\n" + numGames + "\n"+numWins + "\n" + totalScore);
+                                currentPlayer[0] = name;
+                                currentPlayer[1] = password;
+                                currentPlayer[2] = numGames;
+                                currentPlayer[3] = numWins;
+                                currentPlayer[4] = totalScore;
+                            }
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                            Toast.makeText(getApplicationContext(),
+                                    "Error: " + e.getMessage(),
+                                    Toast.LENGTH_LONG).show();
+                        }
+                    }
+
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                VolleyLog.d("Error", "Error: " + error.getMessage());
+                Toast.makeText(getApplicationContext(), error.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+        UnoApplication.getInstance().addToRequestQueue(req);
+    }
 
     /**
      * Handles the user's click events on the screen

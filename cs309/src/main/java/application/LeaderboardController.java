@@ -1,8 +1,14 @@
 package application;
 
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -27,7 +33,7 @@ public class LeaderboardController {
 	@GetMapping(path="/add")
 	public @ResponseBody String addPlayer(@RequestParam String name, @RequestParam Integer avgScore) {
 		Leaderboard l = new Leaderboard();
-		l.setPlayer(name);
+		l.setUsername(name);
 		l.setAvgScore(avgScore);
 		lR.save(l);
 		return name + "added to leaderboard";
@@ -35,10 +41,11 @@ public class LeaderboardController {
 	
 	/**
 	 * This method is used to retrieve an interable list of all the players and their average score from the leaderboard table and will be called by the client via android volley.
-	 * @return Iterable Leaderboard list of all the ranks, usernames, and average score of all players on the leaderboard table.
+	 * @return Iterable Leaderboard list of all usernames, and average score of all players on the leaderboard table in descending order of avgScore.
 	 */
 	@GetMapping(path="/all")
 	public @ResponseBody Iterable<Leaderboard> getLeaderboard() {
-		return lR.findAll();
+		//return lR.findAll();
+		return lR.findAll(new Sort(Sort.Direction.DESC, "avgScore"));
 	}
 }

@@ -27,6 +27,9 @@ public class PlayerController {
 	@Autowired
 	private PlayerRepository playerRepository;
 	
+	@Autowired
+	private LeaderboardRepository leaderboardRepository;
+	
 	/**
 	 * This method is used to map the ability to add/update a player to the player table to keep track of the all the players and their statistics and will be called by the client via android volley.
 	 * @param name String This is the username of the player.
@@ -37,13 +40,22 @@ public class PlayerController {
 	 */
 	@GetMapping(path="/add")
 	public @ResponseBody String addPlayer(@RequestParam String name, @RequestParam String password,
-			@RequestParam Integer numGames, @RequestParam Integer numWins) {
+			@RequestParam Integer numGames, @RequestParam Integer numWins, @RequestParam Integer totalScore) {
+		int avgScore = 0;
 		Player p = new Player();
+		Leaderboard l = new Leaderboard();
 		p.setUsername(name);
+		l.setUsername(name);
 		p.setPassword(password);
 		p.setNumGames(numGames);
 		p.setNumWins(numWins);
+		p.setTotalScore(totalScore);
+		if(totalScore!=0) { 
+			avgScore = totalScore/numGames; 
+		}
+		l.setAvgScore(avgScore);
 		playerRepository.save(p);
+		leaderboardRepository.save(l);
 		return name + " added";
 	}
 	
