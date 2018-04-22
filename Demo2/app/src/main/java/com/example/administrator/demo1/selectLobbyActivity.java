@@ -25,7 +25,6 @@ public class selectLobbyActivity extends AppCompatActivity {
     private String username;
     private ArrayList<String> lobbies = new ArrayList<>();
     private ArrayList<String> users = new ArrayList<>();
-
     UnoApplication app;
     public String TAG = "selectLobbyActivity";
     private boolean isConnected;
@@ -36,16 +35,22 @@ public class selectLobbyActivity extends AppCompatActivity {
         setContentView(R.layout.activity_select_lobby);
 
         //Creates the username for view
-       // username = getIntent().getStringExtra("Username");
+       username = getIntent().getStringExtra("Username");
+
 
         app = (UnoApplication) getApplicationContext();
         gsocket = app.getSocket();
         gsocket.on(gsocket.EVENT_CONNECT, onConnect);
         gsocket.on("disconnect",onDisconnect);
-        gsocket.on("existed users",onExistedUsers);
+       // gsocket.on("existed users",onExistedUsers);
         gsocket.on("multiplayer",onStartMultiplayer);
+        gsocket.on("newLobby", onNewLobby);
+        //gsocket.on("newUserLobby", onNewUserLobby);
+
         gsocket.connect();
         gsocket.emit("add user",username);
+        gsocket.emmit("newLobby", username, lobby);
+
 
     }
 
@@ -61,6 +66,7 @@ public class selectLobbyActivity extends AppCompatActivity {
                 //TODO: return to hub activity screen
 
             case R.id.lobby1:
+                lobbyNum = 1;
                 gsocket.emit("newUserLobby", 1);
 
 
@@ -110,21 +116,7 @@ public class selectLobbyActivity extends AppCompatActivity {
 
     //TODO create update lobbies function
     public void updateLobbies(ArrayList<String> arr){
-        if(arr!=null) {
-            Log.d("Test",Integer.toString(arr.size()));
-            LinearLayout llp = findViewById(R.id.playerScroll);
-            llp.removeAllViews();
-            LinearLayout llnew = new LinearLayout(this);
-            llnew.setOrientation(LinearLayout.VERTICAL);
-            for (int i = 0; i < users.size(); i++) {
-                String user = users.get(i);
-                TextView tv = new TextView(llnew.getContext());
-                tv.setTextSize(30);
-                tv.setText(user);
-                llnew.addView(tv);
-            }
-            llp.addView(llnew);
-        }
+
     }
 
     @Override
@@ -152,6 +144,14 @@ public class selectLobbyActivity extends AppCompatActivity {
             });
         }};
 
+    //todo
+    private Emitter.Listener onNewLobby = new Emitter.Listener() {
+        @Override
+        public void call(Object... args) {
+
+        }
+    };
+
     private Emitter.Listener onDisconnect = new Emitter.Listener() {
         @Override
         public void call(Object... args) {
@@ -169,42 +169,10 @@ public class selectLobbyActivity extends AppCompatActivity {
         }
     };
 
-    private final Emitter.Listener onExistedUsers = new Emitter.Listener() {
-
-        @Override
-        public void call(final Object... args) {
-            users.clear();
-            JSONArray jsarr = (JSONArray) args[0];
-            for (int i = 0; i < jsarr.length(); i++) {
-                try {
-                    String obj = jsarr.get(i).toString();
-                    String name = obj;
-                    users.add(name);
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    //updateUser(users);
-                }
-            });
-        }
-    };
-
-
-    //TODO
-  /*  private final Emitter.Listener onNewLobby = new Emitter.listener() {
-
-        @Override
-        public void call(final Object... args){
-
-        }
 
 
 
-    }*/
+
 
     private final Emitter.Listener onStartMultiplayer = new Emitter.Listener() {
 

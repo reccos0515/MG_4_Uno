@@ -39,7 +39,7 @@ public class HubActivity extends AppCompatActivity {
                 startActivity(i);
                 break;
             case R.id.onlinegame:
-                i = new Intent(this, LobbyActivity.class);
+                i = new Intent(this, selectLobbyActivity.class);
                 i.putExtra("Username", username);
                 startActivity(i);
                 break;
