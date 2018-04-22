@@ -48,8 +48,8 @@ public class selectLobbyActivity extends AppCompatActivity {
         //gsocket.on("newUserLobby", onNewUserLobby);
 
         gsocket.connect();
-        gsocket.emit("add user",username);
-        gsocket.emmit("newLobby", username, lobby);
+        //gsocket.emit("add user",username);
+
 
 
     }
@@ -60,13 +60,16 @@ public class selectLobbyActivity extends AppCompatActivity {
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.newLobby:
-                gsocket.emit("newLobby");
+                /**
+                 * find and join first empty room
+                 */
+                gsocket.emit("newLobby", username);
 
             case R.id.exit:
                 //TODO: return to hub activity screen
 
             case R.id.lobby1:
-                lobbyNum = 1;
+
                 gsocket.emit("newUserLobby", 1);
 
 

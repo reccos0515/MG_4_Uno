@@ -1,39 +1,31 @@
 package zfrisv.cs309;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Random;
 
-import com.corundumstudio.socketio.AckCallback;
+import org.json.JSONObject;
+
 import com.corundumstudio.socketio.AckRequest;
 import com.corundumstudio.socketio.Configuration;
 import com.corundumstudio.socketio.SocketIOClient;
-import com.corundumstudio.socketio.SocketIONamespace;
 import com.corundumstudio.socketio.SocketIOServer;
-import com.corundumstudio.socketio.VoidAckCallback;
-import com.corundumstudio.socketio.listener.DataListener;
-import com.fasterxml.jackson.core.JsonParser;
 import com.corundumstudio.socketio.listener.ConnectListener;
-import org.json.*;
-
+import com.corundumstudio.socketio.listener.DataListener;
+import com.corundumstudio.socketio.transport.NamespaceClient;
 
 /**
  * Begins the UnoGame multiplayer server-handler.
- * @author zfrisv
+ * @author Karen Si
  *
  */
 public class ServerSocketApplication {
 
-	/**
-	 * Lobby id (matches namespace name) -> [user 1, user 2, ...]
-	 */
-	//private HashMap<String, <ArrayList<String>> > lobbyUsers = new HashMap<String, <ArrayList<String>> >();
-	private static HashMap<String, SocketIONamespace> namespaceMap;
-	
-	
-//	private static ArrayList<String> users = new ArrayList<String>();
+	private static ArrayList<String> users = new ArrayList<String>();
+	private static ArrayList<Integer> usersReady = new ArrayList<Integer>();
+	private static ArrayList<Integer> usersCallUno = new ArrayList<Integer>();
 	private static String winner;
 	private static UnoGame currentGame;
+	
 	public static void run() {
 		Configuration config = new Configuration();
         config.setPort(8080);
@@ -51,24 +43,6 @@ public class ServerSocketApplication {
         });
         
         /**
-         * User joins or creates lobby from client
-         * Client:
-         * 	1) client needs list of lobbies (w/ users)
-         * 	2) User selects lobby (reject if 4/4), addUserToLobby
-         * 	3) User creates, send createLobby (if CPU added, send addUserToLobby)
-         *  4) Game started (by host), send removeLobby
-         * 	
-         * Server:
-         * 	1) server needs event to return lobbies
-         * 	2) event to add user to lobby (namespace) or return full
-         * 	3) addNamespace & user to the namespace
-         *  4) remove lobby event
-         * 
-         * Future:
-         * 	delete lobby?
-         */
-        
-        /**
          * Fetches the UnoGame object for the client
          */
         server.addEventListener("fetch game", String.class, new DataListener<String>() {
@@ -78,6 +52,66 @@ public class ServerSocketApplication {
         		server.getBroadcastOperations().sendEvent("get disp", currentGame.getDisposalCards());
         		server.getBroadcastOperations().sendEvent("get turn", currentGame.getCurrentTurn());
         		server.getBroadcastOperations().sendEvent("get direction", currentGame.getCurrentDirection());
+        		server.getBroadcastOperations().sendEvent("update calls", usersCallUno);
+        		server.getBroadcastOperations().sendEvent("set game");
+        }});
+        
+        /**
+         * Sets the ready status of a player
+         */
+        server.addEventListener("set ready", String.class, new DataListener<String>() {
+        	public void onData(SocketIOClient arg0, String username, AckRequest arg2) throws Exception {
+        		//Get the index of the player that is now ready/not ready
+        		System.out.println(username);
+        		int playerIndex = users.indexOf(username);
+        		//Change their status (binary)
+        		if(usersReady.get(playerIndex)==0) {
+        			usersReady.set(playerIndex, 1);
+        		} else {
+        			usersReady.set(playerIndex, 0);
+        		}
+        		System.out.println(usersReady.get(playerIndex));
+        		//Send the clients an update version of who's ready/not ready
+        		server.getBroadcastOperations().sendEvent("existed users", users, usersReady);
+        }});
+        
+        /**
+         * One play calls "UNO!" on another
+         */
+        server.addEventListener("call uno", String.class, new DataListener<String>() {
+        	public void onData(SocketIOClient arg0, String username, AckRequest arg2) throws Exception {
+        		//Get the index of the player that supposedly hasn't called UNO
+        		System.out.println(username);
+        		int playerIndex = users.indexOf(username);
+        		//See if they have only one UnoCard in their hand
+        		//	if they do and haven't called "UNO!", then add two cards to their hand
+        		//from the deck, and update the game state
+        		if(currentGame.getUnoPlayers().get(playerIndex).getUnoHand().getCards().size()==1) {
+        			int calledUno = usersCallUno.get(playerIndex);
+        			if(calledUno==0) {
+        				//Give them two UnoCards from the UnoDeck
+        				for(int i = 0; i < 2; i++) {
+        					currentGame.getUnoPlayers().get(playerIndex).getUnoHand().getCards().add(currentGame.getCardFromDeck());
+        				}
+        				//Remove the "UNO!" call the player had
+        				usersCallUno.set(playerIndex, 0);
+        				//send the updated game state to all the clients (only the UnoDeck and UnoPlayers have changed)
+        				server.getBroadcastOperations().sendEvent("get deck", currentGame.getDeck());
+                		server.getBroadcastOperations().sendEvent("get players", currentGame.getUnoPlayers());
+                		server.getBroadcastOperations().sendEvent("update calls", usersCallUno);
+                		server.getBroadcastOperations().sendEvent("set game");
+        			}
+        		}
+        }});
+        
+        /**
+         * When a user wishes to call "UNO!" for themselves
+         */
+        server.addEventListener("declare uno", String.class, new DataListener<String>() {
+        	public void onData(SocketIOClient arg0, String username, AckRequest arg2) throws Exception {
+        		int usern = users.indexOf(username);
+        		usersCallUno.set(usern, 1);
+        		server.getBroadcastOperations().sendEvent("update calls", usersCallUno);
         		server.getBroadcastOperations().sendEvent("set game");
         }});
         	
@@ -92,17 +126,19 @@ public class ServerSocketApplication {
         		int tValue = obj.getInt("value");
         		simulateTurn(new UnoCard(tValue, tColor, tAction));
         		if(winner!=null) {
-        			System.out.println("Winner!");
+        			System.out.println("We here");
         			server.getBroadcastOperations().sendEvent("finish game",winner);
         			users.clear();
+        			usersReady.clear();
+        			usersCallUno.clear();
         			winner = null;
         		} else {
-//        			server.getRoomOperations(lobbyId)
 	        		server.getBroadcastOperations().sendEvent("get deck", currentGame.getDeck());
 	        		server.getBroadcastOperations().sendEvent("get players", currentGame.getUnoPlayers());
 	        		server.getBroadcastOperations().sendEvent("get disp", currentGame.getDisposalCards());
 	        		server.getBroadcastOperations().sendEvent("get turn", currentGame.getCurrentTurn());
 	        		server.getBroadcastOperations().sendEvent("get direction", currentGame.getCurrentDirection());
+	        		server.getBroadcastOperations().sendEvent("update calls", usersCallUno);
 	        		server.getBroadcastOperations().sendEvent("set game");
         		}
         }});
@@ -114,42 +150,63 @@ public class ServerSocketApplication {
         	public void onData(SocketIOClient arg0, String username, AckRequest arg2) throws Exception {
 				for(int i=0;i<users.size();i++) {
 					if(username.equals(users.get(i))) {
+						//Remove that player from the usersReady array
+						usersReady.remove(i);
 						users.remove(i);
 					}
 				}
-				server.getBroadcastOperations().sendEvent("existed users", users);
+				server.getBroadcastOperations().sendEvent("existed users", users, usersReady);
         }});
+        
+        server.addEventListener("newLobby", String.class, new DataListener<String>() {
+        	public void onData(SocketIOClient arg0, String username, AckRequest arg2) throws Exception {
+        		NamespaceClient.join()
+        		
+        	}
+        });
        
         /**
          * Adds a player that has decided to join the lobby
          */
         server.addEventListener("add user", String.class, new DataListener<String>() {
         		public void onData(SocketIOClient arg0, String username, AckRequest arg2) throws Exception {
+        		System.out.println(username);
 				users.add(username);
-				server.getBroadcastOperations().sendEvent("existed users", users);
+				
+				
+				//Get the index of the player that was added
+        		int playerIndex = users.indexOf(username);
+        		//They shouldn't be ready (unless they are the host)
+        		if(playerIndex!=0) {
+        			usersReady.add(0);
+        		} else {
+        			usersReady.add(1);
+        		}
+				server.getBroadcastOperations().sendEvent("existed users", users, usersReady);
         }});
         
         /**
-         * Creates a new lobby
-         * TODO
-         */
-        server.addEventListener("newLobby", String.class, new DataListener<String>() {
-        	public void onData(SocketIOClient arg0, String username, AckRequest arg2) throws Exception {
-        		//namespaceMap.add(username);
-        		server.getBroadcastOperations().sendEvent("existed lobbies", lobbies);
-        	}
-        });
-        
-        /**
-         * Sends the client to the multiplayer game ***FIX
+         * Sends the client to the multiplayer game
          */
         server.addEventListener("multiplayer", String.class, new DataListener<String>() {
     		public void onData(SocketIOClient arg0, String username, AckRequest arg2) throws Exception {
     		setUpGame();
+    		System.out.println("Test5");
+    		for(int i = 0; i < users.size(); i++) {
+    			usersCallUno.add(0);
+    		}
 			server.getBroadcastOperations().sendEvent("multiplayer");
+			System.out.println("Test6");
     	}});
         
+        /*server.addEventListener(sendMessage, String.class, new DataListener<String>(){
+        	public void onData(SocketIOClient arg0, String username, AckRequest arg2) throws Exception {
+        		
+        	}
+        });Unfinished event listener*/
+        
         server.start();
+        System.out.println("Server started...");
         try {
 			Thread.sleep(Integer.MAX_VALUE);
 		} catch (InterruptedException e) {
@@ -210,8 +267,8 @@ public class ServerSocketApplication {
 		//Create and Shuffle Deck
 	    UnoDeck deck = new UnoDeck();
 	    deck.shuffleCards();
-	    //Deal cards to hands **UPDATE EVENTUALLY
-	    ArrayList<UnoHand> hands = deck.dealHands(users.size()+1);
+	    //Deal cards to hands
+	    ArrayList<UnoHand> hands = deck.dealHands(users.size());
 	    //Create an ArrayList of the players
 	    ArrayList<UnoPlayer> players = new ArrayList<UnoPlayer>();
 	    //Deal the hands to the players
@@ -222,10 +279,9 @@ public class ServerSocketApplication {
 	        i++;
 	    }
 	    //Deal the other hands to the AI ***UPDATE WHEN USING MULTI-PLAYER***
-	    int numUsers = users.size();
-	    for(int i1 = 0; i1 < 1; i1++) {
-	        players.add(new UnoPlayer(PlayerType.CPU,numUsers+i1,hands.get(numUsers+i1),"CPU"));
-	    }
+	    ///for(int i = 0; i < 3; i++) {
+	        ///players.add(new UnoPlayer(PlayerType.CPU,i+1,hands.get(i+1),"CPU"));
+	    ///}
 	    //Initialize the disposal card stack
 	    ArrayList<UnoCard> disposal_Stack = new ArrayList<UnoCard>();
 	    //Create the UnoGame Object
@@ -270,6 +326,8 @@ public class ServerSocketApplication {
             //Check for a win [HUMAN]
             checkForWin(currentPlayer);
         } else {
+        	//If the player had one UnoCard, remove any possible "UNO!" calls that were made
+        	usersCallUno.set(currentPlayer.getPlayerNum(), 0);
         	//Retrieve card from the draw pile
             card = currentGame.getCardFromDeck();
             currentGame.getUnoPlayers().get(currentGame.getCurrentTurn()).getUnoHand().addCard(card);
@@ -327,7 +385,7 @@ public class ServerSocketApplication {
     }
     
     /**
-     * Deals with the actio cards dealt
+     * Deals with the action cards dealt
      * @param card UnoCard (Action type is not NONE)
      * @param currentPlayer Current UnoGame player (who placed the card)
      */
@@ -338,6 +396,8 @@ public class ServerSocketApplication {
                 for(int i = 0; i < 4; i++) {
                     UnoCard takenCard = currentGame.getCardFromDeck();
                     currentGame.getUnoPlayers().get(nextPlayer).getUnoHand().addCard(takenCard);
+                    //Remove any possible "UNO!" calls that were made from this player
+                	usersCallUno.set(nextPlayer, 0);
                 }
                 if(currentPlayer.getPlayerType() == PlayerType.CPU) {
                     chooseColor(card);
@@ -353,6 +413,9 @@ public class ServerSocketApplication {
                 break;
             case REVERSE:
                 currentGame.changeDirection();
+                if(users.size()==2) {
+                	currentGame.nextTurn();	
+                }
                 break;
             case DRAW_TWO:
                 nextPlayer = currentGame.nextPlayer();
@@ -360,6 +423,8 @@ public class ServerSocketApplication {
                     UnoCard takenCard = currentGame.getCardFromDeck();
                     currentGame.getUnoPlayers().get(nextPlayer).getUnoHand().addCard(takenCard);
                 }
+                //Remove any possible "UNO!" calls that were made from this player
+            	usersCallUno.set(nextPlayer, 0);
                 break;
         }
     }
