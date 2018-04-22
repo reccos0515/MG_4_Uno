@@ -16,8 +16,6 @@
         android:layout_marginTop="8dp"
         android:fontFamily="serif"
         android:hint="Enter your message here"
-        android:inputType="text|textCapCharacters|textCapWords|textCapSentences"
-        android:lineSpacingExtra="10sp"
         android:textAlignment="viewStart"
         android:textAllCaps="false"
         android:textSize="16sp"
@@ -28,10 +26,11 @@
         app:layout_constraintStart_toEndOf="@+id/imageButton"
         app:layout_constraintTop_toTopOf="parent" />
 
+
     <ImageButton
         android:id="@+id/imageButton"
-        android:layout_width="57dp"
-        android:layout_height="58dp"
+        android:layout_width="55dp"
+        android:layout_height="52dp"
         android:layout_marginBottom="5dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
@@ -46,17 +45,19 @@
 
     <ImageButton
         android:id="@+id/Send"
-        android:layout_width="46dp"
-        android:layout_height="51dp"
+        android:layout_width="43dp"
+        android:layout_height="40dp"
         android:layout_marginBottom="8dp"
         android:layout_marginEnd="8dp"
         android:background="@color/colorAccent"
+        android:onClick="onClick"
         android:scaleType="fitStart"
         android:tint="@android:color/white"
         android:visibility="visible"
         app:layout_constraintBottom_toTopOf="@+id/horizontalScrollView"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="1.0"
         app:srcCompat="@android:drawable/ic_menu_send" />
 
     <HorizontalScrollView
@@ -166,48 +167,15 @@
         app:layout_constraintVertical_bias="0.359"
         app:srcCompat="@drawable/arrow_right" />
 
-
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/list"
+    <ListView
+        android:id="@+id/listview"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_marginBottom="300dp"
-        android:layout_marginEnd="8dp"
+        android:layout_height="200dp"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="56dp"
         android:background="@color/colorPrimaryDark"
         android:visibility="gone"
-        app:layoutManager="LinearLayoutManager"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
-
-        <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-            android:id="@+id/chatItem"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:gravity="bottom"
-            android:orientation="horizontal"
-            android:visibility="visible">
-
-            <TextView
-                android:id="@+id/id"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_margin="@dimen/text_margin"
-                android:textAppearance="?attr/textAppearanceListItem" />
-
-            <TextView
-                android:id="@+id/content"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_margin="@dimen/text_margin"
-                android:textAppearance="?attr/textAppearanceListItem" />
-        </LinearLayout>
-
-
-    </android.support.v7.widget.RecyclerView>
+        app:layout_constraintTop_toBottomOf="@+id/imageButton" />
 
 
 </android.support.constraint.ConstraintLayout>

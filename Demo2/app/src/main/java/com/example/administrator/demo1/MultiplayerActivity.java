@@ -4,25 +4,23 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
-import android.support.design.widget.TextInputEditText;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.EditorInfo;
+import android.widget.Adapter;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.administrator.demo1.MultiplayerChat.Message;
-import com.example.administrator.demo1.MultiplayerChat.MyChatItemRecyclerViewAdapter;
 import com.google.gson.Gson;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -42,7 +40,6 @@ public class MultiplayerActivity extends AppCompatActivity  {
     private UnoGame currentGame;
     private UnoDeck serverDeck;
     private ArrayList<UnoPlayer> serverPlayers;
-    private List<Message> MessageList;
     private ArrayList<UnoCard> serverDisp;
     private int serverTurn;
     private int serverDirection;
@@ -54,14 +51,11 @@ public class MultiplayerActivity extends AppCompatActivity  {
     UnoApplication app;
     private io.socket.client.Socket gsocket;
 
-    LinearLayout horz;
-    private TextView name;
-    private TextView mess;
+    private List<String> MessageList;
     private EditText inputMessage;
-    private RecyclerView rv;
-    private RecyclerView.Adapter rvAdapter;
-    private RecyclerView.LayoutManager layoutManager;
-
+    private ListView listView;
+    private String strMessage;
+    private ArrayAdapter adapter;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -80,39 +74,36 @@ public class MultiplayerActivity extends AppCompatActivity  {
         gsocket.on("get direction", getDirection);
         gsocket.on("set game", setGame);
         gsocket.on("finish game", finishGame);
-        //gsocket.on("get message", ChatMessage);
+        gsocket.on("update message", ChatMessage);
         gsocket.connect();
 
         //Start Game
         //Fetch the (now populated) game state
         gsocket.emit("fetch game", currentGame);
 
-        rv = new RecyclerView(this);
-        rv = findViewById(R.id.list);
-        horz = new LinearLayout(this);
-        horz = findViewById(R.id.chatItem);
-        name = new TextView(this);
-        name = findViewById(R.id.id);
-        mess = new TextView(this);
-        mess = findViewById(R.id.content);
+        MessageList = new ArrayList<>();
+        MessageList.add("Chat content");
+        adapter = new ArrayAdapter<String>(this,
+                R.layout.fragment_chatitem, MessageList);
+        listView = (ListView) findViewById(R.id.listview);
+        listView.setAdapter(adapter);
         inputMessage = new EditText(this);
         inputMessage = findViewById(R.id.text_input);
-        inputMessage.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-            @Override
-            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                if(actionId == R.id.Send|| actionId==EditorInfo.IME_NULL){
-                    setContentView(inputMessage);
-                    onInputMessage();
-                    return true;
-                }
-                return false;
-            }
-        });
-
     }
-//TODO
-    private void onInputMessage() {
 
+
+    private final Emitter.Listener ChatMessage = new Emitter.Listener() {
+        @Override
+        public void call(Object... args) {
+            String newMess = args[0].toString();
+            MessageList.add(newMess);
+            System.out.println(newMess);
+        }
+    };
+
+    private String onInputMessage() {
+        String outputMessage = "  "+ username + ":  "+ inputMessage.getText().toString();
+        return outputMessage;
     }
 
     private final Emitter.Listener getDeck = new Emitter.Listener() {
@@ -387,27 +378,16 @@ public class MultiplayerActivity extends AppCompatActivity  {
                 }
                 break;
             case R.id.imageButton:
-                //rv = findViewById(R.id.list);
-                if(rv.getVisibility()==View.GONE){
-                rv.setVisibility(View.VISIBLE);
+                if(listView.getVisibility()==View.GONE){
+                listView.setVisibility(View.VISIBLE);
                 }else{
-                    rv.setVisibility(View.GONE);
+                    listView.setVisibility(View.GONE);
                 }
                 break;
-            case R.id.text_input:
-                Message.Builder mb = new Message.Builder();
-                mb.username(username);
-                mb.message(inputMessage.getText().toString());
-                MessageList.add(mb.build());
-
-                name.setText(username);
-                mess.setText(inputMessage.getText().toString().trim());
-                horz.addView(name);
-                horz.addView(mess);
-                rv.addView(horz);
-                break;
             case R.id.Send:
-                //TODO
+                strMessage = onInputMessage();
+                gsocket.emit("new message", strMessage);
+                inputMessage.clearComposingText();
                 break;
             default:
                 break;
