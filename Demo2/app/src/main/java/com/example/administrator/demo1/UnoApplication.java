@@ -31,7 +31,7 @@ public class UnoApplication extends Application {
     private static UnoApplication mInstance;
 
 
-    public static String server = "http://10.26.2.165:8080/";
+    public static String server = "http://10.26.5.184:8080/";
 
     private static UnoApplication instance;
     @Override

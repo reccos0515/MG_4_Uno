@@ -1,6 +1,7 @@
 package zfrisv.cs309;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 import com.corundumstudio.socketio.AckCallback;
@@ -12,8 +13,14 @@ import com.corundumstudio.socketio.SocketIOServer;
 import com.corundumstudio.socketio.VoidAckCallback;
 import com.corundumstudio.socketio.listener.DataListener;
 import com.fasterxml.jackson.core.JsonParser;
+
+import application.Player;
+import application.PlayerController;
+import application.PlayerRepository;
+
 import com.corundumstudio.socketio.listener.ConnectListener;
 import org.json.*;
+import org.springframework.beans.factory.annotation.Autowired;
 
 
 /**
@@ -22,6 +29,9 @@ import org.json.*;
  *
  */
 public class ServerSocketApplication {
+	
+	@Autowired
+	private PlayerRepository pR;
 
 	private static ArrayList<String> users = new ArrayList<String>();
 	private static String winner;
