@@ -39,7 +39,6 @@ public class MultiplayerActivity extends AppCompatActivity  {
     private UnoGame currentGame;
     private UnoDeck serverDeck;
     private ArrayList<UnoPlayer> serverPlayers;
-    private ArrayList<String> chatUsers;
     private ArrayList<Integer> userCalls;
     private ArrayList<UnoCard> serverDisp;
     private int serverTurn;

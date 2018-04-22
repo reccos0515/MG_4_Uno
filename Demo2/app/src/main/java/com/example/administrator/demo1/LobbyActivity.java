@@ -53,17 +53,7 @@ public class LobbyActivity extends AppCompatActivity {
     //Create onClick listener method
     public void onClick(View v) {
         switch (v.getId()) {
-<<<<<<< HEAD
-            case R.id.multiplayer:
 
-                if(users.size()>1) {//comment out for testing chat users.size()>1
-
-                    gsocket.emit("multiplayer");
-                }else if(users.size()<2){
-                    Toast.makeText(getApplicationContext(),"Waiting for another user...",Toast.LENGTH_LONG).show();
-                }else{
-                    Toast.makeText(getApplicationContext(),"Room is full, Try again later...",Toast.LENGTH_LONG).show();
-=======
             case R.id.toggleGame:
                 //For the host
                 if(users.get(0).equals(username)) {
@@ -77,7 +67,7 @@ public class LobbyActivity extends AppCompatActivity {
                     }
                 } else {
                     gsocket.emit("set ready", username);
->>>>>>> 01aabffc77cba99bfe5b9080a8dfee9b56daa80a
+
                 }
                 break;
             case R.id.exitMatch:
