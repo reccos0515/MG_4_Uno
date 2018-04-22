@@ -43,14 +43,19 @@ public class selectLobbyActivity extends AppCompatActivity {
         gsocket.on("existed users",onExistedUsers);
         gsocket.on("multiplayer",onStartMultiplayer);
         gsocket.connect();
-        gsocket.emit("add user",username);
+       // gsocket.emit("add user",username);
 
     }
 
     //Create onClick listener method
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.multiplayer:
+            case R.id.newLobby:
+                gsocket.emit("newLobby");
+
+
+
+            /*case R.id.multiplayer:
                 if(users.size()>1) {
                     gsocket.emit("multiplayer");
                 }else if(users.size()<2){
@@ -63,7 +68,7 @@ public class selectLobbyActivity extends AppCompatActivity {
                 finish();
                 break;
             default:
-                break;
+                break;*/
         }
     }
     public void updateUser(ArrayList<String> arr){
@@ -154,7 +159,7 @@ public class selectLobbyActivity extends AppCompatActivity {
 
         @Override
         public void call(final Object... args) {
-            Intent intent = new Intent(SelectLobbyActivity.this, MultiplayerActivity.class);
+            Intent intent = new Intent(selectLobbyActivity.this, MultiplayerActivity.class);
             intent.putExtra("Username", username);
             if(users.get(0).equals(username)) {
                 intent.putExtra("Host",true);
