@@ -9,20 +9,9 @@ import javax.persistence.Id;
 public class Leaderboard {
 	
 	@Id
-	@GeneratedValue(strategy=GenerationType.AUTO)
-	private Integer id; //rank = id
-	
 	private String username;
 	
 	private Integer avgScore;
-
-	public Integer getId() {
-		return id;
-	}
-
-	public void setId(Integer id) {
-		this.id = id;
-	}
 
 	public String getUsername() {
 		return username;

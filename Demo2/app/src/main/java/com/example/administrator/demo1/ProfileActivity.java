@@ -23,7 +23,7 @@ public class ProfileActivity extends AppCompatActivity {
     private String leaderboardUrl = "http://10.26.2.165:8090/leaderboard/all";
     //[0] = username | [1] = password | [2] = numGames | [3] = numWins | [4] = totalScore
     //[5] = rank | [6] = avgScore
-    private String[] myPlayer = new String[5];
+    private String[] myPlayer = new String[7];
     private TextView profileView;
 
     @Override
@@ -92,13 +92,12 @@ public class ProfileActivity extends AppCompatActivity {
                         try {
                             for(int i = 0; i < response.length(); i++) {
                                 JSONObject player = (JSONObject) response.get(i);
-                                String rank = player.getString("id");
                                 String name = player.getString("username");
                                 String avgScore = player.getString("avgScore");
                                 if(name.equalsIgnoreCase(username)) {
-                                    profileView.append("\n\nRank: "+rank);
+                                    profileView.append("\n\nRank on the leaderboard: "+(i+1));
                                     profileView.append("\n\nAverage score per game: "+avgScore);
-                                    myPlayer[5] = rank;
+                                    myPlayer[5] = Integer.toString(i+1);
                                     myPlayer[6] = avgScore;
                                 }
                             }
