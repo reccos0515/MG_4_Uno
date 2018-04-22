@@ -27,9 +27,8 @@ public class ServerSocketApplication {
 	/**
 	 * Lobby id (matches namespace name) -> [user 1, user 2, ...]
 	 */
-/*	private static HashMap<String, <ArrayList<String>> > lobbyUsers = 
-			new HashMap<String, <ArrayList<String>> >();
-	private static HashMap<String, SocketIONamespace> namespaceMap;*/
+	//private HashMap<String, <ArrayList<String>> > lobbyUsers = new HashMap<String, <ArrayList<String>> >();
+	private static HashMap<String, SocketIONamespace> namespaceMap;
 	
 	
 //	private static ArrayList<String> users = new ArrayList<String>();
@@ -129,6 +128,17 @@ public class ServerSocketApplication {
 				users.add(username);
 				server.getBroadcastOperations().sendEvent("existed users", users);
         }});
+        
+        /**
+         * Creates a new lobby
+         * TODO
+         */
+        server.addEventListener("newLobby", String.class, new DataListener<String>() {
+        	public void onData(SocketIOClient arg0, String username, AckRequest arg2) throws Exception {
+        		//namespaceMap.add(username);
+        		server.getBroadcastOperations().sendEvent("existed lobbies", lobbies);
+        	}
+        });
         
         /**
          * Sends the client to the multiplayer game ***FIX

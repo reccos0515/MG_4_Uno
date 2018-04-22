@@ -23,18 +23,20 @@ import io.socket.emitter.Emitter;
 public class selectLobbyActivity extends AppCompatActivity {
     private io.socket.client.Socket gsocket=null;
     private String username;
+    private ArrayList<String> lobbies = new ArrayList<>();
     private ArrayList<String> users = new ArrayList<>();
+
     UnoApplication app;
-    public String TAG = "SelectLobbyActivity";
+    public String TAG = "selectLobbyActivity";
     private boolean isConnected;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_lobby);
+        setContentView(R.layout.activity_select_lobby);
 
         //Creates the username for view
-        username = getIntent().getStringExtra("Username");
+       // username = getIntent().getStringExtra("Username");
 
         app = (UnoApplication) getApplicationContext();
         gsocket = app.getSocket();
@@ -43,9 +45,11 @@ public class selectLobbyActivity extends AppCompatActivity {
         gsocket.on("existed users",onExistedUsers);
         gsocket.on("multiplayer",onStartMultiplayer);
         gsocket.connect();
-       // gsocket.emit("add user",username);
+        gsocket.emit("add user",username);
 
     }
+
+
 
     //Create onClick listener method
     public void onClick(View v) {
@@ -53,25 +57,59 @@ public class selectLobbyActivity extends AppCompatActivity {
             case R.id.newLobby:
                 gsocket.emit("newLobby");
 
+            case R.id.exit:
+                //TODO: return to hub activity screen
+
+            case R.id.lobby1:
+                gsocket.emit("newUserLobby", 1);
 
 
-            /*case R.id.multiplayer:
-                if(users.size()>1) {
-                    gsocket.emit("multiplayer");
-                }else if(users.size()<2){
-                    Toast.makeText(getApplicationContext(),"Waiting for another user...",Toast.LENGTH_LONG).show();
-                }else{
-                    Toast.makeText(getApplicationContext(),"Room is full, Try again later...",Toast.LENGTH_LONG).show();
-                }
-                break;
-            case R.id.finish:
-                finish();
-                break;
-            default:
-                break;*/
+
+            case R.id.lobby2:
+                gsocket.emit("newUserLobby", 2);
+
+            case R.id.lobby3:
+                gsocket.emit("newUserLobby", 3);
+
+            case R.id.lobby4:
+                gsocket.emit("newUserLobby", 4);
+            case R.id.lobby5:
+                gsocket.emit("newUserLobby", 5);
+            case R.id.lobby6:
+                gsocket.emit("newUserLobby", 6);
+            case R.id.lobby7:
+                gsocket.emit("newUserLobby", 7);
+
+            case R.id.lobby8:
+                gsocket.emit("newUserLobby", 8);
+
+            case R.id.lobby9:
+                gsocket.emit("newUserLobby", 9);
+
+
+            case R.id.lobby10:
+                gsocket.emit("newUserLobby", 10);
+
+            case R.id.lobby11:
+                gsocket.emit("newUserLobby", 11);
+
+            case R.id.lobby12:
+                gsocket.emit("newUserLobby", 12);
+
+            case R.id.lobby13:
+                gsocket.emit("newUserLobby", 13);
+
+            case R.id.lobby14:
+                gsocket.emit("newUserLobby", 14);
+
+
+
+
         }
     }
-    public void updateUser(ArrayList<String> arr){
+
+    //TODO create update lobbies function
+    public void updateLobbies(ArrayList<String> arr){
         if(arr!=null) {
             Log.d("Test",Integer.toString(arr.size()));
             LinearLayout llp = findViewById(R.id.playerScroll);
@@ -149,11 +187,24 @@ public class selectLobbyActivity extends AppCompatActivity {
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
-                    updateUser(users);
+                    //updateUser(users);
                 }
             });
         }
     };
+
+
+    //TODO
+  /*  private final Emitter.Listener onNewLobby = new Emitter.listener() {
+
+        @Override
+        public void call(final Object... args){
+
+        }
+
+
+
+    }*/
 
     private final Emitter.Listener onStartMultiplayer = new Emitter.Listener() {
 

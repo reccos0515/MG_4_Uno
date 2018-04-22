@@ -14,11 +14,11 @@
         android:onClick="onClick"
         android:text="@string/exit"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintHorizontal_bias=".5"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.95" />
+        app:layout_constraintVertical_bias="0.969" />
 
     <Button
         android:id="@+id/newLobby"
@@ -27,11 +27,11 @@
         android:onClick="onClick"
         android:text="Create New Lobby"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintHorizontal_bias=".5"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.8" />
+        app:layout_constraintVertical_bias="0.876" />
 
     <TextView
         android:id="@+id/lobbyTitle"
@@ -47,23 +47,114 @@
         app:layout_constraintVertical_bias="0.05" />
 
     <ScrollView
-        android:id="@+id/lobby_container"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        app:layout_constraintBottom_toTopOf="@+id/lobbyTitle"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        android:id="@+id/lobbyScroll"
+        android:layout_width="368dp"
+        android:layout_height="276dp"
+        tools:layout_editor_absoluteX="8dp"
+        tools:layout_editor_absoluteY="100dp">
 
         <LinearLayout
-            android:id="@+id/lobbyScroll"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:orientation="vertical">
 
+            <Button
+                android:id="@+id/lobby1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Lobby 1"
+                android:visibility="gone" />
+
+            <Button
+                android:id="@+id/lobby2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="lobby 2"
+                android:visibility="gone" />
+
+            <Button
+                android:id="@+id/lobby3"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="lobby 3"
+                android:visibility="gone" />
+
+            <Button
+                android:id="@+id/lobby4"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="lobby 4"
+                android:visibility="gone" />
+
+            <Button
+                android:id="@+id/lobby5"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="lobby 5"
+                android:visibility="gone" />
+
+            <Button
+                android:id="@+id/lobby6"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="lobby 6"
+                android:visibility="gone" />
+
+            <Button
+                android:id="@+id/lobby7"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="lobby 7"
+                android:visibility="gone" />
+
+            <Button
+                android:id="@+id/lobby8"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="lobby 8"
+                android:visibility="gone" />
+
+            <Button
+                android:id="@+id/lobby9"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="lobby 9"
+                android:visibility="gone" />
+
+            <Button
+                android:id="@+id/lobby10"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="lobby 10"
+                android:visibility="gone" />
+
+            <Button
+                android:id="@+id/lobby11"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="lobby 11"
+                android:visibility="gone" />
+
+            <Button
+                android:id="@+id/lobby12"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="lobby 12"
+                android:visibility="gone" />
+
+            <Button
+                android:id="@+id/lobby13"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="lobby 13"
+                android:visibility="gone" />
+
+            <Button
+                android:id="@+id/lobby14"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="lobby 14"
+                android:visibility="gone" />
         </LinearLayout>
     </ScrollView>
 
