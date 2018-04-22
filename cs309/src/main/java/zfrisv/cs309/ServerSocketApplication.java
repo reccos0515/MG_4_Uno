@@ -396,6 +396,7 @@ public class ServerSocketApplication {
                 if(currentPlayer.getPlayerType() == PlayerType.CPU) {
                     chooseColor(card);
                 }
+                currentGame.nextTurn();
                 break;
             case WILD:
                 if(currentPlayer.getPlayerType() == PlayerType.CPU) {
@@ -417,6 +418,7 @@ public class ServerSocketApplication {
                     UnoCard takenCard = currentGame.getCardFromDeck();
                     currentGame.getUnoPlayers().get(nextPlayer).getUnoHand().addCard(takenCard);
                 }
+                currentGame.nextTurn();
                 //Remove any possible "UNO!" calls that were made from this player
             	usersCallUno.set(nextPlayer, 0);
                 break;

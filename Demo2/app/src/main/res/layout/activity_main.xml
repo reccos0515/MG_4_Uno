@@ -24,10 +24,10 @@
         />
 
     <Button
-        android:id="@+id/settings"
+        android:id="@+id/credits"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Settings"
+        android:text="Credits"
         android:textAllCaps="false"
         android:background="@android:color/black"
         android:onClick="onClick"
