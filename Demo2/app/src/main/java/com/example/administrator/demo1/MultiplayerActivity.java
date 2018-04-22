@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -36,6 +37,7 @@ public class MultiplayerActivity extends AppCompatActivity {
     private UnoDeck serverDeck;
     private ArrayList<UnoPlayer> serverPlayers;
     private ArrayList<String> chatUsers;
+    private ArrayList<Integer> userCalls;
     private ArrayList<UnoCard> serverDisp;
     private int serverTurn;
     private int serverDirection;
@@ -63,6 +65,7 @@ public class MultiplayerActivity extends AppCompatActivity {
         gsocket.on("get disp", getDisp);
         gsocket.on("get turn", getTurn);
         gsocket.on("get direction", getDirection);
+        gsocket.on("update calls", updateCalls);
         gsocket.on("set game",setGame);
         gsocket.on("finish game", finishGame);
         //gsocket.on("get message", ChatMessage);
@@ -75,6 +78,26 @@ public class MultiplayerActivity extends AppCompatActivity {
         gsocket.emit("fetch game",currentGame);
 
     }
+
+    private final Emitter.Listener updateCalls= new Emitter.Listener() {
+        @Override
+        public void call(Object... args) {
+            userCalls = new ArrayList<>();
+            userCalls.clear();
+            JSONArray callList = (JSONArray) args[0];
+            for(int i = 0; i < callList.length(); i++) {
+                int callIntent = 0;
+                try {
+                    callIntent = callList.getInt(i);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                userCalls.add(callIntent);
+            }
+        }
+    };
+
+
     private final Emitter.Listener ChatMessage= new Emitter.Listener() {
         @Override
         public void call(Object... args) {
@@ -288,7 +311,6 @@ public class MultiplayerActivity extends AppCompatActivity {
         @Override
         public void call(final Object... args) {
             final String winner = (String) args[0];
-            Log.d("Test","Winner is: "+winner);
             runOnUiThread(new Runnable() {
                 @Override
                 public void run() {
@@ -355,6 +377,11 @@ public class MultiplayerActivity extends AppCompatActivity {
                         toast.show();
                     }
                 }
+                break;
+            case R.id.callUno:
+                gsocket.emit("declare uno", username);
+                Button btnUno = (Button) findViewById(R.id.callUno);
+                btnUno.setVisibility(View.INVISIBLE);
                 break;
             /*case R.id.imageButton:
                 break;*/
@@ -466,6 +493,32 @@ public class MultiplayerActivity extends AppCompatActivity {
             //For each, generate another LinearLayout (Vertical)
             LinearLayout llc = new LinearLayout(this);
             llc.setOrientation(LinearLayout.VERTICAL);
+            //Create onClick listener
+            llc.setTag(player.getUsername());
+            if(!player.getUsername().equals(username)) {
+                llc.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        final String usern = (String) view.getTag();
+                        android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(view.getContext());
+                        builder.setTitle("Would you like to call UNO on "+usern+"?");
+                        // Set up the buttons
+                        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                gsocket.emit("call uno", usern);
+                            }
+                        });
+                        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.cancel();
+                            }
+                        });
+                        builder.show();
+                    }
+                });
+            }
             //Change up the background color for better readability
             if(player.getPlayerNum()%2==0) {
                 llc.setBackgroundColor(Color.parseColor("#404040"));
@@ -491,7 +544,7 @@ public class MultiplayerActivity extends AppCompatActivity {
             tv2.setTextSize(15);
             tv2.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
             ImageView iv = new ImageView(llc.getContext());
-            if(player.getUnoHand().getCards().size()==1) {
+            if(userCalls.get(player.getPlayerNum())==1) {
                 iv.setImageResource(getResources().getIdentifier("uno_logo","drawable",getPackageName()));
             } else {
                 iv.setImageResource(getResources().getIdentifier("blank_uno_logo","drawable",getPackageName()));
@@ -526,6 +579,14 @@ public class MultiplayerActivity extends AppCompatActivity {
         updateScore();
         updateDisposal();
         updateDirectionalArrow();
+        //If this client's UnoHand has only 1 card (and they haven't yet called UNO!), make the UnoButton visible
+        if(getPlayerIndex().getUnoHand().getCards().size()==1 && userCalls.get(getPlayerIndex().getPlayerNum())==0) {
+            Button btnUno = findViewById(R.id.callUno);
+            btnUno.setVisibility(View.VISIBLE);
+        } else {
+            Button btnUno = findViewById(R.id.callUno);
+            btnUno.setVisibility(View.INVISIBLE);
+        }
     }
 
 
