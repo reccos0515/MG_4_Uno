@@ -386,8 +386,9 @@ public class MultiplayerActivity extends AppCompatActivity  {
                 break;
             case R.id.Send:
                 strMessage = onInputMessage();
+                inputMessage.getText().clear();
                 gsocket.emit("new message", strMessage);
-                inputMessage.clearComposingText();
+
                 break;
             default:
                 break;
