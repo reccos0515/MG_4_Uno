@@ -10,6 +10,7 @@ public class UnoPlayer {
     private int playerNum;
     private UnoHand hand;
     private String username;
+    private int lobby;
 
     /**
      * Constructs an UnoPlayer
@@ -27,6 +28,9 @@ public class UnoPlayer {
         hand = givenHand;
         //Player's username
         username = givenUsername;
+        //Player's lobby **-1 if not in a lobby**
+        lobby = -1;
+
     }
 
     /**
@@ -58,5 +62,11 @@ public class UnoPlayer {
      * @return Player's username
      */
     public String getUsername() { return this.username; }
+
+    /**
+     * Returns the player's lobby number
+     * @return number of lobby the player is in, -1 if not in a lobby
+     */
+    public int getLobby() {return this.lobby; }
 
 }

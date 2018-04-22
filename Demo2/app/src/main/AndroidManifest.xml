@@ -4,7 +4,6 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
 
-
     <application
         android:name=".UnoApplication"
         android:allowBackup="true"
@@ -27,7 +26,7 @@
         <activity android:name=".ProfileActivity" />
         <activity android:name=".LeaderboardActivity" />
         <activity
-            android:name=".selectLobbyActivity"
+            android:name=".SelectLobbyActivity"
             android:label="@string/title_activity_select_lobby"
             android:theme="@style/Theme.AppCompat.NoActionBar" />
     </application>
