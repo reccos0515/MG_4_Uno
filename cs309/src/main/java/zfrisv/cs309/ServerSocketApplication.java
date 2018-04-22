@@ -193,11 +193,11 @@ public class ServerSocketApplication {
 			System.out.println("Test6");
     	}});
         
-        /*server.addEventListener(sendMessage, String.class, new DataListener<String>(){
-        	public void onData(SocketIOClient arg0, String username, AckRequest arg2) throws Exception {
-        		
+        server.addEventListener("new message", String.class, new DataListener<String>(){
+        	public void onData(SocketIOClient arg0, String message, AckRequest arg2) throws Exception {
+        		server.getBroadcastOperations().sendEvent("update message", message);
         	}
-        });Unfinished event listener*/
+        });
         
         server.start();
         System.out.println("Server started...");
