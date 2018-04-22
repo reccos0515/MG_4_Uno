@@ -3,7 +3,6 @@ package com.example.administrator.demo1;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.LinearLayout;
@@ -13,14 +12,12 @@ import android.widget.Toast;
 import org.greenrobot.eventbus.EventBus;
 import org.json.JSONArray;
 import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.zip.Inflater;
 
 import io.socket.emitter.Emitter;
 
-public class SelectLobbyActivity extends AppCompatActivity {
+public class selectLobbyActivity extends AppCompatActivity {
     private io.socket.client.Socket gsocket=null;
     private String username;
     private ArrayList<String> users = new ArrayList<>();
@@ -50,7 +47,7 @@ public class SelectLobbyActivity extends AppCompatActivity {
     //Create onClick listener method
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.multiplayer:
+            case R.id.toggleGame:
                 if(users.size()>1) {
                     gsocket.emit("multiplayer");
                 }else if(users.size()<2){
@@ -59,7 +56,7 @@ public class SelectLobbyActivity extends AppCompatActivity {
                     Toast.makeText(getApplicationContext(),"Room is full, Try again later...",Toast.LENGTH_LONG).show();
                 }
                 break;
-            case R.id.finish:
+            case R.id.exitMatch:
                 finish();
                 break;
             default:
@@ -154,7 +151,7 @@ public class SelectLobbyActivity extends AppCompatActivity {
 
         @Override
         public void call(final Object... args) {
-            Intent intent = new Intent(SelectLobbyActivity.this, MultiplayerActivity.class);
+            Intent intent = new Intent(selectLobbyActivity.this, MultiplayerActivity.class);
             intent.putExtra("Username", username);
             if(users.get(0).equals(username)) {
                 intent.putExtra("Host",true);

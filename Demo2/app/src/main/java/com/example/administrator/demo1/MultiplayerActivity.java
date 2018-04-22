@@ -398,12 +398,12 @@ public class MultiplayerActivity extends AppCompatActivity {
                     public void onResponse(JSONArray response) {
                         try {
                             for(int i = 0; i < response.length(); i++) {
-                                JSONObject player = (JSONObject) response.get(i);
-                                String name = player.getString("username");
-                                String password = player.getString("password");
-                                String numGames = player.getString("numGames");
-                                String numWins = player.getString("numWins");
-                                String totalScore = player.getString("totalScore");
+                                JSONObject player2 = (JSONObject) response.get(i);
+                                String name = player2.getString("username");
+                                String password = player2.getString("password");
+                                String numGames = player2.getString("numGames");
+                                String numWins = player2.getString("numWins");
+                                String totalScore = player2.getString("totalScore");
                                 Log.d("Test", "\n"+name + "\n" + password + "\n" + numGames + "\n"+numWins + "\n" + totalScore);
                                 currentPlayer[0] = name;
                                 currentPlayer[1] = password;

@@ -29,9 +29,6 @@ import org.springframework.beans.factory.annotation.Autowired;
  *
  */
 public class ServerSocketApplication {
-	
-	@Autowired
-	private PlayerRepository pR;
 
 	private static ArrayList<String> users = new ArrayList<String>();
 	private static ArrayList<Integer> usersReady = new ArrayList<Integer>();

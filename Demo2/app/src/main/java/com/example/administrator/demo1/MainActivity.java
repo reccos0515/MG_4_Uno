@@ -72,9 +72,6 @@ public class MainActivity extends AppCompatActivity{
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         username = input.getText().toString();
-<<<<<<< HEAD
-                        launchHubActivity(username);
-=======
                         if(playerTable!=null) {
                             Log.d("Test", "Before for");
                             for (int i = 0; playerTable[i][0]!=null; i++) {
@@ -107,7 +104,7 @@ public class MainActivity extends AppCompatActivity{
                             putPlayer();
                             Toast.makeText(getApplicationContext(), username + " added to database!", Toast.LENGTH_LONG).show();
                             //TODO: Android volley request to add user to the database
-                            launchLobbyActivity(username);
+                            launchHubActivity(username);
                         }
                         else {
                             Toast.makeText(getApplicationContext(), "Username take, please enter another", Toast.LENGTH_LONG).show();
@@ -116,11 +113,9 @@ public class MainActivity extends AppCompatActivity{
                             /*final EditText input3 = new EditText(this);
                             if(profile[1].equals(input3.getText().toString())) { launchLobbyActivity(username); }
                             else { Toast.makeText(getApplicationContext(), "Password incorrect, please try again.", Toast.LENGTH_LONG).show();*/
-                            launchLobbyActivity(username);
+                            launchHubActivity(username);
                             //TODO: If password doesn't match show toast message that says wrong password and has them enter another.
                         }
-                        //launchLobbyActivity(username);
->>>>>>> damoore_androidVolley
                     }
                 });
                 builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
