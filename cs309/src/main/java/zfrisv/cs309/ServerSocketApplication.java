@@ -10,8 +10,11 @@ import com.corundumstudio.socketio.SocketIOClient;
 import com.corundumstudio.socketio.SocketIOServer;
 import com.corundumstudio.socketio.listener.DataListener;
 
+import antlr.collections.List;
+
 import com.corundumstudio.socketio.listener.ConnectListener;
 
+import org.hibernate.mapping.Collection;
 import org.hibernate.mapping.Set;
 import org.json.JSONObject;
 
@@ -27,7 +30,7 @@ public class ServerSocketApplication {
 	private static ArrayList<Integer> usersCallUno = new ArrayList<Integer>();
 	private static String winner;
 	private static UnoGame currentGame;
-	private static String room;
+	private static String room = "0";
 	
 	public static void run() {
 		Configuration config = new Configuration();
@@ -58,6 +61,7 @@ public class ServerSocketApplication {
         		server.getRoomOperations(getRoom(arg0)).sendEvent("get direction", currentGame.getCurrentDirection());
         		server.getRoomOperations(getRoom(arg0)).sendEvent("update calls", usersCallUno);
         		server.getRoomOperations(getRoom(arg0)).sendEvent("set game");
+        		
         }});
         
         /**
@@ -172,15 +176,28 @@ public class ServerSocketApplication {
 				
 				clearFromRooms(arg0);
 				
+				if(server.getRoomOperations(room).getClients().size() >= 4) {
+					room = newRoom();
+				}
+				arg0.joinRoom(room);
+				System.out.println(room);
+				System.out.println(getRoom(arg0));
+				
+				
+				collection c = new collection
+				c =server.getRoomOperations(getRoom(arg0)).getClients();
+				
+				/*while(true) {
 				if(server.getRoomOperations(room).getClients().size() < 4) {
 					arg0.joinRoom(room);
+					break;
 				}
 				else {
-					while(server.getRoomOperations(room).getClients().size() != 0) {
 					room = newRoom();
-					}
-					arg0.joinRoom(room);
-				}
+					
+				}*/
+				
+					
 				
 				//Get the index of the player that was added
         		int playerIndex = users.indexOf(username);
@@ -194,9 +211,7 @@ public class ServerSocketApplication {
         }});
         
         
-       //how I will brodcast to a room 
-        //server.getRoomOperations("rooomid").sendEvent("existed users", users, usersReady);
-        
+       
         /**
          * Sends the client to the multiplayer game
          */
