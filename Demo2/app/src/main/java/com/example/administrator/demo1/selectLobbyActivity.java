@@ -47,7 +47,7 @@ public class selectLobbyActivity extends AppCompatActivity {
     //Create onClick listener method
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.multiplayer:
+            case R.id.toggleGame:
                 if(users.size()>1) {
                     gsocket.emit("multiplayer");
                 }else if(users.size()<2){

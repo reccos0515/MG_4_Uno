@@ -13,7 +13,16 @@ public class Player {
 	private String password;
 	private Integer numWins;
 	private Integer numGames;
+	private Integer totalScore;
 	
+	public Integer getTotalScore() {
+		return totalScore;
+	}
+
+	public void setTotalScore(Integer totalScore) {
+		this.totalScore = totalScore;
+	}
+
 	public String getUsername() {
 		return username;
 	}
