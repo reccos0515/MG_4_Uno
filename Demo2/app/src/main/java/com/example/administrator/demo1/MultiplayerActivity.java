@@ -56,8 +56,8 @@ public class MultiplayerActivity extends AppCompatActivity  {
     UnoApplication app;
     private io.socket.client.Socket gsocket;
 
-    private String playerUrl = "http://10.26.5.184:8090/player/find/";
-    private String addPlayerUrl = "http://10.26.5.184:8090/player/add?name=";
+    private String playerUrl = "http://192.168.0.105:8090/player/find/";
+    private String addPlayerUrl = "http://192.168.0.105:8090/player/add?name=";
 
     private String[] currentPlayer = new String[5];
 
