@@ -62,7 +62,7 @@ public class MainActivity extends AppCompatActivity{
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         username = input.getText().toString();
-                        launchHubActivity(username);
+                        launchHubActivity();
                     }
                 });
                 builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -75,6 +75,8 @@ public class MainActivity extends AppCompatActivity{
                 break;
             //Goto the credits screen
             case R.id.credits:
+                Intent i = new Intent(MainActivity.this, CreditsActivity.class);
+                startActivity(i);
                 break;
             default:
                 break;
@@ -125,9 +127,8 @@ public class MainActivity extends AppCompatActivity{
 
     /**
      * Launches the hub activity
-     * @param username Username of the current user
      */
-    public void launchHubActivity(String username) {
+    public void launchHubActivity() {
         Intent i = new Intent(MainActivity.this, HubActivity.class);
         i.putExtra("Username", username);
         startActivity(i);
