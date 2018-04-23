@@ -104,11 +104,7 @@ public class MainActivity extends AppCompatActivity{
                         }
                         if(!existing) {
                             profile[0] = username;
-                            //TODO: prompt "User doesn't exist, please enter a password: "
-                            //TODO: Have a password and confirm password field
-                            //final EditText input2 = new EditText(this);
-                            //profile[2] = input2.getText().toString();
-                            profile[1] = "passwordTest";
+                            profile[1] = password;
                             profile[2] = "0";
                             profile[3] = "0";
                             profile[4] = "0";
@@ -118,18 +114,11 @@ public class MainActivity extends AppCompatActivity{
                             addPlayerUrl += "&numGames=0&numWins=0&totalScore=0";
                             putPlayer();
                             Toast.makeText(getApplicationContext(), username + " added to database!", Toast.LENGTH_LONG).show();
-                            //TODO: Android volley request to add user to the database
                             launchHubActivity();
                         }
                         else {
-                            Toast.makeText(getApplicationContext(), "Username take, please enter another", Toast.LENGTH_LONG).show();
-                            //TODO: prompt "Username already exists, please enter password: "
-                            //TODO: Have a password field that checks the input against the password from the database and a cancel button that returns them to entering a username
-                            /*final EditText input3 = new EditText(this);
-                            if(profile[1].equals(input3.getText().toString())) { launchLobbyActivity(username); }
-                            else { Toast.makeText(getApplicationContext(), "Password incorrect, please try again.", Toast.LENGTH_LONG).show();*/
-                            launchHubActivity();
-                            //TODO: If password doesn't match show toast message that says wrong password and has them enter another.
+                            if(password.equals(profile[1])) { launchHubActivity(); }
+                            else { Toast.makeText(getApplicationContext(), "Password inccorect, please try again.", Toast.LENGTH_LONG).show(); }
                         }
                     }
                 });

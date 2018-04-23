@@ -29,13 +29,23 @@ public class ProfileActivity extends AppCompatActivity {
     //[0] = username | [1] = password | [2] = numGames | [3] = numWins | [4] = totalScore
     //[5] = rank | [6] = avgScore
     private String[] myPlayer = new String[7];
-    private TextView profileView;
+    private TextView gamesWon;
+    private TextView gamesLost;
+    private TextView gamesPlayed;
+    private TextView globalScore;
+    private TextView globalRank;
+    private TextView averageScore;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
-        profileView = findViewById(R.id.profileView);
+        gamesWon = findViewById(R.id.gamesWon);
+        gamesLost = findViewById(R.id.gamesLost);
+        gamesPlayed = findViewById(R.id.gamesPlayed);
+        globalScore = findViewById(R.id.globalScore);
+        globalRank = findViewById(R.id.globalRank);
+        averageScore = findViewById(R.id.averageScore);
         //Creates the username for view
         username = getIntent().getStringExtra("Username");
         getPlayerUrl += username;
@@ -73,11 +83,11 @@ public class ProfileActivity extends AppCompatActivity {
                                 String numGames = player.getString("numGames");
                                 String numWins = player.getString("numWins");
                                 String totalScore = player.getString("totalScore");
-                                profileView.append("\n\nUsername: "+name);
-                                profileView.append("\n\nPassword: "+password);
-                                profileView.append("\n\nNumber of games played: "+numGames);
-                                profileView.append("\n\nNumber of games won: "+numWins);
-                                profileView.append("\n\nTotal score: "+totalScore);
+                                gamesWon.setText(numWins);
+                                int lost = Integer.parseInt(numGames) - Integer.parseInt(numWins);
+                                gamesLost.setText(Integer.toString(lost));
+                                gamesPlayed.setText(numGames);
+                                globalScore.setText(totalScore);
                                 myPlayer[0] = name;
                                 myPlayer[1] = password;
                                 myPlayer[2] = numGames;
@@ -114,8 +124,8 @@ public class ProfileActivity extends AppCompatActivity {
                                 String name = player.getString("username");
                                 String avgScore = player.getString("avgScore");
                                 if(name.equalsIgnoreCase(username)) {
-                                    profileView.append("\n\nRank on the leaderboard: "+(i+1));
-                                    profileView.append("\n\nAverage score per game: "+avgScore);
+                                    averageScore.setText(avgScore);
+                                    globalRank.setText(Integer.toString(i+1));
                                     myPlayer[5] = Integer.toString(i+1);
                                     myPlayer[6] = avgScore;
                                 }
