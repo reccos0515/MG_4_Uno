@@ -29,8 +29,8 @@ public class UnoApplication extends Application {
     public static final String TAG = UnoApplication.class.getSimpleName();
     private RequestQueue mRequestQueue;
     private static UnoApplication mInstance;
-    public static String ConstantIP = "10.29.179.230";
-    public static String server = "http://"+ConstantIP+":8080/";
+    public static String ConstantIP = "10.29.177.138";
+    public static String server = "http://10.29.177.138:8080/";
 
     private static UnoApplication instance;
     @Override

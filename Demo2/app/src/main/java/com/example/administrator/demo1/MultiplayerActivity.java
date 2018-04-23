@@ -60,8 +60,8 @@ public class MultiplayerActivity extends AppCompatActivity  {
     private io.socket.client.Socket gsocket;
 
 
-    private String playerUrl = "http://"+ConstantIP+":8090/player/find/";
-    private String addPlayerUrl = "http://"+ConstantIP+":8090/player/add?name=";
+    private String playerUrl = "http://10.29.177.138:8090/player/find/";
+    private String addPlayerUrl = "http://10.29.177.138:8090/player/add?name=";
 
     private String[] currentPlayer = new String[5];
 
