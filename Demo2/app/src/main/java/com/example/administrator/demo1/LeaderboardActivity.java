@@ -19,7 +19,7 @@ import org.w3c.dom.Text;
 public class LeaderboardActivity extends AppCompatActivity {
     private static final String TAG = "LeaderboardActivity";
     private String username;
-    private String leaderboardUrl = "http://10.26.5.184:8090/leaderboard/all";
+    private String leaderboardUrl = "http://10.29.179.230:8090/leaderboard/all";
     private String players[][] = new String[10][3];
     private TextView LeaderboardView;
 

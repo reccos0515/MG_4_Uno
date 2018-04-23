@@ -25,14 +25,12 @@ import com.android.volley.toolbox.Volley;
 
 public class UnoApplication extends Application {
 
-<<<<<<< HEAD
+
     public static final String TAG = UnoApplication.class.getSimpleName();
     private RequestQueue mRequestQueue;
     private static UnoApplication mInstance;
-    public static String server = "http://10.26.5.184:8080/";
-=======
-    public static String server = "http://10.29.177.138:8080/";
->>>>>>> 102e68d1e3078f07d90baaf5867fad74c1ca973b
+
+    public static String server = "http://10.29.179.230:8080/";
 
     private static UnoApplication instance;
     @Override
