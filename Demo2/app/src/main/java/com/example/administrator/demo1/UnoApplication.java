@@ -1,17 +1,12 @@
 package com.example.administrator.demo1;
 
 import android.app.Application;
-import android.util.Log;
-
-import org.greenrobot.eventbus.EventBus;
 
 import java.net.URISyntaxException;
 
 import io.socket.client.IO;
 import io.socket.client.Socket;
-import io.socket.emitter.Emitter;
 
-import android.app.Application;
 import android.text.TextUtils;
 
 import com.android.volley.Request;
@@ -21,8 +16,6 @@ import com.android.volley.toolbox.Volley;
 /**
  * Created by Dakota Moore and group MG4
  */
-
-
 public class UnoApplication extends Application {
 
     public static final String TAG = UnoApplication.class.getSimpleName();
