@@ -2,6 +2,9 @@ package com.example.administrator.demo1;
 
 import android.content.Context;
 import android.content.DialogInterface;
+import android.graphics.Color;
+import android.text.InputType;
+import android.text.method.PasswordTransformationMethod;
 import android.view.View.OnClickListener;
 import android.content.Intent;
 import android.app.AlertDialog;
@@ -73,11 +76,16 @@ public class MainActivity extends AppCompatActivity{
                 // Add a TextView here for the username
                 final EditText titleBox = new EditText(context);
                 titleBox.setHint("Username");
+                titleBox.setHintTextColor(Color.WHITE);
+                titleBox.setTextColor(Color.WHITE);
                 layout.addView(titleBox); // Notice this is an add method
 
                 // Add another TextView here for the password
                 final EditText descriptionBox = new EditText(context);
                 descriptionBox.setHint("Password");
+                descriptionBox.setHintTextColor(Color.WHITE);
+                descriptionBox.setTextColor(Color.WHITE);
+                descriptionBox.setTransformationMethod(new PasswordTransformationMethod());
                 layout.addView(descriptionBox); // Another add method
                 builder.setView(layout);
                 // Set up the buttons
