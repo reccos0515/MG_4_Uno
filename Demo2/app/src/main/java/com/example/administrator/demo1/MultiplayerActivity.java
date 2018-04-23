@@ -57,33 +57,27 @@ public class MultiplayerActivity extends AppCompatActivity  {
     UnoApplication app;
     private io.socket.client.Socket gsocket;
 
-<<<<<<< HEAD
     private String playerUrl = "http://10.26.5.184:8090/player/find/";
     private String addPlayerUrl = "http://10.26.5.184:8090/player/add?name=";
 
     private String[] currentPlayer = new String[5];
     private String[] winningPlayer = new String[5];
 
-=======
     private List<String> MessageList;
     private EditText inputMessage;
     private ListView listView;
     private String strMessage;
     private ArrayAdapter adapter;
->>>>>>> 102e68d1e3078f07d90baaf5867fad74c1ca973b
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_multiplayer);
         //Fetches the username for the client
         username = getIntent().getStringExtra("Username");
-<<<<<<< HEAD
         host = getIntent().getBooleanExtra("Host",false);
         playerUrl += username;
         getAPlayers();
-=======
         host = getIntent().getBooleanExtra("Host", false);
->>>>>>> 102e68d1e3078f07d90baaf5867fad74c1ca973b
 
         //Setup Emitters [Server -----> Client]
         app = (UnoApplication) getApplicationContext();
