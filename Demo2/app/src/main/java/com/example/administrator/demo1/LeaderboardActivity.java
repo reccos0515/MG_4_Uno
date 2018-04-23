@@ -20,7 +20,7 @@ import org.json.JSONObject;
 public class LeaderboardActivity extends AppCompatActivity {
     private static final String TAG = "LeaderboardActivity";
     private String username;
-    private String leaderboardUrl = "http://192.168.0.105:8090/leaderboard/all";
+    private String leaderboardUrl = "http://192.168.1.107:8090/leaderboard/all";
     private String players[][] = new String[6][3];
     private TextView username1, username2, username3, username4, username5, player_username;
     private TextView score1, score2, score3, score4, score5, player_score;
@@ -53,7 +53,8 @@ public class LeaderboardActivity extends AppCompatActivity {
         switch (v.getId()) {
             //Return to the Hub
             case R.id.leaderboardToHub:
-                Intent i = new Intent(LeaderboardActivity.this, CreditsActivity.class);
+                Intent i = new Intent(LeaderboardActivity.this, HubActivity.class);
+                i.putExtra("Username", username);
                 startActivity(i);
                 break;
             default:
