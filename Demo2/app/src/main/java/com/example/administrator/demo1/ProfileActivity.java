@@ -47,7 +47,7 @@ public class ProfileActivity extends AppCompatActivity {
 
     public void onClick(View v) {
         switch (v.getId()) {
-            //Start the game
+            //Return to the Hub
             case R.id.profileToHub:
                 Intent i = new Intent(ProfileActivity.this, CreditsActivity.class);
                 startActivity(i);

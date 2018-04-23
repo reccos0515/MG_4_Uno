@@ -1,8 +1,10 @@
 package com.example.administrator.demo1;
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -32,6 +34,18 @@ public class LeaderboardActivity extends AppCompatActivity {
         //Creates the username for view
         username = getIntent().getStringExtra("Username");
         getLeaderboard();
+    }
+
+    public void onClick(View v) {
+        switch (v.getId()) {
+            //Return to the Hub
+            case R.id.leaderboardToHub:
+                Intent i = new Intent(LeaderboardActivity.this, CreditsActivity.class);
+                startActivity(i);
+                break;
+            default:
+                break;
+        }
     }
 
     private void getLeaderboard() {
