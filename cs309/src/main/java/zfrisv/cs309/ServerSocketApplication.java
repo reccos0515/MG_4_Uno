@@ -1,7 +1,10 @@
 package zfrisv.cs309;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Random;
 
 import com.corundumstudio.socketio.AckRequest;
@@ -31,6 +34,7 @@ public class ServerSocketApplication {
 	private static String winner;
 	private static UnoGame currentGame;
 	private static String room = "0";
+	static HashMap<SocketIOClient, String> hmap = new HashMap<SocketIOClient, String>();
 	
 	public static void run() {
 		Configuration config = new Configuration();
@@ -172,30 +176,32 @@ public class ServerSocketApplication {
         server.addEventListener("add user", String.class, new DataListener<String>() {
         		public void onData(SocketIOClient arg0, String username, AckRequest arg2) throws Exception {
         		System.out.println(username);
-				users.add(username);
+				//users.add(username);
+        		hmap.put(arg0, username);
+        		
 				
 				clearFromRooms(arg0);
+				users.clear();
 				
 				if(server.getRoomOperations(room).getClients().size() >= 4) {
 					room = newRoom();
 				}
+				
+				
 				arg0.joinRoom(room);
 				System.out.println(room);
 				System.out.println(getRoom(arg0));
 				
+				Object[] clients = server.getRoomOperations(getRoom(arg0)).getClients().toArray();
+				for(int i = 0; i< clients.length; i++) {
+					users.add(hmap.get(clients[i]));
 				
-				collection c = new collection
-				c =server.getRoomOperations(getRoom(arg0)).getClients();
-				
-				/*while(true) {
-				if(server.getRoomOperations(room).getClients().size() < 4) {
-					arg0.joinRoom(room);
-					break;
 				}
-				else {
-					room = newRoom();
-					
-				}*/
+				
+				
+				
+				
+				
 				
 					
 				
@@ -218,6 +224,7 @@ public class ServerSocketApplication {
         server.addEventListener("multiplayer", String.class, new DataListener<String>() {
     		public void onData(SocketIOClient arg0, String username, AckRequest arg2) throws Exception {
     		setUpGame();
+    		server.getRoomOperations(getRoom(arg0)).
     		System.out.println("Test5");
     		for(int i = 0; i < users.size(); i++) {
     			usersCallUno.add(0);
