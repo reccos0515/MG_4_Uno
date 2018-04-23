@@ -1,5 +1,6 @@
 package com.example.administrator.demo1;
 
+import android.content.Context;
 import android.content.DialogInterface;
 import android.view.View.OnClickListener;
 import android.content.Intent;
@@ -9,6 +10,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -59,19 +61,34 @@ public class MainActivity extends AppCompatActivity{
     public void onClick(View v) {
         getAllPlayers();
         switch (v.getId()) {
-
             //Start the game
             case R.id.playGame:
                 existing = false;
                 AlertDialog.Builder builder = new AlertDialog.Builder(v.getContext());
-                builder.setTitle("Please provide a username:");
-                final EditText input = new EditText(this);
-                builder.setView(input);
+                builder.setTitle("Please provide a username & password:");
+                Context context = this.getApplicationContext();
+                final LinearLayout layout = new LinearLayout(context);
+                layout.setOrientation(LinearLayout.VERTICAL);
+
+                // Add a TextView here for the username
+                final EditText titleBox = new EditText(context);
+                titleBox.setHint("Username");
+                layout.addView(titleBox); // Notice this is an add method
+
+                // Add another TextView here for the password
+                final EditText descriptionBox = new EditText(context);
+                descriptionBox.setHint("Password");
+                layout.addView(descriptionBox); // Another add method
+                builder.setView(layout);
                 // Set up the buttons
                 builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        username = input.getText().toString();
+                        EditText t1 = (EditText) layout.getChildAt(0);
+                        EditText t2 = (EditText) layout.getChildAt(1);
+                        username = t1.getText().toString();
+                        String password = t2.getText().toString();
+                        //TODO Use this password for something
                         if(playerTable!=null) {
                             Log.d("Test", "Before for");
                             for (int i = 0; playerTable[i][0]!=null; i++) {

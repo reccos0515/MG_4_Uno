@@ -16,12 +16,11 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.w3c.dom.Text;
 
-import static com.example.administrator.demo1.UnoApplication.ConstantIP;
 
 public class LeaderboardActivity extends AppCompatActivity {
     private static final String TAG = "LeaderboardActivity";
     private String username;
-    private String leaderboardUrl = "http://"+ConstantIP+":8090/leaderboard/all";
+    private String leaderboardUrl = "http://dakotachange:8090/leaderboard/all";
     private String players[][] = new String[10][3];
     private TextView LeaderboardView;
 
