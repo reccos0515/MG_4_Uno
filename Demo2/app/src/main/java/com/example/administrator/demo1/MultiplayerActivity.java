@@ -34,7 +34,6 @@ import java.util.ArrayList;
 import java.util.List;
 import io.socket.emitter.Emitter;
 
-
 /**
  * Class for handling client updates in an Online Game
  */
@@ -61,13 +60,13 @@ public class MultiplayerActivity extends AppCompatActivity  {
     private String addPlayerUrl = "http://10.26.5.184:8090/player/add?name=";
 
     private String[] currentPlayer = new String[5];
-    private String[] winningPlayer = new String[5];
 
     private List<String> MessageList;
     private EditText inputMessage;
     private ListView listView;
     private String strMessage;
     private ArrayAdapter adapter;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

@@ -29,7 +29,7 @@
             android:name=".selectLobbyActivity"
             android:label="@string/title_activity_select_lobby"
             android:theme="@style/Theme.AppCompat.NoActionBar" />
-        <activity android:name=".dummy.CreditsActivity"></activity>
+        <activity android:name=".CreditsActivity"></activity>
     </application>
 
 </manifest>

@@ -37,8 +37,8 @@ public class MainActivity extends AppCompatActivity{
     private static final String TAG = "MainActivity";
     public String username;
 
-    private String allPlayersUrl = "http://10.26.5.184:8090/player/all";
-    private String addPlayerUrl = "http://10.26.5.184:8090/player/add?name=";
+    private String allPlayersUrl = "http://10.29.177.138:8090/player/all";
+    private String addPlayerUrl = "http://10.29.177.138:8090/player/add?name=";
 
     private TextView txtResponse;
     private String jsonResponse;
@@ -104,7 +104,7 @@ public class MainActivity extends AppCompatActivity{
                             putPlayer();
                             Toast.makeText(getApplicationContext(), username + " added to database!", Toast.LENGTH_LONG).show();
                             //TODO: Android volley request to add user to the database
-                            launchHubActivity(username);
+                            launchHubActivity();
                         }
                         else {
                             Toast.makeText(getApplicationContext(), "Username take, please enter another", Toast.LENGTH_LONG).show();
@@ -113,7 +113,7 @@ public class MainActivity extends AppCompatActivity{
                             /*final EditText input3 = new EditText(this);
                             if(profile[1].equals(input3.getText().toString())) { launchLobbyActivity(username); }
                             else { Toast.makeText(getApplicationContext(), "Password incorrect, please try again.", Toast.LENGTH_LONG).show();*/
-                            launchHubActivity(username);
+                            launchHubActivity();
                             //TODO: If password doesn't match show toast message that says wrong password and has them enter another.
                         }
                     }
@@ -128,6 +128,8 @@ public class MainActivity extends AppCompatActivity{
                 break;
             //Goto the credits screen
             case R.id.credits:
+                Intent i = new Intent(MainActivity.this, CreditsActivity.class);
+                startActivity(i);
                 break;
             default:
                 break;
@@ -199,9 +201,8 @@ public class MainActivity extends AppCompatActivity{
 
     /**
      * Launches the hub activity
-     * @param username Username of the current user
      */
-    public void launchHubActivity(String username) {
+    public void launchHubActivity() {
         Intent i = new Intent(MainActivity.this, HubActivity.class);
         i.putExtra("Username", username);
         startActivity(i);

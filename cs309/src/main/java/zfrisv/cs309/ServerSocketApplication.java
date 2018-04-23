@@ -281,10 +281,17 @@ public class ServerSocketApplication {
 	        i++;
 	    }
 	    //Deal the other hands to the AI ***UPDATE WHEN USING MULTI-PLAYER***
+<<<<<<< HEAD
 	   /* int numUsers = users.size();
 	    for(int i1 = 0; i1 < 1; i1++) {
 	        players.add(new UnoPlayer(PlayerType.CPU,numUsers+i1,hands.get(numUsers+i1),"CPU"));
 	    }*/
+=======
+//	    int numUsers = users.size();
+//	    for(int i1 = 0; i1 < 1; i1++) {
+//	        players.add(new UnoPlayer(PlayerType.CPU,numUsers+i1,hands.get(numUsers+i1),"CPU"));
+//	    }
+>>>>>>> 8926a7fb2d87cf2abc971f579c6a424453195dc4
 	    //Initialize the disposal card stack
 	    ArrayList<UnoCard> disposal_Stack = new ArrayList<UnoCard>();
 	    //Create the UnoGame Object
