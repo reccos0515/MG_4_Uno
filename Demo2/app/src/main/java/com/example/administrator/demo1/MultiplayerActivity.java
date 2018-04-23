@@ -34,6 +34,8 @@ import java.util.ArrayList;
 import java.util.List;
 import io.socket.emitter.Emitter;
 
+import static com.example.administrator.demo1.UnoApplication.ConstantIP;
+
 
 /**
  * Class for handling client updates in an Online Game
@@ -58,8 +60,8 @@ public class MultiplayerActivity extends AppCompatActivity  {
     private io.socket.client.Socket gsocket;
 
 
-    private String playerUrl = "http://10.29.179.230:8090/player/find/";
-    private String addPlayerUrl = "http://10.29.179.230:8090/player/add?name=";
+    private String playerUrl = "http://"+ConstantIP+":8090/player/find/";
+    private String addPlayerUrl = "http://"+ConstantIP+":8090/player/add?name=";
 
     private String[] currentPlayer = new String[5];
 
