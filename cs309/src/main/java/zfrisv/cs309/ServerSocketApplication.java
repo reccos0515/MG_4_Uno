@@ -1,32 +1,21 @@
 package zfrisv.cs309;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Random;
 
-import com.corundumstudio.socketio.AckCallback;
 import com.corundumstudio.socketio.AckRequest;
 import com.corundumstudio.socketio.Configuration;
 import com.corundumstudio.socketio.SocketIOClient;
-import com.corundumstudio.socketio.SocketIONamespace;
 import com.corundumstudio.socketio.SocketIOServer;
-import com.corundumstudio.socketio.VoidAckCallback;
 import com.corundumstudio.socketio.listener.DataListener;
-import com.fasterxml.jackson.core.JsonParser;
-
-import application.Player;
-import application.PlayerController;
-import application.PlayerRepository;
 
 import com.corundumstudio.socketio.listener.ConnectListener;
 
 import org.json.JSONObject;
-import org.springframework.beans.factory.annotation.Autowired;
-
 
 /**
  * Begins the UnoGame multiplayer server-handler.
- * @author zfrisv
+ * @author MG4 Group
  *
  */
 public class ServerSocketApplication {
@@ -281,17 +270,6 @@ public class ServerSocketApplication {
 	        i++;
 	    }
 	    //Deal the other hands to the AI ***UPDATE WHEN USING MULTI-PLAYER***
-<<<<<<< HEAD
-	   /* int numUsers = users.size();
-	    for(int i1 = 0; i1 < 1; i1++) {
-	        players.add(new UnoPlayer(PlayerType.CPU,numUsers+i1,hands.get(numUsers+i1),"CPU"));
-	    }*/
-=======
-//	    int numUsers = users.size();
-//	    for(int i1 = 0; i1 < 1; i1++) {
-//	        players.add(new UnoPlayer(PlayerType.CPU,numUsers+i1,hands.get(numUsers+i1),"CPU"));
-//	    }
->>>>>>> 8926a7fb2d87cf2abc971f579c6a424453195dc4
 	    //Initialize the disposal card stack
 	    ArrayList<UnoCard> disposal_Stack = new ArrayList<UnoCard>();
 	    //Create the UnoGame Object

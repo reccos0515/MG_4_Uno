@@ -62,7 +62,7 @@ public class LeaderboardActivity extends AppCompatActivity {
                                     players[5][2] = avgScore;
                                 }
                             }
-                            LeaderboardView.append(players[5][0] + " \t " + players[5][1] + " \t" + players[5][2] + "\n");
+                            LeaderboardView.append("\n\n\n"+players[5][0] + " \t " + players[5][1] + " \t" + players[5][2] + "\n");
                         } catch (JSONException e) {
                             e.printStackTrace();
                             Toast.makeText(getApplicationContext(),
