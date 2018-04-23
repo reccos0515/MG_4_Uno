@@ -1,10 +1,12 @@
 package application;
 
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
+/**
+ * Object class for player objects for the player table.
+ * @author Dakota Moore
+ */
 @Entity
 public class Player {
 	

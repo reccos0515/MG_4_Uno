@@ -14,8 +14,6 @@ import com.android.volley.toolbox.JsonArrayRequest;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.w3c.dom.Text;
-
 
 public class LeaderboardActivity extends AppCompatActivity {
     private static final String TAG = "LeaderboardActivity";
@@ -62,7 +60,7 @@ public class LeaderboardActivity extends AppCompatActivity {
                                     players[5][2] = avgScore;
                                 }
                             }
-                            LeaderboardView.append(players[5][0] + " \t " + players[5][1] + " \t" + players[5][2] + "\n");
+                            LeaderboardView.append("\n\n\n"+players[5][0] + " \t " + players[5][1] + " \t" + players[5][2] + "\n");
                         } catch (JSONException e) {
                             e.printStackTrace();
                             Toast.makeText(getApplicationContext(),

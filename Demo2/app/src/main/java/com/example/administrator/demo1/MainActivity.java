@@ -22,21 +22,11 @@ import com.android.volley.VolleyError;
 import com.android.volley.VolleyLog;
 import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.StringRequest;
-import com.example.administrator.demo1.*;
 import com.android.volley.Response;
 
-import org.greenrobot.eventbus.EventBus;
-import org.greenrobot.eventbus.Subscribe;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import java.util.ArrayList;
-
-import io.socket.client.Socket;
-import io.socket.emitter.Emitter;
-
-import static android.app.PendingIntent.getActivity;
 
 public class MainActivity extends AppCompatActivity{
     private static final String TAG = "MainActivity";
