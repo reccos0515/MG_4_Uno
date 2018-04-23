@@ -9,7 +9,6 @@
 	<configs>
 	</configs>
 	<autoconfigs>
-		<config>java:application.ChatApp</config>
 		<config>java:application.Application</config>
 		<config>java:application.LeaderboardApp</config>
 		<config>java:application.PlayerApp</config>
