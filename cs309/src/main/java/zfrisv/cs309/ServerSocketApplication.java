@@ -449,18 +449,28 @@ public class ServerSocketApplication {
     	   winner = player.getUsername();
        }
     }
-    
+    /**
+     * creates a new string variable for a room name
+     * @return
+     */
     public static String newRoom() {
     	double i = Math.random();
     	String s = Double.toString(i);
     	return s;
     }
-    
+    /**
+     * gets all rooms that a client is in
+     * @param client
+     * @return
+     */
     public static java.util.Set<String> getRooms(SocketIOClient client) {
     	return client.getAllRooms();
     	
     }
-    
+    /**
+     * removes the client from all rooms
+     * @param client
+     */
     public static void clearFromRooms(SocketIOClient client) {
     	java.util.Set<String> s = getRooms(client);
     	
@@ -471,7 +481,11 @@ public class ServerSocketApplication {
     	}
     	
     }
-    
+    /**
+     * returns the first room that the client is connected to (should be only connected to one room)
+     * @param client
+     * @return
+     */
     public static String getRoom(SocketIOClient client) {
     	java.util.Set<String> s = getRooms(client);
     	Iterator<String> iter =  s.iterator();
