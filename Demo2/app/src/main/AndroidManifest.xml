@@ -25,11 +25,9 @@
         <activity android:name=".HubActivity" />
         <activity android:name=".ProfileActivity" />
         <activity android:name=".LeaderboardActivity" />
-        <activity android:name=".selectLobbyActivity" />
-        <activity
-            android:name=".SelectLobbyActivity"
-            android:label="@string/title_activity_select_lobby"
-            android:theme="@style/Theme.AppCompat.NoActionBar" />
+        <activity android:name=".selectLobbyActivity" android:exported="true"/>
+
+
     </application>
 
 </manifest>

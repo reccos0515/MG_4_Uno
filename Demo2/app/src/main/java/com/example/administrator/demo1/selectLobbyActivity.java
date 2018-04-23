@@ -43,9 +43,9 @@ public class selectLobbyActivity extends AppCompatActivity {
         gsocket.on(gsocket.EVENT_CONNECT, onConnect);
         gsocket.on("disconnect",onDisconnect);
        // gsocket.on("existed users",onExistedUsers);
-        gsocket.on("multiplayer",onStartMultiplayer);
+        //gsocket.on("multiplayer",onStartMultiplayer);
         gsocket.on("newLobby", onNewLobby);
-        //gsocket.on("newUserLobby", onNewUserLobby);
+        //gsocket.on("newUserLobby", onJoinLobby);
 
         gsocket.connect();
         //gsocket.emit("add user",username);
@@ -70,46 +70,46 @@ public class selectLobbyActivity extends AppCompatActivity {
 
             case R.id.lobby1:
 
-                gsocket.emit("newUserLobby", 1);
+                gsocket.emit("joinLobby", "1");
 
 
 
             case R.id.lobby2:
-                gsocket.emit("newUserLobby", 2);
+                gsocket.emit("joinLobby", "2");
 
             case R.id.lobby3:
-                gsocket.emit("newUserLobby", 3);
+                gsocket.emit("joinLobby", "3");
 
             case R.id.lobby4:
-                gsocket.emit("newUserLobby", 4);
+                gsocket.emit("joinLobby", "4");
             case R.id.lobby5:
-                gsocket.emit("newUserLobby", 5);
+                gsocket.emit("joinLobby", "5");
             case R.id.lobby6:
-                gsocket.emit("newUserLobby", 6);
+                gsocket.emit("joinLobby", "6");
             case R.id.lobby7:
-                gsocket.emit("newUserLobby", 7);
+                gsocket.emit("joinLobby", "7");
 
             case R.id.lobby8:
-                gsocket.emit("newUserLobby", 8);
+                gsocket.emit("joinLobby", "8");
 
             case R.id.lobby9:
-                gsocket.emit("newUserLobby", 9);
+                gsocket.emit("joinLobby", "9");
 
 
             case R.id.lobby10:
-                gsocket.emit("newUserLobby", 10);
+                gsocket.emit("joinLobby", "10");
 
             case R.id.lobby11:
-                gsocket.emit("newUserLobby", 11);
+                gsocket.emit("joinLobby", "11");
 
             case R.id.lobby12:
-                gsocket.emit("newUserLobby", 12);
+                gsocket.emit("joinLobby", "12");
 
             case R.id.lobby13:
-                gsocket.emit("newUserLobby", 13);
+                gsocket.emit("joinLobby", "13");
 
             case R.id.lobby14:
-                gsocket.emit("newUserLobby", 14);
+                gsocket.emit("joinLobby", "14");
 
 
 
@@ -119,7 +119,20 @@ public class selectLobbyActivity extends AppCompatActivity {
 
     //TODO create update lobbies function
     public void updateLobbies(ArrayList<String> arr){
-
+        if(arr!=null) {
+            LinearLayout lobbies = findViewById(R.id.lobbyScroll);
+            llp.removeAllViews();
+            LinearLayout llnew = new LinearLayout(this);
+            llnew.setOrientation(LinearLayout.VERTICAL);
+            for (int i = 0; i < users.size(); i++) {
+                String user = users.get(i);
+                TextView tv = new TextView(llnew.getContext());
+                tv.setTextSize(30);
+                tv.setText(user);
+                llnew.addView(tv);
+            }
+            llp.addView(llnew);
+        }
     }
 
     @Override
@@ -134,7 +147,6 @@ public class selectLobbyActivity extends AppCompatActivity {
     private Emitter.Listener onConnect = new Emitter.Listener() {
         @Override
         public void call(Object... args) {
-            Log.d("Test","User joined");
             isConnected = true;
             runOnUiThread(new Runnable() {
                 @Override
@@ -147,37 +159,28 @@ public class selectLobbyActivity extends AppCompatActivity {
             });
         }};
 
+
+
     //todo
+    private Emitter.Listener onJoinLobby = new Emitter.Listener() {
+        @Override
+        public void call(Object... args) {
+
+        }
+    };
+
     private Emitter.Listener onNewLobby = new Emitter.Listener() {
         @Override
         public void call(Object... args) {
 
         }
-    };
-
-    private Emitter.Listener onDisconnect = new Emitter.Listener() {
-        @Override
-        public void call(Object... args) {
-            Log.d("Test","User disconnected");
-            runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                    Log.d(TAG, "diconnected");
-                    isConnected = false;
-                    gsocket.emit("user left",username);
-                    Toast.makeText(getApplicationContext(),
-                            "Disconnected", Toast.LENGTH_LONG).show();
-                }
-            });
-        }
-    };
+    }
 
 
 
 
 
-
-    private final Emitter.Listener onStartMultiplayer = new Emitter.Listener() {
+    /*private final Emitter.Listener onStartMultiplayer = new Emitter.Listener() {
 
         @Override
         public void call(final Object... args) {
@@ -190,5 +193,5 @@ public class selectLobbyActivity extends AppCompatActivity {
             }
             startActivity(intent);
         }
-    };
+    };*/
 }

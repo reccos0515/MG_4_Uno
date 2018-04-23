@@ -15,25 +15,7 @@ import com.corundumstudio.socketio.listener.DataListener;
 import com.fasterxml.jackson.core.JsonParser;
 import com.corundumstudio.socketio.listener.ConnectListener;
 import org.json.*;
-import com.corundumstudio.socketio.AckMode;
-import com.corundumstudio.socketio.AckRequest;
-import com.corundumstudio.socketio.BroadcastOperations;
-import com.corundumstudio.socketio.Configuration;
-import com.corundumstudio.socketio.MultiTypeArgs;
-import com.corundumstudio.socketio.SocketIOClient;
-import com.corundumstudio.socketio.SocketIONamespace;
-import com.corundumstudio.socketio.annotation.ScannerEngine;
-import com.corundumstudio.socketio.listener.ConnectListener;
-import com.corundumstudio.socketio.listener.DataListener;
-import com.corundumstudio.socketio.listener.DisconnectListener;
-import com.corundumstudio.socketio.listener.ExceptionListener;
-import com.corundumstudio.socketio.listener.MultiTypeEventListener;
-import com.corundumstudio.socketio.protocol.JsonSupport;
-import com.corundumstudio.socketio.protocol.Packet;
-import com.corundumstudio.socketio.store.StoreFactory;
-import com.corundumstudio.socketio.store.pubsub.JoinLeaveMessage;
-import com.corundumstudio.socketio.store.pubsub.PubSubStore;
-import com.corundumstudio.socketio.transport.NamespaceClient;
+import java.util.UUID;
 
 /**
  * Begins the UnoGame multiplayer server-handler.
@@ -47,6 +29,8 @@ public class ServerSocketApplication {
 	private static ArrayList<Integer> usersCallUno = new ArrayList<Integer>();
 	private static String winner;
 	private static UnoGame currentGame;
+	
+	static ArrayList<String> lobbies = new ArrayList<String>();
 	
 	public static void run() {
 		Configuration config = new Configuration();
@@ -63,6 +47,9 @@ public class ServerSocketApplication {
         		System.out.println("New client connected");
         	}
         });
+        
+        
+        
         
         /**
          * Fetches the UnoGame object for the client
@@ -180,11 +167,18 @@ public class ServerSocketApplication {
 				server.getBroadcastOperations().sendEvent("existed users", users, usersReady);
         }});
         
-        server.addEventListener("newLobby", String.class, new DataListener<String>() {
-        	public void onData(SocketIOClient arg0, String username, AckRequest arg2) throws Exception {
-        		NamespaceClient.join()
-        		
-        	}
+        server.addEventListener("joinLobby", String.class, new DataListener<String>() {
+            @Override
+            public void onData(SocketIOClient socketIOClient, String roomName, AckRequest ackRequest) throws Exception {
+                socketIOClient.joinRoom(roomName);
+                
+                /*socketIOClient.getAllRooms();*/
+                lobbies.add(roomName);
+                server.getRoomOperations(roomName).sendEvent("existed users", users, usersReady);
+                
+                
+                
+            }
         });
        
         /**
@@ -195,6 +189,7 @@ public class ServerSocketApplication {
         		System.out.println(username);
 				users.add(username);
 				
+                arg0.
 				
 				//Get the index of the player that was added
         		int playerIndex = users.indexOf(username);
