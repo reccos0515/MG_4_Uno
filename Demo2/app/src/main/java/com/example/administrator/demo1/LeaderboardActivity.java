@@ -22,14 +22,27 @@ public class LeaderboardActivity extends AppCompatActivity {
     private String username;
     private String leaderboardUrl = "http://192.168.0.105:8090/leaderboard/all";
     private String players[][] = new String[6][3];
-    private TextView LeaderboardView;
+    private TextView username1, username2, username3, username4, username5, player_username;
+    private TextView score1, score2, score3, score4, score5, player_score;
+    private TextView player_rank;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_leaderboard);
-        LeaderboardView = (TextView) findViewById(R.id.LeaderboardView);
-        LeaderboardView.append("\n\nRank \t Username \t Average Score\n\n");
+        username1 = findViewById(R.id.username1);
+        username2 = findViewById(R.id.username2);
+        username3 = findViewById(R.id.username3);
+        username4 = findViewById(R.id.username4);
+        username5 = findViewById(R.id.username5);
+        score1 = findViewById(R.id.score1);
+        score2 = findViewById(R.id.score2);
+        score3 = findViewById(R.id.score3);
+        score4 = findViewById(R.id.score4);
+        score5 = findViewById(R.id.score5);
+        player_username = findViewById(R.id.player_username);
+        player_rank = findViewById(R.id.player_rank);
+        player_score = findViewById(R.id.player_score);
 
         //Creates the username for view
         username = getIntent().getStringExtra("Username");
@@ -66,15 +79,36 @@ public class LeaderboardActivity extends AppCompatActivity {
                                     players[i][0] = Integer.toString(i + 1);
                                     players[i][1] = name;
                                     players[i][2] = avgScore;
-                                    LeaderboardView.append(Integer.toString(i + 1) + " \t " + name + " \t" + avgScore + "\n");
+                                    if(i==0) {
+                                        score1.setText(avgScore);
+                                        username1.setText(name);
+                                    }
+                                    else if (i==1) {
+                                        score2.setText(avgScore);
+                                        username2.setText(name);
+                                    }
+                                    else if(i==2) {
+                                        score3.setText(avgScore);
+                                        username3.setText(name);
+                                    }
+                                    else if(i==3) {
+                                        score4.setText(avgScore);
+                                        username4.setText(name);
+                                    }
+                                    else if(i==4) {
+                                        score5.setText(avgScore);
+                                        username5.setText(name);
+                                    }
                                 }
                                 if(name.equalsIgnoreCase(username)) {
                                     players[5][0] = Integer.toString(i+1);
+                                    player_rank.setText("#"+Integer.toString(i+1));
                                     players[5][1] = username;
+                                    player_username.setText(name);
                                     players[5][2] = avgScore;
+                                    player_score.setText(avgScore);
                                 }
                             }
-                            LeaderboardView.append("\n\n\n"+players[5][0] + " \t " + players[5][1] + " \t" + players[5][2] + "\n");
                         } catch (JSONException e) {
                             e.printStackTrace();
                             Toast.makeText(getApplicationContext(),
