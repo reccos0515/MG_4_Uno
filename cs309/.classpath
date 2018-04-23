@@ -22,15 +22,10 @@
 			<attribute name="maven.pomderived" value="true"/>
 		</attributes>
 	</classpathentry>
-<<<<<<< HEAD
 	<classpathentry exported="true" kind="lib" path="C:/Users/damoo/Desktop/Spring18/CS309/MG_4_Uno/cs309/java-json.jar"/>
 	<classpathentry excluding="**" kind="src" output="target/classes" path="src/main/resources">
 		<attributes>
 			<attribute name="maven.pomderived" value="true"/>
 		</attributes>
 	</classpathentry>
-=======
-	<classpathentry kind="lib" path="C:/Users/Administrator/Downloads/java-json.jar/java-json.jar"/>
->>>>>>> 8926a7fb2d87cf2abc971f579c6a424453195dc4
-	<classpathentry kind="output" path="target/classes"/>
 </classpath>
