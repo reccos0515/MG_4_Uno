@@ -1,6 +1,7 @@
 package zfrisv.cs309;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.Random;
 
 import com.corundumstudio.socketio.AckRequest;
@@ -11,6 +12,7 @@ import com.corundumstudio.socketio.listener.DataListener;
 
 import com.corundumstudio.socketio.listener.ConnectListener;
 
+import org.hibernate.mapping.Set;
 import org.json.JSONObject;
 
 /**
@@ -25,6 +27,7 @@ public class ServerSocketApplication {
 	private static ArrayList<Integer> usersCallUno = new ArrayList<Integer>();
 	private static String winner;
 	private static UnoGame currentGame;
+	private static String room;
 	
 	public static void run() {
 		Configuration config = new Configuration();
@@ -47,13 +50,14 @@ public class ServerSocketApplication {
          */
         server.addEventListener("fetch game", String.class, new DataListener<String>() {
         	public void onData(SocketIOClient arg0, String username, AckRequest arg2) throws Exception {
-        		server.getBroadcastOperations().sendEvent("get deck", currentGame.getDeck());
-        		server.getBroadcastOperations().sendEvent("get players", currentGame.getUnoPlayers());
-        		server.getBroadcastOperations().sendEvent("get disp", currentGame.getDisposalCards());
-        		server.getBroadcastOperations().sendEvent("get turn", currentGame.getCurrentTurn());
-        		server.getBroadcastOperations().sendEvent("get direction", currentGame.getCurrentDirection());
-        		server.getBroadcastOperations().sendEvent("update calls", usersCallUno);
-        		server.getBroadcastOperations().sendEvent("set game");
+        		
+        		server.getRoomOperations(getRoom(arg0)).sendEvent("get deck", currentGame.getDeck());
+        		server.getRoomOperations(getRoom(arg0)).sendEvent("get players", currentGame.getUnoPlayers());
+        		server.getRoomOperations(getRoom(arg0)).sendEvent("get disp", currentGame.getDisposalCards());
+        		server.getRoomOperations(getRoom(arg0)).sendEvent("get turn", currentGame.getCurrentTurn());
+        		server.getRoomOperations(getRoom(arg0)).sendEvent("get direction", currentGame.getCurrentDirection());
+        		server.getRoomOperations(getRoom(arg0)).sendEvent("update calls", usersCallUno);
+        		server.getRoomOperations(getRoom(arg0)).sendEvent("set game");
         }});
         
         /**
@@ -72,7 +76,7 @@ public class ServerSocketApplication {
         		}
         		System.out.println(usersReady.get(playerIndex));
         		//Send the clients an update version of who's ready/not ready
-        		server.getBroadcastOperations().sendEvent("existed users", users, usersReady);
+        		server.getRoomOperations(getRoom(arg0)).sendEvent("existed users", users, usersReady);
         }});
         
         /**
@@ -96,10 +100,10 @@ public class ServerSocketApplication {
         				//Remove the "UNO!" call the player had
         				usersCallUno.set(playerIndex, 0);
         				//send the updated game state to all the clients (only the UnoDeck and UnoPlayers have changed)
-        				server.getBroadcastOperations().sendEvent("get deck", currentGame.getDeck());
-                		server.getBroadcastOperations().sendEvent("get players", currentGame.getUnoPlayers());
-                		server.getBroadcastOperations().sendEvent("update calls", usersCallUno);
-                		server.getBroadcastOperations().sendEvent("set game");
+        				server.getRoomOperations(getRoom(arg0)).sendEvent("get deck", currentGame.getDeck());
+        				server.getRoomOperations(getRoom(arg0)).sendEvent("get players", currentGame.getUnoPlayers());
+        				server.getRoomOperations(getRoom(arg0)).sendEvent("update calls", usersCallUno);
+        				server.getRoomOperations(getRoom(arg0)).sendEvent("set game");
         			}
         		}
         }});
@@ -111,8 +115,8 @@ public class ServerSocketApplication {
         	public void onData(SocketIOClient arg0, String username, AckRequest arg2) throws Exception {
         		int usern = users.indexOf(username);
         		usersCallUno.set(usern, 1);
-        		server.getBroadcastOperations().sendEvent("update calls", usersCallUno);
-        		server.getBroadcastOperations().sendEvent("set game");
+        		server.getRoomOperations(getRoom(arg0)).sendEvent("update calls", usersCallUno);
+        		server.getRoomOperations(getRoom(arg0)).sendEvent("set game");
         }});
         	
         /**
@@ -127,19 +131,19 @@ public class ServerSocketApplication {
         		simulateTurn(new UnoCard(tValue, tColor, tAction));
         		if(winner!=null) {
         			System.out.println("We here");
-        			server.getBroadcastOperations().sendEvent("finish game",winner);
+        			server.getRoomOperations(getRoom(arg0)).sendEvent("finish game",winner);
         			users.clear();
         			usersReady.clear();
         			usersCallUno.clear();
         			winner = null;
         		} else {
-	        		server.getBroadcastOperations().sendEvent("get deck", currentGame.getDeck());
-	        		server.getBroadcastOperations().sendEvent("get players", currentGame.getUnoPlayers());
-	        		server.getBroadcastOperations().sendEvent("get disp", currentGame.getDisposalCards());
-	        		server.getBroadcastOperations().sendEvent("get turn", currentGame.getCurrentTurn());
-	        		server.getBroadcastOperations().sendEvent("get direction", currentGame.getCurrentDirection());
-	        		server.getBroadcastOperations().sendEvent("update calls", usersCallUno);
-	        		server.getBroadcastOperations().sendEvent("set game");
+        			server.getRoomOperations(getRoom(arg0)).sendEvent("get deck", currentGame.getDeck());
+        			server.getRoomOperations(getRoom(arg0)).sendEvent("get players", currentGame.getUnoPlayers());
+	        		server.getRoomOperations(getRoom(arg0)).sendEvent("get disp", currentGame.getDisposalCards());
+	        		server.getRoomOperations(getRoom(arg0)).sendEvent("get turn", currentGame.getCurrentTurn());
+	        		server.getRoomOperations(getRoom(arg0)).sendEvent("get direction", currentGame.getCurrentDirection());
+	        		server.getRoomOperations(getRoom(arg0)).sendEvent("update calls", usersCallUno);
+	        		server.getRoomOperations(getRoom(arg0)).sendEvent("set game");
         		}
         }});
         
@@ -155,7 +159,7 @@ public class ServerSocketApplication {
 						users.remove(i);
 					}
 				}
-				server.getBroadcastOperations().sendEvent("existed users", users, usersReady);
+				server.getRoomOperations(getRoom(arg0)).sendEvent("existed users", users, usersReady);
         }});
        
         /**
@@ -165,6 +169,19 @@ public class ServerSocketApplication {
         		public void onData(SocketIOClient arg0, String username, AckRequest arg2) throws Exception {
         		System.out.println(username);
 				users.add(username);
+				
+				clearFromRooms(arg0);
+				
+				if(server.getRoomOperations(room).getClients().size() < 4) {
+					arg0.joinRoom(room);
+				}
+				else {
+					while(server.getRoomOperations(room).getClients().size() != 0) {
+					room = newRoom();
+					}
+					arg0.joinRoom(room);
+				}
+				
 				//Get the index of the player that was added
         		int playerIndex = users.indexOf(username);
         		//They shouldn't be ready (unless they are the host)
@@ -173,8 +190,12 @@ public class ServerSocketApplication {
         		} else {
         			usersReady.add(1);
         		}
-				server.getBroadcastOperations().sendEvent("existed users", users, usersReady);
+				server.getRoomOperations(getRoom(arg0)).sendEvent("existed users", users, usersReady);
         }});
+        
+        
+       //how I will brodcast to a room 
+        //server.getRoomOperations("rooomid").sendEvent("existed users", users, usersReady);
         
         /**
          * Sends the client to the multiplayer game
@@ -186,13 +207,13 @@ public class ServerSocketApplication {
     		for(int i = 0; i < users.size(); i++) {
     			usersCallUno.add(0);
     		}
-			server.getBroadcastOperations().sendEvent("multiplayer");
+			server.getRoomOperations(getRoom(arg0)).sendEvent("multiplayer");
 			System.out.println("Test6");
     	}});
         
         server.addEventListener("new message", String.class, new DataListener<String>(){
         	public void onData(SocketIOClient arg0, String message, AckRequest arg2) throws Exception {
-        		server.getBroadcastOperations().sendEvent("update message", message);
+        		server.getRoomOperations(getRoom(arg0)).sendEvent("update message", message);
         	}
         });
         
@@ -428,4 +449,35 @@ public class ServerSocketApplication {
     	   winner = player.getUsername();
        }
     }
+    
+    public static String newRoom() {
+    	double i = Math.random();
+    	String s = Double.toString(i);
+    	return s;
+    }
+    
+    public static java.util.Set<String> getRooms(SocketIOClient client) {
+    	return client.getAllRooms();
+    	
+    }
+    
+    public static void clearFromRooms(SocketIOClient client) {
+    	java.util.Set<String> s = getRooms(client);
+    	
+    	
+    	Iterator<String> iter =  s.iterator();
+    	while(iter.hasNext()) {
+    		client.leaveRoom(iter.next());
+    	}
+    	
+    }
+    
+    public static String getRoom(SocketIOClient client) {
+    	java.util.Set<String> s = getRooms(client);
+    	Iterator<String> iter =  s.iterator();
+    	return iter.next();
+    }
+    
+    
+    
 }
