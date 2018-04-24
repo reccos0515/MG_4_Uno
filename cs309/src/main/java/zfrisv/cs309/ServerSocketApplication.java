@@ -17,6 +17,7 @@ import antlr.collections.List;
 
 import com.corundumstudio.socketio.listener.ConnectListener;
 
+import org.apache.catalina.Server;
 import org.hibernate.mapping.Collection;
 import org.hibernate.mapping.Set;
 import org.json.JSONObject;
@@ -33,9 +34,18 @@ public class ServerSocketApplication {
 	private static ArrayList<Integer> usersCallUno = new ArrayList<Integer>();
 	private static String winner;
 	private static UnoGame currentGame;
+	private static HashMap<String, UnoGame> unoGames = new HashMap<String, UnoGame>();	//Stores UnoGame by lobby name
 	private static String room = "0";
-	static HashMap<SocketIOClient, String> hmap = new HashMap<SocketIOClient, String>();
+	private static java.util.Collection<SocketIOClient> usersInLobby = new ArrayList<SocketIOClient>();
 	
+	
+	private static HashMap<SocketIOClient, String> usernames = new HashMap<SocketIOClient, String>(); //stores a username by socket connection
+	private static HashMap<SocketIOClient, String> userLobby = new HashMap<SocketIOClient, String>(); //stores lobby a socket connection is in
+	private static HashMap<String, Boolean> isReady = new HashMap<String, Boolean>(); //stores if a username is ready or not
+	private static HashMap<SocketIOClient, Boolean> isHost = new HashMap<SocketIOClient, Boolean>(); //stores if a client is a host
+	private static HashMap<SocketIOClient, Integer> lobbyPosition = new HashMap<SocketIOClient, Integer>(); //stores a players position in a lobby
+	
+
 	public static void run() {
 		Configuration config = new Configuration();
         config.setPort(8080);
@@ -58,6 +68,8 @@ public class ServerSocketApplication {
         server.addEventListener("fetch game", String.class, new DataListener<String>() {
         	public void onData(SocketIOClient arg0, String username, AckRequest arg2) throws Exception {
         		
+        		getUnoGame(arg0);
+        		
         		server.getRoomOperations(getRoom(arg0)).sendEvent("get deck", currentGame.getDeck());
         		server.getRoomOperations(getRoom(arg0)).sendEvent("get players", currentGame.getUnoPlayers());
         		server.getRoomOperations(getRoom(arg0)).sendEvent("get disp", currentGame.getDisposalCards());
@@ -65,6 +77,8 @@ public class ServerSocketApplication {
         		server.getRoomOperations(getRoom(arg0)).sendEvent("get direction", currentGame.getCurrentDirection());
         		server.getRoomOperations(getRoom(arg0)).sendEvent("update calls", usersCallUno);
         		server.getRoomOperations(getRoom(arg0)).sendEvent("set game");
+        		
+        		unoGames.replace(userLobby.get(arg0), currentGame);
         		
         }});
         
@@ -75,14 +89,23 @@ public class ServerSocketApplication {
         	public void onData(SocketIOClient arg0, String username, AckRequest arg2) throws Exception {
         		//Get the index of the player that is now ready/not ready
         		System.out.println(username);
-        		int playerIndex = users.indexOf(username);
+        		//int playerIndex = users.indexOf(username);
         		//Change their status (binary)
-        		if(usersReady.get(playerIndex)==0) {
+        		/*if(usersReady.get(playerIndex)==0) {
         			usersReady.set(playerIndex, 1);
         		} else {
         			usersReady.set(playerIndex, 0);
+        		}*/
+        		Boolean b = isReady.get(arg0);
+        		if(b = false) {
+        			isReady.replace(arg0, true);
         		}
-        		System.out.println(usersReady.get(playerIndex));
+        		else {
+        			isReady.replace(arg0, false);
+        		}
+        		
+        		
+        		//System.out.println(usersReady.get(playerIndex));
         		//Send the clients an update version of who's ready/not ready
         		server.getRoomOperations(getRoom(arg0)).sendEvent("existed users", users, usersReady);
         }});
@@ -177,7 +200,7 @@ public class ServerSocketApplication {
         		public void onData(SocketIOClient arg0, String username, AckRequest arg2) throws Exception {
         		System.out.println(username);
 				//users.add(username);
-        		hmap.put(arg0, username);
+        		usernames.put(arg0, username);
         		
 				
 				clearFromRooms(arg0);
@@ -187,6 +210,19 @@ public class ServerSocketApplication {
 					room = newRoom();
 				}
 				
+				if(server.getRoomOperations(room).getClients().size() == 0) {
+					isHost.put(arg0, true);
+					isReady.put(arg0, true);
+				}
+				
+				else {
+					isHost.put(arg0,  false);
+					isReady.put(arg0, false);
+				}
+				
+				lobbyPosition.put(arg0, server.getRoomOperations(room).getClients().size());
+				userLobby.put(arg0, room);
+				
 				
 				arg0.joinRoom(room);
 				System.out.println(room);
@@ -194,26 +230,21 @@ public class ServerSocketApplication {
 				
 				Object[] clients = server.getRoomOperations(getRoom(arg0)).getClients().toArray();
 				for(int i = 0; i< clients.length; i++) {
-					users.add(hmap.get(clients[i]));
+					users.add(usernames.get(clients[i]));
 				
 				}
-				
-				
-				
-				
-				
-				
-					
-				
+			
 				//Get the index of the player that was added
-        		int playerIndex = users.indexOf(username);
+        		//int playerIndex = users.indexOf(username);
         		//They shouldn't be ready (unless they are the host)
-        		if(playerIndex!=0) {
-        			usersReady.add(0);
-        		} else {
-        			usersReady.add(1);
-        		}
+        		
+				usersInLobby = server.getRoomOperations(getRoom(arg0)).getClients();
+				usersInLobbyToUsers(usersInLobby);
+				
+        		
+        		
 				server.getRoomOperations(getRoom(arg0)).sendEvent("existed users", users, usersReady);
+				
         }});
         
         
@@ -514,6 +545,40 @@ public class ServerSocketApplication {
     	return iter.next();
     }
     
+    private static void updateUsersInLobby(java.util.Collection<SocketIOClient> usersCol) {
+    	users.clear();
+    	Iterator<SocketIOClient> iter = usersCol.iterator();
+    	while(iter.hasNext()) {
+    		users.add(usernames.get(iter.next()));
+    	}
+    }
+    
+
+    
+    /**
+     * sets current game to the game the user is in
+     * Call this before working with currentGame
+     * @param client
+     */
+    private static void getUnoGame(SocketIOClient client){
+    	currentGame = unoGames.get(userLobby.get(client));
+    }
+    
+    
+    private static void updateUsersReady() {
+    	Iterator<String> iter = users.iterator();
+    	usersReady.clear();
+    	while(iter.hasNext()) {
+    		if(isReady.get(iter.next()) == true) {
+    			usersReady.add(1);
+    		}
+    		else {
+    			usersReady.add(0);
+    		}
+    		
+    		 
+    	}
+    }
     
     
 }
