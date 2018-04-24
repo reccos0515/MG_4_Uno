@@ -224,7 +224,7 @@ public class ServerSocketApplication {
         server.addEventListener("multiplayer", String.class, new DataListener<String>() {
     		public void onData(SocketIOClient arg0, String username, AckRequest arg2) throws Exception {
     		setUpGame();
-    		server.getRoomOperations(getRoom(arg0)).
+    		server.getRoomOperations(getRoom(arg0));
     		System.out.println("Test5");
     		for(int i = 0; i < users.size(); i++) {
     			usersCallUno.add(0);
