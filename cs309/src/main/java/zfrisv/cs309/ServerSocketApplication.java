@@ -29,22 +29,25 @@ import org.json.JSONObject;
  */
 public class ServerSocketApplication {
 
-	private static ArrayList<String> users = new ArrayList<String>();
-	private static ArrayList<Integer> usersReady = new ArrayList<Integer>();
-	private static ArrayList<Integer> usersCallUno = new ArrayList<Integer>();
-	private static String winner;
-	private static UnoGame currentGame;
+//	private static ArrayList<String> users = new ArrayList<String>();
+//	private static ArrayList<Integer> usersReady = new ArrayList<Integer>();
+//	private static ArrayList<Integer> usersCallUno = new ArrayList<Integer>();
+//	private static String winner;
+//	private static UnoGame currentGame;
+//	private static String room = "0";
+//	private static java.util.Collection<SocketIOClient> usersInLobby = new ArrayList<SocketIOClient>();
+	
 	private static HashMap<String, UnoGame> unoGames = new HashMap<String, UnoGame>();	//Stores UnoGame by lobby name
-	private static String room = "0";
-	private static java.util.Collection<SocketIOClient> usersInLobby = new ArrayList<SocketIOClient>();
-	
-	
 	private static HashMap<SocketIOClient, String> usernames = new HashMap<SocketIOClient, String>(); //stores a username by socket connection
 	private static HashMap<SocketIOClient, String> userLobby = new HashMap<SocketIOClient, String>(); //stores lobby a socket connection is in
-	private static HashMap<String, Boolean> isReady = new HashMap<String, Boolean>(); //stores if a username is ready or not
+	private static HashMap<SocketIOClient, Boolean> isReady = new HashMap<SocketIOClient, Boolean>(); //stores if a username is ready or not
 	private static HashMap<SocketIOClient, Boolean> isHost = new HashMap<SocketIOClient, Boolean>(); //stores if a client is a host
 	private static HashMap<SocketIOClient, Integer> lobbyPosition = new HashMap<SocketIOClient, Integer>(); //stores a players position in a lobby
-	
+	private static HashMap<String, ArrayList<String>> lobbyUsers = new HashMap<>(); //tobby to users
+	private static HashMap<String, ArrayList<Integer>> usersReady = new HashMap<>(); //lobby to usersReady
+	private static HashMap<String, ArrayList<Integer>> lobbyCalledUno = new HashMap<>(); //lobby to userscalledUno
+	private static HashMap<String, String> winner = new HashMap<>();
+
 
 	public static void run() {
 		Configuration config = new Configuration();
@@ -68,17 +71,17 @@ public class ServerSocketApplication {
         server.addEventListener("fetch game", String.class, new DataListener<String>() {
         	public void onData(SocketIOClient arg0, String username, AckRequest arg2) throws Exception {
         		
-        		getUnoGame(arg0);
+        		unoGames.get(userLobby.get(arg0));
+        		String room = getRoom(arg0);
+        		server.getRoomOperations(room).sendEvent("get deck", unoGames.get(room).getDeck());
+        		server.getRoomOperations(room).sendEvent("get players", unoGames.get(room).getUnoPlayers());
+        		server.getRoomOperations(room).sendEvent("get disp", unoGames.get(room).getDisposalCards());
+        		server.getRoomOperations(room).sendEvent("get turn", unoGames.get(room).getCurrentTurn());
+        		server.getRoomOperations(room).sendEvent("get direction", unoGames.get(room).getCurrentDirection());
+        		server.getRoomOperations(room).sendEvent("update calls", unoGames.get(room));
+        		server.getRoomOperations(room).sendEvent("set game");
         		
-        		server.getRoomOperations(getRoom(arg0)).sendEvent("get deck", currentGame.getDeck());
-        		server.getRoomOperations(getRoom(arg0)).sendEvent("get players", currentGame.getUnoPlayers());
-        		server.getRoomOperations(getRoom(arg0)).sendEvent("get disp", currentGame.getDisposalCards());
-        		server.getRoomOperations(getRoom(arg0)).sendEvent("get turn", currentGame.getCurrentTurn());
-        		server.getRoomOperations(getRoom(arg0)).sendEvent("get direction", currentGame.getCurrentDirection());
-        		server.getRoomOperations(getRoom(arg0)).sendEvent("update calls", usersCallUno);
-        		server.getRoomOperations(getRoom(arg0)).sendEvent("set game");
-        		
-        		unoGames.replace(userLobby.get(arg0), currentGame);
+        		unoGames.put(userLobby.get(arg0), unoGames.get(room));
         		
         }});
         
@@ -98,16 +101,16 @@ public class ServerSocketApplication {
         		}*/
         		Boolean b = isReady.get(arg0);
         		if(b = false) {
-        			isReady.replace(arg0, true);
+        			isReady.put(arg0, true);
         		}
         		else {
-        			isReady.replace(arg0, false);
+        			isReady.put(arg0, false);
         		}
         		
         		
         		//System.out.println(usersReady.get(playerIndex));
         		//Send the clients an update version of who's ready/not ready
-        		server.getRoomOperations(getRoom(arg0)).sendEvent("existed users", users, usersReady);
+        		server.getRoomOperations(getRoom(arg0)).sendEvent("existed users", lobbyUsers.get(userLobby.get(arg0)), usersReady);
         }});
         
         /**
@@ -117,23 +120,27 @@ public class ServerSocketApplication {
         	public void onData(SocketIOClient arg0, String username, AckRequest arg2) throws Exception {
         		//Get the index of the player that supposedly hasn't called UNO
         		System.out.println(username);
-        		int playerIndex = users.indexOf(username);
+        		
+        		// sclient -> room -> userlist
+        		// sclient -> room string -> sclients in room -> usernames
+        		
+        		int playerIndex = lobbyUsers.get(userLobby.get(arg0)).indexOf(username);
         		//See if they have only one UnoCard in their hand
         		//	if they do and haven't called "UNO!", then add two cards to their hand
         		//from the deck, and update the game state
-        		if(currentGame.getUnoPlayers().get(playerIndex).getUnoHand().getCards().size()==1) {
-        			int calledUno = usersCallUno.get(playerIndex);
+        		if(unoGames.get(userLobby.get(arg0)).getUnoPlayers().get(playerIndex).getUnoHand().getCards().size()==1) {
+        			int calledUno = lobbyCalledUno.get(userLobby.get(arg0)).indexOf(username);
         			if(calledUno==0) {
         				//Give them two UnoCards from the UnoDeck
         				for(int i = 0; i < 2; i++) {
-        					currentGame.getUnoPlayers().get(playerIndex).getUnoHand().getCards().add(currentGame.getCardFromDeck());
+        					unoGames.get(userLobby.get(arg0)).getUnoPlayers().get(playerIndex).getUnoHand().getCards().add(unoGames.get(userLobby.get(arg0)).getCardFromDeck());
         				}
         				//Remove the "UNO!" call the player had
-        				usersCallUno.set(playerIndex, 0);
+        				lobbyCalledUno.get(userLobby.get(arg0)).set(playerIndex, 0);
         				//send the updated game state to all the clients (only the UnoDeck and UnoPlayers have changed)
-        				server.getRoomOperations(getRoom(arg0)).sendEvent("get deck", currentGame.getDeck());
-        				server.getRoomOperations(getRoom(arg0)).sendEvent("get players", currentGame.getUnoPlayers());
-        				server.getRoomOperations(getRoom(arg0)).sendEvent("update calls", usersCallUno);
+        				server.getRoomOperations(getRoom(arg0)).sendEvent("get deck", unoGames.get(userLobby.get(arg0)).getDeck());
+        				server.getRoomOperations(getRoom(arg0)).sendEvent("get players", unoGames.get(userLobby.get(arg0)).getUnoPlayers());
+        				server.getRoomOperations(getRoom(arg0)).sendEvent("update calls", lobbyCalledUno.get(userLobby.get(arg0)));
         				server.getRoomOperations(getRoom(arg0)).sendEvent("set game");
         			}
         		}
@@ -144,9 +151,9 @@ public class ServerSocketApplication {
          */
         server.addEventListener("declare uno", String.class, new DataListener<String>() {
         	public void onData(SocketIOClient arg0, String username, AckRequest arg2) throws Exception {
-        		int usern = users.indexOf(username);
-        		usersCallUno.set(usern, 1);
-        		server.getRoomOperations(getRoom(arg0)).sendEvent("update calls", usersCallUno);
+        		int usern = lobbyUsers.get(userLobby.get(arg0)).indexOf(username);
+        		lobbyCalledUno.get(userLobby.get(arg0)).set(usern, 1);
+        		server.getRoomOperations(getRoom(arg0)).sendEvent("update calls", lobbyCalledUno.get(userLobby.get(arg0)));
         		server.getRoomOperations(getRoom(arg0)).sendEvent("set game");
         }});
         	
@@ -159,21 +166,22 @@ public class ServerSocketApplication {
         		Actions tAction = setActionType(obj.getString("actionType"));
         		Colors tColor = setColor(obj.getString("color"));
         		int tValue = obj.getInt("value");
-        		simulateTurn(new UnoCard(tValue, tColor, tAction));
-        		if(winner!=null) {
+        		simulateTurn(new UnoCard(tValue, tColor, tAction), arg0);
+        		if(winner.get(userLobby.get(arg0))!=null) {
         			System.out.println("We here");
-        			server.getRoomOperations(getRoom(arg0)).sendEvent("finish game",winner);
-        			users.clear();
-        			usersReady.clear();
-        			usersCallUno.clear();
-        			winner = null;
+        			server.getRoomOperations(getRoom(arg0)).sendEvent("finish game",winner.get(userLobby.get(arg0)));
+      
+        			
+        			
+        			
+        			winner.put(userLobby.get(arg0), null);
         		} else {
-        			server.getRoomOperations(getRoom(arg0)).sendEvent("get deck", currentGame.getDeck());
-        			server.getRoomOperations(getRoom(arg0)).sendEvent("get players", currentGame.getUnoPlayers());
-	        		server.getRoomOperations(getRoom(arg0)).sendEvent("get disp", currentGame.getDisposalCards());
-	        		server.getRoomOperations(getRoom(arg0)).sendEvent("get turn", currentGame.getCurrentTurn());
-	        		server.getRoomOperations(getRoom(arg0)).sendEvent("get direction", currentGame.getCurrentDirection());
-	        		server.getRoomOperations(getRoom(arg0)).sendEvent("update calls", usersCallUno);
+        			server.getRoomOperations(getRoom(arg0)).sendEvent("get deck", unoGames.get(userLobby.get(arg0)).getDeck());
+        			server.getRoomOperations(getRoom(arg0)).sendEvent("get players", unoGames.get(userLobby.get(arg0)).getUnoPlayers());
+	        		server.getRoomOperations(getRoom(arg0)).sendEvent("get disp", unoGames.get(userLobby.get(arg0)).getDisposalCards());
+	        		server.getRoomOperations(getRoom(arg0)).sendEvent("get turn", unoGames.get(userLobby.get(arg0)).getCurrentTurn());
+	        		server.getRoomOperations(getRoom(arg0)).sendEvent("get direction", unoGames.get(userLobby.get(arg0)).getCurrentDirection());
+	        		server.getRoomOperations(getRoom(arg0)).sendEvent("update calls", lobbyCalledUno.get(userLobby.get(arg0)));
 	        		server.getRoomOperations(getRoom(arg0)).sendEvent("set game");
         		}
         }});
@@ -183,34 +191,50 @@ public class ServerSocketApplication {
          */
         server.addEventListener("user left", String.class, new DataListener<String>() {
         	public void onData(SocketIOClient arg0, String username, AckRequest arg2) throws Exception {
-				for(int i=0;i<users.size();i++) {
-					if(username.equals(users.get(i))) {
+				for(int i=0;i<lobbyUsers.get(userLobby.get(arg0)).size();i++) {
+					if(username.equals(lobbyUsers.get(userLobby.get(arg0)))) {
 						//Remove that player from the usersReady array
 						usersReady.remove(i);
-						users.remove(i);
+						lobbyUsers.get(userLobby.get(arg0)).remove(i);
 					}
 				}
-				server.getRoomOperations(getRoom(arg0)).sendEvent("existed users", users, usersReady);
+				server.getRoomOperations(getRoom(arg0)).sendEvent("existed users", lobbyUsers.get(userLobby.get(arg0)), usersReady);
         }});
        
         /**
          * Adds a player that has decided to join the lobby
          */
+//        server.addEventListener("add user", String.class, new DataListener<String>() {
+//    		public void onData(SocketIOClient arg0, String username, AckRequest arg2) throws Exception {
+//    		System.out.println(username);
+//			lobbyUsers.get(userLobby.get(arg0)).add(username);
+//			//Get the index of the player that was added
+//    		int playerIndex = lobbyUsers.get(userLobby.get(arg0)).indexOf(username);
+//    		//They shouldn't be ready (unless they are the host)
+//    		if(playerIndex!=0) {
+//    			usersReady.get(getRoom(arg0)).add(0);
+//    		} else {
+//    			usersReady.get(getRoom(arg0)).add(1);
+//    		}
+//			server.getBroadcastOperations().sendEvent("existed users", lobbyUsers.get(userLobby.get(arg0)), usersReady);
+//    }});
+
         server.addEventListener("add user", String.class, new DataListener<String>() {
         		public void onData(SocketIOClient arg0, String username, AckRequest arg2) throws Exception {
         		System.out.println(username);
 				//users.add(username);
         		usernames.put(arg0, username);
         		
-				
 				clearFromRooms(arg0);
-				users.clear();
 				
-				if(server.getRoomOperations(room).getClients().size() >= 4) {
-					room = newRoom();
+				
+				
+				if(server.getRoomOperations(userLobby.get(arg0)).getClients().size() >= 4) {
+					userLobby.put(arg0,  newRoom());
+//					room = newRoom();
 				}
 				
-				if(server.getRoomOperations(room).getClients().size() == 0) {
+				if(server.getRoomOperations(userLobby.get(arg0)).getClients().size() == 0) {
 					isHost.put(arg0, true);
 					isReady.put(arg0, true);
 				}
@@ -220,17 +244,20 @@ public class ServerSocketApplication {
 					isReady.put(arg0, false);
 				}
 				
-				lobbyPosition.put(arg0, server.getRoomOperations(room).getClients().size());
-				userLobby.put(arg0, room);
+				lobbyPosition.put(arg0, server.getRoomOperations(userLobby.get(arg0)).getClients().size());
+				userLobby.put(arg0, userLobby.get(arg0));
 				
 				
-				arg0.joinRoom(room);
-				System.out.println(room);
+				//lobbyUsers.put(room, arraylist w username)
+				lobbyUsers.get(userLobby.get(arg0)).add(username);
+				
+				arg0.joinRoom(userLobby.get(arg0));
+				System.out.println(userLobby.get(arg0));
 				System.out.println(getRoom(arg0));
 				
 				Object[] clients = server.getRoomOperations(getRoom(arg0)).getClients().toArray();
 				for(int i = 0; i< clients.length; i++) {
-					users.add(usernames.get(clients[i]));
+					lobbyUsers.get(userLobby.get(arg0)).add(usernames.get(clients[i]));
 				
 				}
 			
@@ -238,12 +265,12 @@ public class ServerSocketApplication {
         		//int playerIndex = users.indexOf(username);
         		//They shouldn't be ready (unless they are the host)
         		
-				usersInLobby = server.getRoomOperations(getRoom(arg0)).getClients();
-				usersInLobbyToUsers(usersInLobby);
+				//usersInLobby = server.getRoomOperations(getRoom(arg0)).getClients();
+				//updateUsersInLobby(usersInLobby);
 				
         		
         		
-				server.getRoomOperations(getRoom(arg0)).sendEvent("existed users", users, usersReady);
+				server.getRoomOperations(getRoom(arg0)).sendEvent("existed users", userLobby.get(arg0), usersReady.get(userLobby.get(arg0)));
 				
         }});
         
@@ -254,11 +281,11 @@ public class ServerSocketApplication {
          */
         server.addEventListener("multiplayer", String.class, new DataListener<String>() {
     		public void onData(SocketIOClient arg0, String username, AckRequest arg2) throws Exception {
-    		setUpGame();
+    		setUpGame(arg0);
     		server.getRoomOperations(getRoom(arg0));
     		System.out.println("Test5");
-    		for(int i = 0; i < users.size(); i++) {
-    			usersCallUno.add(0);
+    		for(int i = 0; i < lobbyUsers.get(userLobby.get(arg0)).size(); i++) {
+    			lobbyCalledUno.get(userLobby.get(arg0)).add(0);
     		}
 			server.getRoomOperations(getRoom(arg0)).sendEvent("multiplayer");
 			System.out.println("Test6");
@@ -328,17 +355,17 @@ public class ServerSocketApplication {
 	/**
 	 * Sets up the multiplayer game and broadcasts it to all the players
 	 */
-	public static void setUpGame() {
+	public static void setUpGame(SocketIOClient client) {
 		//Create and Shuffle Deck
 	    UnoDeck deck = new UnoDeck();
 	    deck.shuffleCards();
 	    //Deal cards to hands **UPDATE EVENTUALLY
-	    ArrayList<UnoHand> hands = deck.dealHands(users.size());
+	    ArrayList<UnoHand> hands = deck.dealHands(lobbyUsers.get(userLobby.get(client)).size());
 	    //Create an ArrayList of the players
 	    ArrayList<UnoPlayer> players = new ArrayList<UnoPlayer>();
 	    //Deal the hands to the players
 	    int i = 0;
-	    for(String username: users) {
+	    for(String username: lobbyUsers.get(userLobby.get(client))) {
 	    	UnoPlayer player = new UnoPlayer(PlayerType.HUMAN, i,hands.get(i),username);
 	        players.add(player);
 	        i++;
@@ -347,89 +374,89 @@ public class ServerSocketApplication {
 	    //Initialize the disposal card stack
 	    ArrayList<UnoCard> disposal_Stack = new ArrayList<UnoCard>();
 	    //Create the UnoGame Object
-	    currentGame = new UnoGame(deck,players,disposal_Stack, 0,0);
+	    unoGames.put(userLobby.get(client), new UnoGame(deck,players,disposal_Stack, 0,0));
 	    //Place the first card for the disposal stack
-	    currentGame.getDisposalCards().add(0,deck.getCards().remove(0));
+	    unoGames.get(userLobby.get(client)).getDisposalCards().add(0,deck.getCards().remove(0));
 	}
     
 	/**
 	 * Resets a wild card (if there is one) and places a card down
 	 * @param card UnoCard to be placed in the disposal deck
 	 */
-    public static void placeCard(UnoCard card) {
+    public static void placeCard(UnoCard card, SocketIOClient client) {
         //Before laying down card, see if the previous was a wild card. If so, get rid of it's color
-        if(currentGame.getDisposalCards().size()!=0) {
-            if(currentGame.getDisposalCards().get(0).getActionType() == Actions.WILD_DRAW_FOUR
-                    || currentGame.getDisposalCards().get(0).getActionType() == Actions.WILD) {
-                currentGame.getDisposalCards().get(0).setColor(Colors.NONE);
+        if(unoGames.get(userLobby.get(client)).getDisposalCards().size()!=0) {
+            if(unoGames.get(userLobby.get(client)).getDisposalCards().get(0).getActionType() == Actions.WILD_DRAW_FOUR
+                    || unoGames.get(userLobby.get(client)).getDisposalCards().get(0).getActionType() == Actions.WILD) {
+            	unoGames.get(userLobby.get(client)).getDisposalCards().get(0).setColor(Colors.NONE);
             }
         }
-        currentGame.getDisposalCards().add(0, card);
+        unoGames.get(userLobby.get(client)).getDisposalCards().add(0, card);
     }
     
     /**
      * Simulates a turn in the Uno Game [AKA laying down a card, initiated by a human player]
      * @param card UnoCard which was played
      */
-    public static void simulateTurn(UnoCard card) {
+    public static void simulateTurn(UnoCard card,  SocketIOClient client) {
     	System.out.println(card.CardToText());
         //Pointer variable for ease of use
-        UnoPlayer currentPlayer = currentGame.getUnoPlayers().get(currentGame.getCurrentTurn());
+        UnoPlayer currentPlayer = unoGames.get(userLobby.get(client)).getUnoPlayers().get(unoGames.get(userLobby.get(client)).getCurrentTurn());
         //If the play didn't actually draw a card
         if(card.getActionType()!=Actions.NONE || card.getColor()!=Colors.NONE) {
             //Remove the card from the player's hand and update disposal
             currentPlayer.getUnoHand().removeCard(card);
             //Check for action card [HUMAN]
             if(card.getActionType()!=Actions.NONE) {
-                handleAction(card, currentPlayer);
+                handleAction(card, currentPlayer, client);
             }
             //Place card in disposal
-            placeCard(card);
+            placeCard(card, client);
             //Check for a win [HUMAN]
-            checkForWin(currentPlayer);
+            checkForWin(currentPlayer, client);
         } else {
         	//If the player had one UnoCard, remove any possible "UNO!" calls that were made
-        	usersCallUno.set(currentPlayer.getPlayerNum(), 0);
+        	lobbyCalledUno.get(userLobby.get(client)).set(currentPlayer.getPlayerNum(), 0);
         	//Retrieve card from the draw pile
-            card = currentGame.getCardFromDeck();
-            currentGame.getUnoPlayers().get(currentGame.getCurrentTurn()).getUnoHand().addCard(card);
+            card = unoGames.get(userLobby.get(client)).getCardFromDeck();
+            unoGames.get(userLobby.get(client)).getUnoPlayers().get(unoGames.get(userLobby.get(client)).getCurrentTurn()).getUnoHand().addCard(card);
         }
         //Update whose turn it is/pointer variable
-        currentGame.nextTurn();
+        unoGames.get(userLobby.get(client)).nextTurn();
         //New player updated
-        currentPlayer = currentGame.getUnoPlayers().get(currentGame.getCurrentTurn());
+        currentPlayer = unoGames.get(userLobby.get(client)).getUnoPlayers().get(unoGames.get(userLobby.get(client)).getCurrentTurn());
         while(currentPlayer.getPlayerType() == PlayerType.CPU) {
-            CPUTurn();
+            CPUTurn(client);
             //Update the currentPlayer
-            currentPlayer = currentGame.getUnoPlayers().get(currentGame.getCurrentTurn());
+            currentPlayer = unoGames.get(userLobby.get(client)).getUnoPlayers().get(unoGames.get(userLobby.get(client)).getCurrentTurn());
         }
     }
     
     /**
      * Simulates a CPU UnoGame turn.
      */
-    public static void CPUTurn() {
+    public static void CPUTurn(SocketIOClient client) {
         //Retrieve a card from the currentPlayer
-        UnoPlayer currentPlayer = currentGame.getUnoPlayers().get(currentGame.getCurrentTurn());
-        UnoCard CPUCard = currentGame.getValidCard(currentPlayer);
+        UnoPlayer currentPlayer = unoGames.get(userLobby.get(client)).getUnoPlayers().get(unoGames.get(userLobby.get(client)).getCurrentTurn());
+        UnoCard CPUCard = unoGames.get(userLobby.get(client)).getValidCard(currentPlayer);
         //If it couldn't get a card, draw from the pile and move to the next turn
         if(CPUCard==null) {
-            CPUCard = currentGame.getCardFromDeck();
+            CPUCard = unoGames.get(userLobby.get(client)).getCardFromDeck();
             currentPlayer.getUnoHand().addCard(CPUCard);
         } else {
             //Removes the card from the hand
             currentPlayer.getUnoHand().removeCard(CPUCard);
             //If it's an action card, deal with it
             if(CPUCard.getActionType()!=Actions.NONE) {
-                handleAction(CPUCard, currentPlayer);
+                handleAction(CPUCard, currentPlayer,client);
             }
             //Updates the disposal stack
-            placeCard(CPUCard);
+            placeCard(CPUCard, client);
             //Check for a win [CPU]
-            checkForWin(currentPlayer);
+            checkForWin(currentPlayer, client);
         }
         //Update whose turn it is
-        currentGame.nextTurn();
+        unoGames.get(userLobby.get(client)).nextTurn();
     }
     
     /**
@@ -451,20 +478,20 @@ public class ServerSocketApplication {
      * @param card UnoCard (Action type is not NONE)
      * @param currentPlayer Current UnoGame player (who placed the card)
      */
-    public static void handleAction(UnoCard card, UnoPlayer currentPlayer) {
+    public static void handleAction(UnoCard card, UnoPlayer currentPlayer, SocketIOClient client) {
         switch (card.getActionType()) {
             case WILD_DRAW_FOUR:
-                int nextPlayer = currentGame.nextPlayer();
+                int nextPlayer = unoGames.get(userLobby.get(client)).nextPlayer();
                 for(int i = 0; i < 4; i++) {
-                    UnoCard takenCard = currentGame.getCardFromDeck();
-                    currentGame.getUnoPlayers().get(nextPlayer).getUnoHand().addCard(takenCard);
+                    UnoCard takenCard = unoGames.get(userLobby.get(client)).getCardFromDeck();
+                    unoGames.get(userLobby.get(client)).getUnoPlayers().get(nextPlayer).getUnoHand().addCard(takenCard);
                     //Remove any possible "UNO!" calls that were made from this player
-                	usersCallUno.set(nextPlayer, 0);
+                    lobbyCalledUno.get(userLobby.get(client)).set(nextPlayer, 0);
                 }
                 if(currentPlayer.getPlayerType() == PlayerType.CPU) {
                     chooseColor(card);
                 }
-                currentGame.nextTurn();
+                unoGames.get(userLobby.get(client)).nextTurn();
                 break;
             case WILD:
                 if(currentPlayer.getPlayerType() == PlayerType.CPU) {
@@ -472,23 +499,23 @@ public class ServerSocketApplication {
                 }
                 break;
             case SKIP:
-                currentGame.nextTurn();
+            	unoGames.get(userLobby.get(client)).nextTurn();
                 break;
             case REVERSE:
-                currentGame.changeDirection();
-                if(users.size()==2) {
-                	currentGame.nextTurn();	
+            	unoGames.get(userLobby.get(client)).changeDirection();
+                if(lobbyUsers.get(userLobby.get(client)).size()==2) {
+                	unoGames.get(userLobby.get(client)).nextTurn();	
                 }
                 break;
             case DRAW_TWO:
-                nextPlayer = currentGame.nextPlayer();
+                nextPlayer = unoGames.get(userLobby.get(client)).nextPlayer();
                 for(int i = 0; i < 2; i++) {
-                    UnoCard takenCard = currentGame.getCardFromDeck();
-                    currentGame.getUnoPlayers().get(nextPlayer).getUnoHand().addCard(takenCard);
+                    UnoCard takenCard = unoGames.get(userLobby.get(client)).getCardFromDeck();
+                    unoGames.get(userLobby.get(client)).getUnoPlayers().get(nextPlayer).getUnoHand().addCard(takenCard);
                 }
-                currentGame.nextTurn();
+                unoGames.get(userLobby.get(client)).nextTurn();
                 //Remove any possible "UNO!" calls that were made from this player
-            	usersCallUno.set(nextPlayer, 0);
+            	lobbyCalledUno.get(userLobby.get(client)).set(nextPlayer, 0);
                 break;
         }
     }
@@ -497,9 +524,9 @@ public class ServerSocketApplication {
      * Checks for a win for the current player
      * @param player Current UnoGame player
      */
-    public static void checkForWin(UnoPlayer player) {
+    public static void checkForWin(UnoPlayer player, SocketIOClient client) {
        if(player.getUnoHand().getCardNum()==0) {
-    	   winner = player.getUsername();
+    	   winner.put(userLobby.get(client), player.getUsername());
        }
     }
     /**
@@ -545,40 +572,13 @@ public class ServerSocketApplication {
     	return iter.next();
     }
     
-    private static void updateUsersInLobby(java.util.Collection<SocketIOClient> usersCol) {
-    	users.clear();
-    	Iterator<SocketIOClient> iter = usersCol.iterator();
-    	while(iter.hasNext()) {
-    		users.add(usernames.get(iter.next()));
-    	}
-    }
+  
     
 
     
-    /**
-     * sets current game to the game the user is in
-     * Call this before working with currentGame
-     * @param client
-     */
-    private static void getUnoGame(SocketIOClient client){
-    	currentGame = unoGames.get(userLobby.get(client));
-    }
+  
     
-    
-    private static void updateUsersReady() {
-    	Iterator<String> iter = users.iterator();
-    	usersReady.clear();
-    	while(iter.hasNext()) {
-    		if(isReady.get(iter.next()) == true) {
-    			usersReady.add(1);
-    		}
-    		else {
-    			usersReady.add(0);
-    		}
-    		
-    		 
-    	}
-    }
+   
     
     
 }
