@@ -32,8 +32,8 @@ public class MainActivity extends AppCompatActivity{
     private static final String TAG = "MainActivity";
     public String username;
 
-    private String allPlayersUrl = "http://192.168.1.107:8090/player/all";
-    private String addPlayerUrl = "http://192.168.1.107:8090/player/add?name=";
+    private String allPlayersUrl = "http://10.26.50.236:8090/player/all";
+    private String addPlayerUrl = "http://10.26.50.236:8090/player/add?name=";
 
     private TextView txtResponse;
     private String jsonResponse;

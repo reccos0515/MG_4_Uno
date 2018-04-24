@@ -21,7 +21,7 @@ public class UnoApplication extends Application {
     public static final String TAG = UnoApplication.class.getSimpleName();
     private RequestQueue mRequestQueue;
     private static UnoApplication mInstance;
-    public static String server = "http://192.168.1.107:8080/";
+    public static String server = "http://10.26.50.236:8080/";
 
     private static UnoApplication instance;
     @Override

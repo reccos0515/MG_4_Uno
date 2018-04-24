@@ -24,8 +24,8 @@ import org.json.JSONObject;
 public class ProfileActivity extends AppCompatActivity {
     private static final String TAG = "ProfileActivity";
     private String username;
-    private String getPlayerUrl = "http://192.168.1.107:8090/player/find/";
-    private String leaderboardUrl = "http://192.168.1.107:8090/leaderboard/all";
+    private String getPlayerUrl = "http://10.26.50.236:8090/player/find/";
+    private String leaderboardUrl = "http://10.26.50.236:8090/leaderboard/all";
     //[0] = username | [1] = password | [2] = numGames | [3] = numWins | [4] = totalScore
     //[5] = rank | [6] = avgScore
     private String[] myPlayer = new String[7];
