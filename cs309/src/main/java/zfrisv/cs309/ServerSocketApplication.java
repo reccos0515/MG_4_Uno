@@ -47,6 +47,7 @@ public class ServerSocketApplication {
 	private static HashMap<String, ArrayList<Integer>> usersReady = new HashMap<>(); //lobby to usersReady
 	private static HashMap<String, ArrayList<Integer>> lobbyCalledUno = new HashMap<>(); //lobby to userscalledUno
 	private static HashMap<String, String> winner = new HashMap<>();
+	private static String lobby = "0";
 
 
 	public static void run() {
@@ -229,12 +230,13 @@ public class ServerSocketApplication {
 				
 				
 				
-				if(server.getRoomOperations(userLobby.get(arg0)).getClients().size() >= 4) {
+				
+				if(server.getRoomOperations(lobby).getClients().size() >= 4) {
 					userLobby.put(arg0,  newRoom());
 //					room = newRoom();
 				}
 				
-				if(server.getRoomOperations(userLobby.get(arg0)).getClients().size() == 0) {
+				if(server.getRoomOperations(lobby).getClients().size() == 0) {
 					isHost.put(arg0, true);
 					isReady.put(arg0, true);
 				}
@@ -244,20 +246,20 @@ public class ServerSocketApplication {
 					isReady.put(arg0, false);
 				}
 				
-				lobbyPosition.put(arg0, server.getRoomOperations(userLobby.get(arg0)).getClients().size());
+				lobbyPosition.put(arg0, server.getRoomOperations(lobby).getClients().size());
 				userLobby.put(arg0, userLobby.get(arg0));
 				
 				
 				//lobbyUsers.put(room, arraylist w username)
-				lobbyUsers.get(userLobby.get(arg0)).add(username);
+//				lobbyUsers.get(userLobby.get(arg0)).add(usernames.get(arg0));
 				
-				arg0.joinRoom(userLobby.get(arg0));
+				arg0.joinRoom(lobby);
 				System.out.println(userLobby.get(arg0));
 				System.out.println(getRoom(arg0));
 				
 				Object[] clients = server.getRoomOperations(getRoom(arg0)).getClients().toArray();
 				for(int i = 0; i< clients.length; i++) {
-					lobbyUsers.get(userLobby.get(arg0)).add(usernames.get(clients[i]));
+					//lobbyUsers.get(userLobby.get(arg0)).add(usernames.get(clients[i]));
 				
 				}
 			
