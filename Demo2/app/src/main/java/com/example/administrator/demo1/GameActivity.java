@@ -317,14 +317,14 @@ public class GameActivity extends AppCompatActivity {
         UnoDeck deck = new UnoDeck();
         deck.shuffleCards();
         //Deal cards to hands
-        ArrayList<UnoHand> hands = deck.dealHands(4);
+        int numNPC = Integer.parseInt(spn.getSelectedItem().toString());
+        ArrayList<UnoHand> hands = deck.dealHands(1+numNPC);
         //Create an ArrayList of the players
         ArrayList<UnoPlayer> players = new ArrayList<>();
         //Deal the hands to the players (Just player 1 (Human) for now)
         UnoPlayer player = new UnoPlayer(PlayerType.HUMAN, 0,hands.get(0),getIntent().getStringExtra("Username"));
         players.add(player);
         //Deal the other hands to the AI
-        int numNPC = Integer.parseInt(spn.getSelectedItem().toString());
         for(int i = 0; i < numNPC; i++) {
             players.add(new UnoPlayer(PlayerType.CPU,i+1,hands.get(i+1),"CPU"+(i+1)));
         }
